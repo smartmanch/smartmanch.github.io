@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>स्पेलिंग चैंपियन - दिन और महीने</title>
+    <style>
+        /* CSS Styling */
+        body { font-family: 'Arial', sans-serif; background-color: #f0f8ff; text-align: center; padding: 20px; margin: 0; }
+        .container { max-width: 650px; margin: auto; background-color: white; padding: 20px; border-radius: 15px; box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
+        h1 { color: #d9534f; }
+        #score-board { font-size: 24px; color: #ffbf00; margin-bottom: 20px; font-weight: bold; padding: 10px; background-color: #f9f9f9; border-radius: 8px; }
+        #game-area { display: none; }
+        #user-info-area { margin-bottom: 20px; }
+        .user-input { padding: 10px; margin: 5px; font-size: 18px; border-radius: 5px; border: 1px solid #ccc; }
+        #hindi-word-text { font-size: 36px; margin: 20px 0; color: #007bff; font-weight: bold; }
+        #input-container { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+        .letter-box { width: 45px; height: 45px; font-size: 28px; text-align: center; border: 2px solid #ccc; border-radius: 5px; text-transform: uppercase; background-color: #e9ecef; }
+        .letter-box:focus { border-color: #28a745; outline: none; }
+        #controls { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+        #submit-btn, #hint-btn, #start-btn { padding: 12px 20px; font-size: 18px; color: white; border: none; cursor: pointer; border-radius: 5px; transition: background-color 0.3s; }
+        #submit-btn { background-color: #28a745; }
+        #submit-btn:hover { background-color: #218838; }
+        #hint-btn { background-color: #fd7e14; }
+        #hint-btn:hover { background-color: #da6a0d; }
+        #start-btn { background-color: #007bff; }
+        #start-btn:hover { background-color: #0056b3; }
+        #feedback-area { margin-top: 25px; font-size: 24px; min-height: 30px; }
+        .correct-flash { color: green; font-weight: bold; }
+        #marksheet-area { display: none; text-align: left; margin-top: 30px; padding: 20px; background-color: #e9ecef; border-radius: 10px; }
+        .marksheet-row { padding: 8px 0; border-bottom: 1px solid #ccc; font-size: 18px; }
+        .marksheet-row:last-child { border-bottom: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>स्पेलिंग चैंपियन (दिन और महीने)</h1>
+
+    <div id="user-info-area">
+        <input type="text" id="userName" class="user-input" placeholder="अपना नाम लिखें" autocomplete="off">
+        <input type="text" id="userClass" class="user-input" placeholder="कक्षा लिखें" autocomplete="off">
+    </div>
+    
+    <button id="start-btn">गेम शुरू करें</button>
+
+    <div id="score-board" style="display: none;">सिक्के: <span id="coins">0</span> | प्रश्न: <span id="question-count">0/38</span></div>
+
+    <div id="game-area">
+        <div id="hindi-word-text"></div>
+        <div id="input-container">
+            <!-- Input boxes will be generated here -->
+        </div>
+        <div id="controls">
+            <button id="submit-btn">चेक करें</button>
+            <button id="hint-btn">हिंट (शब्द देखें)</button>
+        </div>
+        <div id="feedback-area"></div>
+    </div>
+
+    <div id="marksheet-area">
+        <h2>मार्कशीट</h2>
+        <div class="marksheet-row"><strong>नाम:</strong> <span id="ms-name"></span></div>
+        <div class="marksheet-row"><strong>कक्षा:</strong> <span id="ms-class"></span></div>
+        <div class="marksheet-row"><strong>कुल प्रश्न:</strong> <span id="ms-total"></span></div>
+        <div class="marksheet-row"><strong>सही उत्तर (बिना हिंट):</strong> <span id="ms-correct-no-hint"></span></div>
+        <div class="marksheet-row"><strong>सही उत्तर (हिंट के साथ):</strong> <span id="ms-correct-with-hint"></span></div>
+        <div class="marksheet-row"><strong>कुल सिक्के अर्जित:</strong> <span id="ms-coins"></span></div>
+    </div>
+</div>
+
+<script>
+    // JavaScript Logic 
+    const words = [
+        // सप्ताह के 7 दिन
+        { hindi: "सोमवार", english: "MONDAY" },
+        { hindi: "मंगलवार", english: "TUESDAY" },
+        { hindi: "बुधवार", english: "WEDNESDAY" },
+        { hindi: "गुरुवार", english: "THURSDAY" },
+        { hindi: "शुक्रवार", english: "FRIDAY" },
+        { hindi: "शनिवार", english: "SATURDAY" },
+        { hindi: "रविवार", english: "SUNDAY" },
+        
+        // 12 महीने
+        { hindi: "जनवरी", english: "JANUARY" },
+        { hindi: "फरवरी", english: "FEBRUARY" },
+        { hindi: "मार्च", english: "MARCH" },
+        { hindi: "अप्रैल", english: "APRIL" },
+        { hindi: "मई", english: "MAY" },
+        { hindi: "जून", english: "JUNE" },
+        { hindi: "जुलाई", english: "JULY" },
+        { hindi: "अगस्त", english: "AUGUST" },
+        { hindi: "सितंबर", english: "SEPTEMBER" },
+        { hindi: "अक्टूबर", english: "OCTOBER" },
+        { hindi: "नवंबर", english: "NOVEMBER" },
+        { hindi: "दिसंबर", english: "DECEMBER" }
+    ]; // कुल 19 शब्द
+
+    let allQuestions = [];
+    let currentQuestionIndex = 0;
+    let coins = 0;
+    let hintUsedForCurrentQuestion = false;
+    let correctAnswersNoHint = 0;
+    let correctAnswersWithHint = 0;
+    const TOTAL_ROUNDS = 2; // 19 प्रश्न 2 बार दोहराए जाएंगे (कुल 38)
+
+    const startBtn = document.getElementById('start-btn');
+    const gameArea = document.getElementById('game-area');
+    const userInfoArea = document.getElementById('user-info-area');
+    const scoreBoard = document.getElementById('score-board');
+    const marksheetArea = document.getElementById('marksheet-area');
+    const userNameInput = document.getElementById('userName');
+    const userClassInput = document.getElementById('userClass');
+    const hindiWordText = document.getElementById('hindi-word-text');
+    const inputContainer = document.getElementById('input-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const hintBtn = document.getElementById('hint-btn');
+    const feedbackArea = document.getElementById('feedback-area');
+    const coinsSpan = document.getElementById('coins');
+    const questionCountSpan = document.getElementById('question-count');
+
+    startBtn.addEventListener('click', startGame);
+    submitBtn.addEventListener('click', checkAnswer);
+    hintBtn.addEventListener('click', showHint);
+
+    function startGame() {
+        const name = userNameInput.value.trim();
+        const userClass = userClassInput.value.trim();
+
+        if (name === "" || userClass === "") {
+            alert("कृपया अपना नाम और कक्षा लिखें!");
+            return;
+        }
+
+        userInfoArea.style.display = 'none';
+        startBtn.style.display = 'none';
+        gameArea.style.display = 'block';
+        scoreBoard.style.display = 'block';
+        
+        for (let i = 0; i < TOTAL_ROUNDS; i++) {
+            // हर राउंड के बाद प्रश्नों को मिला दें ताकि क्रम अलग रहे
+            allQuestions = allQuestions.concat(words.sort(() => Math.random() - 0.5));
+        }
+        
+        currentQuestionIndex = 0;
+        coins = 0;
+        correctAnswersNoHint = 0;
+        correctAnswersWithHint = 0;
+        updateUI();
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        if (currentQuestionIndex < allQuestions.length) {
+            const currentQ = allQuestions[currentQuestionIndex];
+            hindiWordText.textContent = `हिंदी अर्थ: ${currentQ.hindi}`;
+            createInputBoxes(currentQ.english.length);
+            feedbackArea.textContent = '';
+            submitBtn.disabled = false;
+            hintUsedForCurrentQuestion = false;
+        } else {
+            endGame();
+        }
+    }
+
+    function createInputBoxes(length) {
+        inputContainer.innerHTML = '';
+        for (let i = 0; i < length; i++) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.maxLength = 1;
+            input.classList.add('letter-box');
+            input.addEventListener('input', function() {
+                if (this.value.length === this.maxLength) {
+                    const nextInput = this.nextElementSibling;
+                    if (nextInput) {
+                        nextInput.focus();
+                    }
+                }
+            });
+            inputContainer.appendChild(input);
+        }
+        inputContainer.firstChild.focus();
+    }
+
+    function showHint() {
+        const currentQ = allQuestions[currentQuestionIndex];
+        alert(`सही स्पेलिंग है: ${currentQ.english}`);
+        hintUsedForCurrentQuestion = true;
+    }
+
+    function checkAnswer() {
+        const inputs = document.querySelectorAll('.letter-box');
+        let userAnswer = '';
+        inputs.forEach(input => {
+            userAnswer += input.value.toUpperCase();
+        });
+
+        const correctAnswer = allQuestions[currentQuestionIndex].english.toUpperCase();
+
+        if (userAnswer === correctAnswer) {
+            if (!hintUsedForCurrentQuestion) {
+                coins += 2;
+                correctAnswersNoHint++;
+                feedbackArea.innerHTML = `<span class="correct-flash">सही जवाब! +2 सिक्के! स्पेलिंग: ${correctAnswer}</span>`;
+            } else {
+                correctAnswersWithHint++;
+                feedbackArea.innerHTML = `<span class="correct-flash">सही जवाब! (हिंट का उपयोग किया गया) स्पेलिंग: ${correctAnswer}</span>`;
+            }
+            
+            submitBtn.disabled = true;
+
+            // 1.5 सेकंड बाद अगला प्रश्न
+            setTimeout(nextQuestion, 1500); 
+
+        } else {
+            feedbackArea.textContent = "गलत जवाब। फिर से कोशिश करें।";
+            inputs.forEach(input => input.value = '');
+            inputContainer.firstChild.focus();
+        }
+        updateUI();
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        updateUI();
+        loadQuestion();
+    }
+
+    function updateUI() {
+        coinsSpan.textContent = coins;
+        questionCountSpan.textContent = `${currentQuestionIndex}/${allQuestions.length}`;
+    }
+
+    function endGame() {
+        gameArea.style.display = 'none';
+        scoreBoard.style.display = 'none';
+        marksheetArea.style.display = 'block';
+        
+        // मार्कशीट भरें
+        document.getElementById('ms-name').textContent = userNameInput.value.trim();
+        document.getElementById('ms-class').textContent = userClassInput.value.trim();
+        document.getElementById('ms-total').textContent = allQuestions.length;
+        document.getElementById('ms-correct-no-hint').textContent = correctAnswersNoHint;
+        document.getElementById('ms-correct-with-hint').textContent = correctAnswersWithHint;
+        document.getElementById('ms-coins').textContent = coins;
+    }
+</script>
+
+</body>
+</html>

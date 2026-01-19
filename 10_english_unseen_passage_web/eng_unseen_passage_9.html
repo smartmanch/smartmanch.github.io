@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Needa School Quiz - Learning Mode</title>
+    <style>
+        /* --- General & Typography --- */
+        html, body {
+            height: 100%; 
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif; 
+            background-color: #eef4f8; 
+            color: #333;
+            line-height: 1.6;
+            overflow: hidden; /* Crucial: Hide main body scrollbar */
+        }
+        .header {
+            background-color: #1a73e8; 
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.6em;
+            font-weight: 600;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 10px auto; 
+            padding: 0 10px;
+            height: calc(100vh - 70px); 
+            display: flex;
+            gap: 15px;
+            box-sizing: border-box;
+        }
+        h2 {
+            color: #1a73e8;
+            font-size: 1.4em;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        /* --- Input Page Styling --- */
+        #input-page {
+            width: 100%;
+            background: white;
+            padding: 30px; 
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: block; 
+            height: fit-content;
+        }
+        .input-group { margin: 15px auto; max-width: 400px; text-align: left; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        .start-button { background-color: #fbbc05; color: #333; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 1.1em; margin-top: 20px; box-shadow: 0 3px #e0a800; }
+
+        /* --- Quiz Layout (Side-by-Side View) --- */
+        #quiz-page {
+            display: none;
+            width: 100%;
+            display: flex;
+            gap: 15px;
+            height: 100%; 
+        }
+        
+        .passage-area, .question-area {
+            flex: 1; 
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            height: 100%; 
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .passage-area {
+            background-color: white;
+            overflow-y: auto; /* Allow internal scroll only for the passage content */
+        }
+
+        .question-area {
+            background-color: #f9f9f9;
+            overflow-y: hidden; 
+        }
+        
+        .passage-card { border-left: 6px solid #fbbc05; padding: 10px; background-color: #ffffff; border-radius: 5px; }
+        .passage-card p { font-size: 0.9em; margin: 0; } 
+        .highlight { background-color: #a8dadc; padding: 1px 3px; border-radius: 4px; font-weight: 600; transition: background-color 0.5s; }
+
+        .score-board { background: #4285f4; color: white; padding: 8px; font-size: 1.1em; border-radius: 8px; margin-bottom: 10px; font-weight: 600; }
+        .progress-container { margin-bottom: 10px; font-weight: 500; color: #555; flex-shrink: 0; }
+        
+        /* Question View Container */
+        #questions-container {
+            flex-grow: 1;
+            position: relative;
+            padding: 5px 0;
+            overflow-y: auto; /* Allow internal scroll only for the question/options */
+        }
+
+        .question {
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+            display: none; 
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            transition: opacity 0.3s;
+        }
+        .question.active { display: block; }
+        .question p strong { font-size: 1em; }
+
+        .options button { width: 100%; padding: 10px; margin: 6px 0; border: 1px solid #b8daff; border-radius: 8px; font-size: 0.9em; }
+        .options button:hover:not(:disabled) { background-color: #1a73e8; color: white; }
+        .feedback { margin-top: 8px; padding: 8px; font-size: 0.9em; }
+        
+        .correct { background-color: #34a853 !important; color: white !important; border: 1px solid #34a853 !important; }
+        .incorrect { background-color: #ea4335 !important; color: white !important; border: 1px solid #ea4335 !important; }
+        .disabled { cursor: not-allowed; opacity: 0.8; }
+        .next-button { background-color: #34a853; color: white; padding: 8px 15px; border-radius: 8px; margin-top: 10px; display: none; float: right; font-size: 0.9em; }
+
+        /* --- Result Page Styling --- */
+        #result-page {
+            display: none;
+            width: 100%;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            height: fit-content;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>**राजकीय उच्च माध्यमिक विद्यालय, सैनीपुरा, नवलगढ़, झुंझुनू**</h1>
+    </div>
+
+    <div class="container">
+        
+        <div id="input-page">
+            <h2>📝 Enter Student Details to Start</h2>
+            <div class="input-group">
+                <label for="studentName">Name:</label>
+                <input type="text" id="studentName" required>
+            </div>
+            <div class="input-group">
+                <label for="rollNumber">Roll Number:</label>
+                <input type="text" id="rollNumber" required>
+            </div>
+            <div class="input-group">
+                <label for="className">Class:</label>
+                <input type="text" id="className" required>
+            </div>
+            <button class="start-button" onclick="startQuiz()">Start Quiz</button>
+        </div>
+
+        <div id="quiz-page">
+            
+            <div class="passage-area">
+                <h2 style="border-bottom: 2px solid #eef4f8;">📖 Passage: Needa School (Refuge)</h2>
+                <div class="passage-card">
+                    <p id="passageContent">
+                        </p>
+                </div>
+            </div>
+
+            <div class="question-area">
+                <div class="score-board">
+                    Current Score: <span id="current-score">0</span>
+                </div>
+                
+                <div class="progress-container">
+                    Question <span id="currentQuestionNumber">1</span> of 6
+                    <div class="progress-bar">
+                        <div id="progressBarFill"></div>
+                    </div>
+                </div>
+
+                <div id="questions-container">
+                    
+                    <div class="question active" id="q1">
+                        <p><strong>i) The learning centre (Anand Bharti) is located in a house called:</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(1, 'A', 'B', 'p1')">A) Anand</button>
+                            <button onclick="checkAnswer(1, 'B', 'B', 'p1')">B) Needa</button>
+                            <button onclick="checkAnswer(1, 'C', 'B', 'p1')">C) Bharti</button>
+                            <button onclick="checkAnswer(1, 'D', 'B', 'p1')">D) Janaki</button>
+                        </div>
+                        <div class="feedback" id="feedback-1"></div>
+                        <button class="next-button" onclick="nextQuestion(1)">Next Question</button>
+                    </div>
+
+                    <div class="question" id="q2">
+                        <p><strong>ii) Who typically attends the small school in the afternoons?</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(2, 'A', 'A', 'p1')">A) Little girls who are domestic servants</button>
+                            <button onclick="checkAnswer(2, 'B', 'A', 'p1')">B) Elders learning to read</button>
+                            <button onclick="checkAnswer(2, 'C', 'A', 'p1')">C) Little boys learning to read</button>
+                            <button onclick="checkAnswer(2, 'D', 'A', 'p1')">D) Old men</button>
+                        </div>
+                        <div class="feedback" id="feedback-2"></div>
+                        <button class="next-button" onclick="nextQuestion(2)">Next Question</button>
+                    </div>
+                    
+                    <div class="question" id="q3">
+                        <p><strong>iii) A first generation learner is a person who:</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(3, 'A', 'B', 'p3')">A) Goes to school for the first time</button>
+                            <button onclick="checkAnswer(3, 'B', 'B', 'p3')">B) Is the first in the family to go to school</button>
+                            <button onclick="checkAnswer(3, 'C', 'B', 'p3')">C) Learns about first generation history</button>
+                            <button onclick="checkAnswer(3, 'D', 'B', 'p3')">D) None of the above</button>
+                        </div>
+                        <div class="feedback" id="feedback-3"></div>
+                        <button class="next-button" onclick="nextQuestion(3)">Next Question</button>
+                    </div>
+                    
+                    <div class="question" id="q4">
+                        <p><strong>iv) What are mentioned as common features in this school?</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(4, 'A', 'D', 'p3')">A) Field trips</button>
+                            <button onclick="checkAnswer(4, 'B', 'D', 'p3')">B) Discussions on current events</button>
+                            <button onclick="checkAnswer(4, 'C', 'D', 'p3')">C) Innovative teaching methods</button>
+                            <button onclick="checkAnswer(4, 'D', 'D', 'p3')">D) All of the above</button>
+                        </div>
+                        <div class="feedback" id="feedback-4"></div>
+                        <button class="next-button" onclick="nextQuestion(4)">Next Question</button>
+                    </div>
+
+                    <div class="question" id="q5">
+                        <p><strong>v) The children in the school are transformed into:</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(5, 'A', 'A', 'p4')">A) Confident individuals</button>
+                            <button onclick="checkAnswer(5, 'B', 'A', 'p4')">B) Dullard</button>
+                            <button onclick="checkAnswer(5, 'C', 'A', 'p4')">C) Politicians</button>
+                            <button onclick="checkAnswer(5, 'D', 'A', 'p4')">D) Teachers</button>
+                        </div>
+                        <div class="feedback" id="feedback-5"></div>
+                        <button class="next-button" onclick="nextQuestion(5)">Next Question</button>
+                    </div>
+                    
+                    <div class="question" id="q6">
+                        <p><strong>vi) Who runs the Anand Bharti school?</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(6, 'A', 'C', 'p5')">A) Mother Teresa</button>
+                            <button onclick="checkAnswer(6, 'B', 'C', 'p5')">B) Dr. A. P. J. Kalam</button>
+                            <button onclick="checkAnswer(6, 'C', 'C', 'p5')">C) Janaki Iyer</button>
+                            <button onclick="checkAnswer(6, 'D', 'C', 'p5')">D) Jyoti Swaroop</button>
+                        </div>
+                        <div class="feedback" id="feedback-6"></div>
+                        <button class="next-button" onclick="nextQuestion(6)">Finish Quiz</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="result-page">
+            <h2 style="color: #34a853;">🎉 Quiz Result</h2>
+            <div class="result-details">
+                <p><strong>Name:</strong> <span id="res-name"></span></p>
+                <p><strong>Roll Number:</strong> <span id="res-roll"></span></p>
+                <p><strong>Class:</strong> <span id="res-class"></span></p>
+                <hr>
+                <h3 style="color: #1a73e8; font-size: 1.5em; text-align: center;">Total Score Achieved:</h3>
+                <div class="final-score"><span id="res-score"></span> / 12</div>
+                <p style="text-align: center; color: #555;">(Maximum Possible Score: 12)</p>
+            </div>
+            <div class="wishes">
+                **🌟 All the best for your future, dear student! Keep learning! 🌟**
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Global Variables
+        let score = 0;
+        const correctPoints = 2;
+        const totalQuestions = 6; 
+        const questionsAttempted = {}; // 0: First attempt, 1: First try failed (retry allowed), 2: Finalized
+        let studentInfo = {}; 
+        let currentQNum = 1;
+
+        // --- Passage Mapping (Full Passage with IDs) ---
+        const rawPassage = {
+            'p1': 'A little distance from the Tarnaka crossroads, you come across a quiet house called ‘Needa’ (refuge). Attached to it is a small school where in the afternoons, you will come across many little girls who are domestic servants, learning to read.',
+            'p2': 'This is no non-formal education centre. Education is a very serious business here. The girls get to write their public exams, some of them join residential schools (after clearing the entrance exams) and some others go for higher studies.',
+            'p3': 'Innovative teaching methods help these first generation learners. Field trips, discussion on current events are common features in this school.',
+            'p4': 'Anand Bharti is not just about education, many people have commented that the children here are transformed into confident individuals and that the values imbibed here stay with them wherever they go.',
+            'p5': 'The woman who runs the school and who has a house in ‘Needa’ is Janaki Iyer, a 70-year old lady.',
+        };
+
+        // --- Initialization and UI Functions ---
+
+        function loadPassage() {
+            let passageHtml = '';
+            for (const id in rawPassage) {
+                // Wrap each sentence/section in a span with its ID for highlighting
+                passageHtml += `<span id="${id}">${rawPassage[id]}</span> `;
+            }
+            document.getElementById('passageContent').innerHTML = passageHtml;
+        }
+
+        function updateProgressBar() {
+            const attemptedCount = currentQNum > totalQuestions ? totalQuestions : currentQNum - 1;
+            const percentage = (attemptedCount / totalQuestions) * 100;
+            document.getElementById('progressBarFill').style.width = percentage + '%';
+        }
+
+        function startQuiz() {
+            const name = document.getElementById('studentName').value.trim();
+            const roll = document.getElementById('rollNumber').value.trim();
+            const className = document.getElementById('className').value.trim();
+
+            if (!name || !roll || !className) {
+                alert("Please fill in all details (Name, Roll Number, Class).");
+                return;
+            }
+
+            studentInfo = { name, roll, className };
+            document.getElementById('input-page').style.display = 'none';
+            document.getElementById('quiz-page').style.display = 'flex';
+            loadPassage(); 
+            document.getElementById('q1').classList.add('active'); 
+            document.getElementById('currentQuestionNumber').textContent = 1; 
+            updateProgressBar(); 
+        }
+
+        function showResult() {
+            document.getElementById('res-name').textContent = studentInfo.name;
+            document.getElementById('res-roll').textContent = studentInfo.roll;
+            document.getElementById('res-class').textContent = studentInfo.className;
+            document.getElementById('res-score').textContent = score;
+
+            document.getElementById('quiz-page').style.display = 'none';
+            document.getElementById('result-page').style.display = 'block';
+        }
+
+        // --- Question Navigation ---
+
+        function nextQuestion(qNum) {
+            const currentQuestionElement = document.getElementById('q' + qNum);
+            const nextQNum = qNum + 1;
+            const nextQuestionElement = document.getElementById('q' + nextQNum);
+
+            // Hide current question
+            currentQuestionElement.classList.remove('active');
+            
+            if (nextQuestionElement) {
+                // Show next question
+                nextQuestionElement.classList.add('active');
+                currentQNum = nextQNum;
+                document.getElementById('currentQuestionNumber').textContent = currentQNum;
+                loadPassage(); // Clear any previous passage highlight
+            } else {
+                // If no next question, show results
+                showResult();
+            }
+            updateProgressBar();
+        }
+
+        // --- Helper/UI Functions ---
+
+        function updateScore(points) {
+            score += points;
+            document.getElementById('current-score').textContent = score;
+        }
+
+        function disableQuestionOptions(qNum, enable) {
+            const questionElement = document.getElementById('q' + qNum);
+            const options = questionElement.querySelectorAll('.options button');
+            options.forEach(button => {
+                button.disabled = !enable;
+                if(!enable) button.classList.add('disabled');
+                else button.classList.remove('disabled');
+            });
+        }
+        
+        function getButtonByAnswer(qNum, answerKey) {
+            const options = document.getElementById('q' + qNum).querySelectorAll('.options button');
+            let targetButton = null;
+            options.forEach(button => {
+                const buttonText = button.textContent.trim();
+                if (buttonText.startsWith(answerKey + ')')) {
+                    targetButton = button;
+                }
+            });
+            return targetButton;
+        }
+
+        function highlightPassageSource(sourceId, isCorrect) {
+            loadPassage(); // Clear any existing highlight first
+
+            if (isCorrect) {
+                const highlightedElement = document.getElementById(sourceId);
+                if (highlightedElement) {
+                    highlightedElement.classList.add('highlight');
+                    // Scroll passage area to the highlighted text (internal scroll)
+                    const passageArea = document.querySelector('.passage-area');
+                    passageArea.scrollTop = highlightedElement.offsetTop - passageArea.offsetTop - 50; 
+                }
+            }
+        }
+
+        function showFeedback(qNum, isCorrect, attemptStatus, message, correctAnsKey) {
+            const feedbackElement = document.getElementById('feedback-' + qNum);
+            const correctButton = getButtonByAnswer(qNum, correctAnsKey);
+
+            feedbackElement.textContent = '';
+            
+            // Clear previous highlighting classes from all options
+            const options = document.getElementById('q' + qNum).querySelectorAll('.options button');
+            options.forEach(button => {
+                button.classList.remove('correct', 'incorrect');
+            });
+
+            if (isCorrect) {
+                // Correct Answer (First or Second Try)
+                const points = attemptStatus === 0 ? correctPoints : 0;
+                feedbackElement.textContent = `✅ Correct! ${attemptStatus === 0 ? '+' + correctPoints + ' points awarded.' : 'No points awarded (second attempt). You may now proceed.'}`;
+                feedbackElement.style.backgroundColor = '#e6ffed';
+                feedbackElement.style.color = '#34a853';
+                correctButton.classList.add('correct');
+                
+                // Show Next button and disable options
+                document.getElementById('q' + qNum).querySelector('.next-button').style.display = 'block';
+                disableQuestionOptions(qNum, false);
+            } else {
+                // Incorrect Answer
+                if (attemptStatus === 0) {
+                    // First Fail: Provide hint, ask for retry.
+                    feedbackElement.textContent = `❌ Incorrect. Check the highlighted area in the passage (source) and try again.`;
+                    feedbackElement.style.backgroundColor = '#ffebe6';
+                    feedbackElement.style.color = '#ea4335';
+                    // Options remain enabled
+                } else {
+                    // Second Fail (Final): Finalize and move on.
+                    feedbackElement.textContent = `❌ Incorrect. Attempts exhausted. The correct answer has been marked in green.`;
+                    feedbackElement.style.backgroundColor = '#ffebe6';
+                    feedbackElement.style.color = '#ea4335';
+                    correctButton.classList.add('correct'); // Show the correct answer
+                    
+                    // Show Next button and disable options
+                    document.getElementById('q' + qNum).querySelector('.next-button').style.display = 'block';
+                    disableQuestionOptions(qNum, false);
+                }
+            }
+        }
+        
+        // --- Main Logic ---
+
+        function checkAnswer(qNum, userAnsKey, correctAnsKey, sourceId) {
+            if (questionsAttempted[qNum] === undefined) {
+                questionsAttempted[qNum] = 0; // 0: First attempt
+            }
+            if (questionsAttempted[qNum] === 2) return; 
+
+            const isCorrect = (userAnsKey === correctAnsKey);
+            const currentAttempt = questionsAttempted[qNum];
+            const userButton = getButtonByAnswer(qNum, userAnsKey);
+
+            if (isCorrect) {
+                // Correct Answer
+                if (currentAttempt === 0) {
+                    updateScore(correctPoints); 
+                }
+                questionsAttempted[qNum] = 2; // Finalize
+                highlightPassageSource(sourceId, true); // Highlight source on success
+                showFeedback(qNum, true, currentAttempt, '', correctAnsKey);
+            } else {
+                // Incorrect Answer
+                if (currentAttempt === 0) {
+                    // First Fail
+                    questionsAttempted[qNum] = 1; // Mark for second try
+                    userButton.classList.add('incorrect'); // Highlight user's incorrect choice
+                    highlightPassageSource(sourceId, true); // Highlight source as hint
+                    showFeedback(qNum, false, currentAttempt, '', correctAnsKey);
+                } else {
+                    // Second Fail (Final)
+                    questionsAttempted[qNum] = 2; // Finalize as failed
+                    userButton.classList.add('incorrect'); 
+                    highlightPassageSource(sourceId, false); // Do NOT highlight on second fail
+                    showFeedback(qNum, false, currentAttempt, '', correctAnsKey);
+                }
+            }
+        }
+
+        // Initialize display properties and handlers
+        document.addEventListener('DOMContentLoaded', () => {
+             // Show input page initially
+            document.getElementById('input-page').style.display = 'block';
+            document.getElementById('quiz-page').style.display = 'none';
+        });
+    </script>
+</body>
+</html>

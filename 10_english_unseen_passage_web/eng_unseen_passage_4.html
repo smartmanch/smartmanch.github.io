@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chanakya Quiz - Learning Mode</title>
+    <style>
+        /* --- General & Typography --- */
+        html, body {
+            height: 100%; 
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif; 
+            background-color: #eef4f8; 
+            color: #333;
+            line-height: 1.6;
+            overflow: hidden; /* Crucial: Hide main body scrollbar */
+        }
+        .header {
+            background-color: #1a73e8; 
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.6em;
+            font-weight: 600;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 10px auto; 
+            padding: 0 10px;
+            height: calc(100vh - 70px); /* Fill remaining vertical space */
+            display: flex;
+            gap: 15px;
+            box-sizing: border-box;
+        }
+        h2 {
+            color: #1a73e8;
+            font-size: 1.4em;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        /* --- Input Page Styling --- */
+        #input-page {
+            width: 100%;
+            background: white;
+            padding: 30px; 
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: block; 
+            height: fit-content;
+        }
+        .input-group { margin: 15px auto; max-width: 400px; text-align: left; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        .start-button { background-color: #fbbc05; color: #333; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 1.1em; margin-top: 20px; box-shadow: 0 3px #e0a800; }
+
+        /* --- Quiz Layout (Side-by-Side View) --- */
+        #quiz-page {
+            display: none;
+            width: 100%;
+            display: flex;
+            gap: 15px;
+            height: 100%; 
+        }
+        
+        .passage-area, .question-area {
+            flex: 1; 
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            height: 100%; 
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .passage-area {
+            background-color: white;
+            overflow-y: auto; /* Allow internal scroll only for the passage content */
+        }
+
+        .question-area {
+            background-color: #f9f9f9;
+            overflow-y: hidden; 
+        }
+        
+        .passage-card { border-left: 6px solid #fbbc05; padding: 10px; background-color: #ffffff; border-radius: 5px; }
+        .passage-card p { font-size: 0.9em; margin: 0; } 
+        .highlight { background-color: #a8dadc; padding: 1px 3px; border-radius: 4px; font-weight: 600; transition: background-color 0.5s; }
+
+        .score-board { background: #4285f4; color: white; padding: 8px; font-size: 1.1em; border-radius: 8px; margin-bottom: 10px; font-weight: 600; }
+        .progress-container { margin-bottom: 10px; font-weight: 500; color: #555; flex-shrink: 0; }
+        
+        /* Question View Container */
+        #questions-container {
+            flex-grow: 1;
+            position: relative;
+            padding: 5px 0;
+            overflow-y: auto; /* Allow internal scroll only for the question/options */
+        }
+
+        .question {
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+            display: none; 
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            transition: opacity 0.3s;
+        }
+        .question.active { display: block; }
+        .question p strong { font-size: 1em; }
+
+        .options button { width: 100%; padding: 10px; margin: 6px 0; border: 1px solid #b8daff; border-radius: 8px; font-size: 0.9em; }
+        .options button:hover:not(:disabled) { background-color: #1a73e8; color: white; }
+        .feedback { margin-top: 8px; padding: 8px; font-size: 0.9em; }
+        
+        .correct { background-color: #34a853 !important; color: white !important; border: 1px solid #34a853 !important; }
+        .incorrect { background-color: #ea4335 !important; color: white !important; border: 1px solid #ea4335 !important; }
+        .disabled { cursor: not-allowed; opacity: 0.8; }
+        .next-button { background-color: #34a853; color: white; padding: 8px 15px; border-radius: 8px; margin-top: 10px; display: none; float: right; font-size: 0.9em; }
+
+        /* --- Result Page Styling --- */
+        #result-page {
+            display: none;
+            width: 100%;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            height: fit-content;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>**राजकीय उच्च माध्यमिक विद्यालय, सैनीपुरा, नवलगढ़, झुंझुनू**</h1>
+    </div>
+
+    <div class="container">
+        
+        <div id="input-page">
+            <h2>📝 Enter Student Details to Start</h2>
+            <div class="input-group">
+                <label for="studentName">Name:</label>
+                <input type="text" id="studentName" required>
+            </div>
+            <div class="input-group">
+                <label for="rollNumber">Roll Number:</label>
+                <input type="text" id="rollNumber" required>
+            </div>
+            <div class="input-group">
+                <label for="className">Class:</label>
+                <input type="text" id="className" required>
+            </div>
+            <button class="start-button" onclick="startQuiz()">Start Quiz</button>
+        </div>
+
+        <div id="quiz-page">
+            
+            <div class="passage-area">
+                <h2 style="border-bottom: 2px solid #eef4f8;">📖 Passage: Chanakya's Honesty</h2>
+                <div class="passage-card">
+                    <p id="passageContent">
+                        </p>
+                </div>
+            </div>
+
+            <div class="question-area">
+                <div class="score-board">
+                    Current Score: <span id="current-score">0</span>
+                </div>
+                
+                <div class="progress-container">
+                    Question <span id="currentQuestionNumber">1</span> of 9
+                    <div class="progress-bar">
+                        <div id="progressBarFill"></div>
+                    </div>
+                </div>
+
+                <div id="questions-container">
+                    
+                    <div class="question active" id="q1">
+                        <p><strong>i) Who entered the room quietly?</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(1, 'A', 'C', 'p1')">A) Villagers</button>
+                            <button onclick="checkAnswer(1, 'B', 'C', 'p1')">B) Guards</button>
+                            <button onclick="checkAnswer(1, 'C', 'C', 'p1')">C) The robbers</button>
+                            <button onclick="checkAnswer(1, 'D', 'C', 'p1')">D) The Prime Minister</button>
+                        </div>
+                        <div class="feedback" id="feedback-1"></div>
+                        <button class="next-button" onclick="nextQuestion(1)">Next Question</button>
+                    </div>
+
+                    <div class="question" id="q2">
+                        <p><strong>ii) Where were the blankets kept?</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(2, 'A', 'B', 'p2')">A) On the straw bed</button>
+                            <button onclick="checkAnswer(2, 'B', 'B', 'p2')">B) In a corner</button>
+                            <button onclick="checkAnswer(2, 'C', 'B', 'p2')">C) On the floor</button>
+                            <button onclick="checkAnswer(2, 'D', 'B', 'p2')">D) Near the door</button>
+                        </div>
+                        <div class="feedback" id="feedback-2"></div>
+                        <button class="next-button" onclick="nextQuestion(2)">Next Question</button>
+                    </div>
+                    
+                    <div class="question" id="q3">
+                        <p><strong>iii) Where was Chanakya sleeping?</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(3, 'A', 'A', 'p3')">A) On a bed of straw</button>
+                            <button onclick="checkAnswer(3, 'B', 'A', 'p3')">B) On a new blanket</button>
+                            <button onclick="checkAnswer(3, 'C', 'A', 'p3')">C) On the floor</button>
+                            <button onclick="checkAnswer(3, 'D', 'A', 'p3')">D) In the other room</button>
+                        </div>
+                        <div class="feedback" id="feedback-3"></div>
+                        <button class="next-button" onclick="nextQuestion(3)">Next Question</button>
+                    </div>
+                    
+                    <div class="question" id="q4">
+                        <p><strong>iv) Why were the robbers astonished?</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(4, 'A', 'D', 'p4')">A) The door was open</button>
+                            <button onclick="checkAnswer(4, 'B', 'D', 'p4')">B) Chanakya was awake</button>
+                            <button onclick="checkAnswer(4, 'C', 'D', 'p4')">C) The room was cold</button>
+                            <button onclick="checkAnswer(4, 'D', 'D', 'p4')">D) Chanakya used an old blanket despite having new ones</button>
+                        </div>
+                        <div class="feedback" id="feedback-4"></div>
+                        <button class="next-button" onclick="nextQuestion(4)">Next Question</button>
+                    </div>
+
+                    <div class="question" id="q5">
+                        <p><strong>v) Why did Chanakya not touch the blankets?</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(5, 'A', 'C', 'p5')">A) He was not cold</button>
+                            <button onclick="checkAnswer(5, 'B', 'C', 'p5')">B) He preferred straw</button>
+                            <button onclick="checkAnswer(5, 'C', 'C', 'p5')">C) They were public property</button>
+                            <button onclick="checkAnswer(5, 'D', 'C', 'p5')">D) The new blankets were dirty</button>
+                        </div>
+                        <div class="feedback" id="feedback-5"></div>
+                        <button class="next-button" onclick="nextQuestion(5)">Next Question</button>
+                    </div>
+                    
+                    <div class="question" id="q6">
+                        <p><strong>vi) Why were the robbers ashamed?</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(6, 'A', 'D', 'p5')">A) They saw Chanakya sleeping</button>
+                            <button onclick="checkAnswer(6, 'B', 'D', 'p5')">B) The room was too cold</button>
+                            <button onclick="checkAnswer(6, 'C', 'D', 'p5')">C) They couldn't find the money</button>
+                            <button onclick="checkAnswer(6, 'D', 'D', 'p5')">D) Chanakya did not touch public property, but they came to steal it</button>
+                        </div>
+                        <div class="feedback" id="feedback-6"></div>
+                        <button class="next-button" onclick="nextQuestion(6)">Next Question</button>
+                    </div>
+                    
+                    <div class="question" id="q7">
+                        <p><strong>vii) What did Chanakya see early in the morning?</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(7, 'A', 'A', 'p7')">A) The stolen things lying outside his house</button>
+                            <button onclick="checkAnswer(7, 'B', 'A', 'p7')">B) The robbers waiting outside</button>
+                            <button onclick="checkAnswer(7, 'C', 'A', 'p7')">C) The door was still open</button>
+                            <button onclick="checkAnswer(7, 'D', 'A', 'p7')">D) His old blanket missing</button>
+                        </div>
+                        <div class="feedback" id="feedback-7"></div>
+                        <button class="next-button" onclick="nextQuestion(7)">Next Question</button>
+                    </div>
+                    
+                    <div class="question" id="q8">
+                        <p><strong>viii) Write the similar word of the following from the passage: "Surprised"</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(8, 'A', 'B', 'p4')">A) Ashamed</button>
+                            <button onclick="checkAnswer(8, 'B', 'B', 'p4')">B) Astonished</button>
+                            <button onclick="checkAnswer(8, 'C', 'B', 'p4')">C) Quietly</button>
+                            <button onclick="checkAnswer(8, 'D', 'B', 'p4')">D) Covered</button>
+                        </div>
+                        <div class="feedback" id="feedback-8"></div>
+                        <button class="next-button" onclick="nextQuestion(8)">Next Question</button>
+                    </div>
+
+                    <div class="question" id="q9">
+                        <p><strong>ix) What was the final consequence of the robbers' change of heart, according to the end of the passage?</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(9, 'A', 'C', 'p8')">A) Chanakya became richer from the returned items</button>
+                            <button onclick="checkAnswer(9, 'B', 'C', 'p8')">B) Chanakya moved his belongings to the village</button>
+                            <button onclick="checkAnswer(9, 'C', 'C', 'p8')">C) There were no more robberies in the Maurya Empire</button>
+                            <button onclick="checkAnswer(9, 'D', 'C', 'p8')">D) The robbers were arrested by the guards</button>
+                        </div>
+                        <div class="feedback" id="feedback-9"></div>
+                        <button class="next-button" onclick="nextQuestion(9)">Finish Quiz</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="result-page">
+            <h2 style="color: #34a853;">🎉 Quiz Result</h2>
+            <div class="result-details">
+                <p><strong>Name:</strong> <span id="res-name"></span></p>
+                <p><strong>Roll Number:</strong> <span id="res-roll"></span></p>
+                <p><strong>Class:</strong> <span id="res-class"></span></p>
+                <hr>
+                <h3 style="color: #1a73e8; font-size: 1.5em; text-align: center;">Total Score Achieved:</h3>
+                <div class="final-score"><span id="res-score"></span> / 18</div>
+                <p style="text-align: center; color: #555;">(Maximum Possible Score: 18)</p>
+            </div>
+            <div class="wishes">
+                **🌟 All the best for your future, dear student! Keep learning! 🌟**
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Global Variables
+        let score = 0;
+        const correctPoints = 2;
+        const totalQuestions = 9; 
+        const questionsAttempted = {}; // 0: First attempt, 1: First try failed (retry allowed), 2: Finalized
+        let studentInfo = {}; 
+        let currentQNum = 1;
+
+        // --- Passage Mapping (Full Passage with IDs) ---
+        const rawPassage = {
+            'p1': 'It was a cold night but the door of the house was open. In the moonlight, everything inside could be seen clearly. The robbers entered the room quietly.',
+            'p2': 'The blankets were in a corner.',
+            'p3': 'Before taking the blankets, the robbers looked on all sides again. They saw in another corner a bed of straw. Chanakya was sleeping on it. He had covered himself with an old blanket, which had holes in it.',
+            'p4': 'The robbers were astonished. There were so many new blankets in the room and yet the Prime - Minister slept covered with an old blanket on a straw - bed. If he wanted, he could have used a new blanket but he did not.',
+            'p5': 'They were ashamed. No one would have known if Chanakya had used the blankets at night but he did not even touch the public property and they had come to take away the blankets.',
+            'p6': 'Both the robbers came out. They told the whole story to the other robbers waiting outside. They also felt ashamed. The robbers then brought all the stolen things and put them outside Chanakya’s house.',
+            'p7': 'Early in the morning, Chanakya got up and came out. He saw the stolen things lying outside and understood everything.',
+            'p8': 'He sent these things back to the village. After this there were no robberies in the Maurya Empire.',
+        };
+
+        // --- Initialization and UI Functions ---
+
+        function loadPassage() {
+            let passageHtml = '';
+            for (const id in rawPassage) {
+                passageHtml += `<span id="${id}">${rawPassage[id]}</span> `;
+            }
+            document.getElementById('passageContent').innerHTML = passageHtml;
+        }
+
+        function updateProgressBar() {
+            const attemptedCount = currentQNum > totalQuestions ? totalQuestions : currentQNum - 1;
+            const percentage = (attemptedCount / totalQuestions) * 100;
+            document.getElementById('progressBarFill').style.width = percentage + '%';
+        }
+
+        function startQuiz() {
+            const name = document.getElementById('studentName').value.trim();
+            const roll = document.getElementById('rollNumber').value.trim();
+            const className = document.getElementById('className').value.trim();
+
+            if (!name || !roll || !className) {
+                alert("Please fill in all details (Name, Roll Number, Class).");
+                return;
+            }
+
+            studentInfo = { name, roll, className };
+            document.getElementById('input-page').style.display = 'none';
+            document.getElementById('quiz-page').style.display = 'flex';
+            loadPassage(); 
+            document.getElementById('q1').classList.add('active'); 
+            updateProgressBar(); 
+        }
+
+        function showResult() {
+            document.getElementById('res-name').textContent = studentInfo.name;
+            document.getElementById('res-roll').textContent = studentInfo.roll;
+            document.getElementById('res-class').textContent = studentInfo.className;
+            document.getElementById('res-score').textContent = score;
+
+            document.getElementById('quiz-page').style.display = 'none';
+            document.getElementById('result-page').style.display = 'block';
+        }
+
+        // --- Question Navigation ---
+
+        function nextQuestion(qNum) {
+            const currentQuestionElement = document.getElementById('q' + qNum);
+            const nextQNum = qNum + 1;
+            const nextQuestionElement = document.getElementById('q' + nextQNum);
+
+            // Hide current question
+            currentQuestionElement.classList.remove('active');
+            
+            if (nextQuestionElement) {
+                // Show next question
+                nextQuestionElement.classList.add('active');
+                currentQNum = nextQNum;
+                document.getElementById('currentQuestionNumber').textContent = currentQNum;
+                loadPassage(); // Clear any previous passage highlight
+            } else {
+                // If no next question, show results
+                showResult();
+            }
+            updateProgressBar();
+        }
+
+        // --- Helper/UI Functions ---
+
+        function updateScore(points) {
+            score += points;
+            document.getElementById('current-score').textContent = score;
+        }
+
+        function disableQuestionOptions(qNum, enable) {
+            const questionElement = document.getElementById('q' + qNum);
+            const options = questionElement.querySelectorAll('.options button');
+            options.forEach(button => {
+                button.disabled = !enable;
+                if(!enable) button.classList.add('disabled');
+                else button.classList.remove('disabled');
+            });
+        }
+        
+        function getButtonByAnswer(qNum, answerKey) {
+            const options = document.getElementById('q' + qNum).querySelectorAll('.options button');
+            let targetButton = null;
+            options.forEach(button => {
+                const buttonText = button.textContent.trim();
+                if (buttonText.startsWith(answerKey + ')')) {
+                    targetButton = button;
+                }
+            });
+            return targetButton;
+        }
+
+        function highlightPassageSource(sourceId, isCorrect) {
+            loadPassage(); // Clear any existing highlight first
+
+            if (isCorrect) {
+                const highlightedElement = document.getElementById(sourceId);
+                if (highlightedElement) {
+                    highlightedElement.classList.add('highlight');
+                    // Scroll passage area to the highlighted text (internal scroll)
+                    const passageArea = document.querySelector('.passage-area');
+                    passageArea.scrollTop = highlightedElement.offsetTop - passageArea.offsetTop - 50; 
+                }
+            }
+        }
+
+        function showFeedback(qNum, isCorrect, attemptStatus, message, correctAnsKey) {
+            const feedbackElement = document.getElementById('feedback-' + qNum);
+            const correctButton = getButtonByAnswer(qNum, correctAnsKey);
+
+            feedbackElement.textContent = '';
+            
+            // Clear previous highlighting classes from all options
+            const options = document.getElementById('q' + qNum).querySelectorAll('.options button');
+            options.forEach(button => {
+                button.classList.remove('correct', 'incorrect');
+            });
+
+            if (isCorrect) {
+                // Correct Answer (First or Second Try)
+                const points = attemptStatus === 0 ? correctPoints : 0;
+                feedbackElement.textContent = `✅ Correct! ${attemptStatus === 0 ? '+' + correctPoints + ' points awarded.' : 'No points awarded (second attempt). You may now proceed.'}`;
+                feedbackElement.style.backgroundColor = '#e6ffed';
+                feedbackElement.style.color = '#34a853';
+                correctButton.classList.add('correct');
+                
+                // Show Next button and disable options
+                document.getElementById('q' + qNum).querySelector('.next-button').style.display = 'block';
+                disableQuestionOptions(qNum, false);
+            } else {
+                // Incorrect Answer
+                if (attemptStatus === 0) {
+                    // First Fail: Provide hint, ask for retry.
+                    feedbackElement.textContent = `❌ Incorrect. Check the highlighted area in the passage (source) and try again.`;
+                    feedbackElement.style.backgroundColor = '#ffebe6';
+                    feedbackElement.style.color = '#ea4335';
+                    // Options remain enabled
+                } else {
+                    // Second Fail (Final): Finalize and move on.
+                    feedbackElement.textContent = `❌ Incorrect. Attempts exhausted. The correct answer has been marked in green.`;
+                    feedbackElement.style.backgroundColor = '#ffebe6';
+                    feedbackElement.style.color = '#ea4335';
+                    correctButton.classList.add('correct'); // Show the correct answer
+                    
+                    // Show Next button and disable options
+                    document.getElementById('q' + qNum).querySelector('.next-button').style.display = 'block';
+                    disableQuestionOptions(qNum, false);
+                }
+            }
+        }
+        
+        // --- Main Logic ---
+
+        function checkAnswer(qNum, userAnsKey, correctAnsKey, sourceId) {
+            if (questionsAttempted[qNum] === undefined) {
+                questionsAttempted[qNum] = 0; // 0: First attempt
+            }
+            if (questionsAttempted[qNum] === 2) return; 
+
+            const isCorrect = (userAnsKey === correctAnsKey);
+            const currentAttempt = questionsAttempted[qNum];
+            const userButton = getButtonByAnswer(qNum, userAnsKey);
+
+            if (isCorrect) {
+                // Correct Answer
+                if (currentAttempt === 0) {
+                    updateScore(correctPoints); 
+                }
+                questionsAttempted[qNum] = 2; // Finalize
+                highlightPassageSource(sourceId, true); // Highlight source on success
+                showFeedback(qNum, true, currentAttempt, '', correctAnsKey);
+            } else {
+                // Incorrect Answer
+                if (currentAttempt === 0) {
+                    // First Fail
+                    questionsAttempted[qNum] = 1; // Mark for second try
+                    userButton.classList.add('incorrect'); // Highlight user's incorrect choice
+                    highlightPassageSource(sourceId, true); // Highlight source as hint
+                    showFeedback(qNum, false, currentAttempt, '', correctAnsKey);
+                } else {
+                    // Second Fail (Final)
+                    questionsAttempted[qNum] = 2; // Finalize as failed
+                    userButton.classList.add('incorrect'); 
+                    highlightPassageSource(sourceId, false); // Do NOT highlight on second fail
+                    showFeedback(qNum, false, currentAttempt, '', correctAnsKey);
+                }
+            }
+        }
+
+        // Initialize display properties and handlers
+        document.addEventListener('DOMContentLoaded', () => {
+             // Show input page initially
+            document.getElementById('input-page').style.display = 'block';
+            document.getElementById('quiz-page').style.display = 'none';
+
+            // Optional: for quick testing
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('quiz') === 'start') {
+                document.getElementById('studentName').value = 'Demo Student';
+                document.getElementById('rollNumber').value = '001';
+                document.getElementById('className').value = '10th';
+                startQuiz();
+            }
+        });
+    </script>
+</body>
+</html>

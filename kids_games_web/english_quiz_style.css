@@ -1,0 +1,153 @@
+/* english_quiz_style.css */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #e6e6fa; /* Light Lavender */
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    margin: 0;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+    background-color: #4b0082; /* Indigo */
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#game-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 800px;
+}
+
+h2 {
+    color: #4b0082; /* Indigo */
+    border-bottom: 2px solid #4b0082;
+    padding-bottom: 5px;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+button {
+    padding: 10px 20px;
+    margin-top: 15px;
+    background-color: #ff4500; /* OrangeRed */
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #cc3700;
+}
+
+/* Score Display */
+#current-score {
+    padding: 10px;
+    background-color: #f0fff0; /* Honeydew */
+    border: 1px solid #90ee90;
+    border-radius: 5px;
+    color: #228b22;
+    font-weight: bold;
+    text-align: right;
+    margin-bottom: 20px;
+}
+#current-score span {
+    font-size: 1.5em;
+    color: #4b0082; 
+}
+
+/* List Table */
+#word-list-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+#word-list-table th, #word-list-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+#word-list-table th {
+    background-color: #f2f2f2;
+    color: #555;
+}
+
+/* Quiz Options */
+.question-box {
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.option {
+    display: block;
+    padding: 10px;
+    margin: 8px 0;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    user-select: none;
+}
+
+.option:hover {
+    background-color: #d6d8db;
+}
+
+/* Click States */
+.correct {
+    background-color: #28a745 !important; /* Green */
+    color: white;
+    box-shadow: 0 0 5px #28a745;
+}
+.incorrect {
+    background-color: #dc3545 !important; /* Red */
+    color: white;
+    box-shadow: 0 0 5px #dc3545;
+}
+
+/* Feedback Message */
+#feedback-message {
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    font-size: 1.1em;
+}
+
+/* Marksheet */
+#mark-sheet p {
+    font-size: 18px;
+    padding: 5px;
+    border-bottom: 1px dashed #ccc;
+}
+#mark-sheet strong {
+    color: #4b0082;
+}

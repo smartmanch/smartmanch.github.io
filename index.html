@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Manch - Home</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #e67e22;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: var(--bg-color); color: #333; }
+        
+        header { background-color: var(--primary-color); color: white; padding: 1rem 0; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        header h1 { margin: 0; font-size: 2.5rem; }
+        header p { margin: 5px 0 0; font-size: 1.1rem; color: #ecf0f1; }
+        
+        nav { background-color: #34495e; padding: 10px; text-align: center; position: sticky; top: 0; z-index: 100; }
+        nav a { color: white; text-decoration: none; margin: 0 15px; font-weight: bold; }
+        nav a:hover { color: var(--accent-color); }
+        
+        .gallery-container { display: flex; overflow-x: auto; padding: 20px; gap: 15px; background: #ddd; scrollbar-width: thin; }
+        .gallery-item { min-width: 250px; height: 180px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+        .gallery-item img:hover { transform: scale(1.05); }
+        .gallery-caption { position: absolute; bottom: 0; background: rgba(0,0,0,0.6); color: white; width: 100%; text-align: center; padding: 5px 0; font-size: 0.9rem; }
+        
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+        h2.section-title { text-align: center; color: var(--primary-color); border-bottom: 3px solid var(--accent-color); display: inline-block; margin-bottom: 30px; padding-bottom: 5px; }
+        .center-heading { text-align: center; margin-top: 40px; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        
+        .card { background: var(--card-bg); border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: transform 0.2s; border-top: 5px solid var(--primary-color); }
+        .card:hover { transform: translateY(-5px); }
+        .card h3 { color: var(--primary-color); margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        
+        /* Scrollable List Style */
+        .scroll-list {
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .scroll-list::-webkit-scrollbar { width: 6px; }
+        .scroll-list::-webkit-scrollbar-track { background: #f1f1f1; }
+        .scroll-list::-webkit-scrollbar-thumb { background: #888; border-radius: 3px; }
+        
+        .resource-list { list-style: none; padding: 0; margin: 0; }
+        .resource-list li { margin-bottom: 8px; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; }
+        .resource-list a { text-decoration: none; color: #2980b9; font-weight: 500; display: block; font-size: 0.95rem; }
+        .resource-list a:hover { color: #e67e22; padding-left: 5px; transition: 0.2s; }
+        
+        .badge { font-size: 0.75em; padding: 2px 6px; border-radius: 4px; color: white; margin-left: 5px; float: right; }
+        .badge-game { background-color: #27ae60; } 
+        .badge-pdf { background-color: #c0392b; } 
+        .badge-quiz { background-color: #8e44ad; }
+        .badge-sim { background-color: #2980b9; }
+        .badge-map { background-color: #d35400; }
+        
+        .list-category { background: #eee; padding: 5px; font-weight: bold; margin-top: 10px; font-size: 0.9em; border-radius: 4px; }
+        
+        footer { background-color: #2c3e50; color: white; text-align: center; padding: 20px; margin-top: 40px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="logo.png" alt="Smart Manch Logo" style="height: 80px; width: auto; background: white; border-radius: 50%;">
+        <h1>स्मार्ट मंच (Smart Manch)</h1>
+        <p>शिक्षा विभाग, राजस्थान - ई-लर्निंग पोर्टल</p>
+    </header>
+
+    <nav>
+        <a href="#kids">कक्षा 1-5 (Kids)</a>
+        <a href="#class10">कक्षा 10</a>
+        <a href="#class12">कक्षा 12</a>
+        <a href="#simulations">लैब & मैप्स</a>
+    </nav>
+
+    <div class="gallery-container">
+        <div class="gallery-item"><img src="student.jpeg" alt="Students"><div class="gallery-caption">विद्यार्थी</div></div>
+        <div class="gallery-item"><img src="ajmer.jpeg" alt="Ajmer"><div class="gallery-caption">अजमेर विजिट</div></div>
+        <div class="gallery-item"><img src="bhopal.jpeg" alt="Bhopal"><div class="gallery-caption">भोपाल ट्रेनिंग</div></div>
+        <div class="gallery-item"><img src="award.jpeg" alt="Award"><div class="gallery-caption">पुरस्कार वितरण</div></div>
+        <div class="gallery-item"><img src="lab.jpeg" alt="Lab"><div class="gallery-caption">लैब एक्टिविटी</div></div>
+    </div>
+
+    <div class="container">
+        
+        <div id="kids" class="center-heading">
+            <h2 class="section-title">Kids Zone (कक्षा 1 से 5)</h2>
+        </div>
+        <div class="grid">
+            <div class="card" style="border-top-color: #f1c40f;">
+                <h3>हिंदी (Hindi Games)</h3>
+                <div class="scroll-list">
+                    <ul class="resource-list">
+                        <li><a href="kids_games_web/vilom_index.html">विलोम शब्द <span class="badge badge-game">Play</span></a></li>
+                        <li><a href="kids_games_web/hindi_learning_game.html">हिंदी लर्निंग गेम <span class="badge badge-game">Play</span></a></li>
+                        <li><a href="kids_games_web/paryayvachi_shabd_champion.html">पर्यायवाची चैंपियन <span class="badge badge-game">Play</span></a></li>
+                        <li><a href="kids_games_web/index_paryaywachi.html">पर्यायवाची भाग-1 <span class="badge badge-game">Play</span></a></li>
+                        <li><a href="kids_games_web/index_paryaywachi2.html">पर्यायवाची भाग-2 <span class="badge badge-game">Play</span></a></li>
+                        <li><a href="kids_games_web/index_paryaywachi3.html">पर्यायवाची भाग-3 <span class="badge badge-game">Play</span></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card" style="border-top-color: #e74c3c;">
+                <h3>अंग्रेजी (Spelling & Vocab)</h3>
+                <div class="scroll-list">
+                    <ul class="resource-list">
+                        <li><a href="kids_games_web/english_antonyms_quiz.html">Antonyms Quiz <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="kids_games_web/english_antonyms_quiz_50.html">Antonyms (50 Q) <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="kids_games_web/spelling_days_months_game_38.html">Days & Months <span class="badge badge-game">Game</span></a></li>
+                        <li><a href="kids_games_web/spelling_bodyparts_game_20.html">Body Parts (Easy) <span class="badge badge-game">Game</span></a></li>
+                        <li><a href="kids_games_web/spelling_game_body_parts_150.html">Body Parts (Hard) <span class="badge badge-game">Game</span></a></li>
+                        <li><a href="kids_games_web/spelling_fruits_game_20.html">Fruits Name <span class="badge badge-game">Game</span></a></li>
+                        <li><a href="kids_games_web/spelling_vegetables_game_20.html">Vegetables Name <span class="badge badge-game">Game</span></a></li>
+                        <li><a href="kids_games_web/spelling_game_food_items_150.html">Food Items <span class="badge badge-game">Game</span></a></li>
+                        <li><a href="kids_games_web/spelling_game_new_words_150.html">New Words <span class="badge badge-game">Game</span></a></li>
+                        <li><a href="kids_games_web/spelling_game_no_hint_marks.html">Spelling Challenge <span class="badge badge-game">Game</span></a></li>
+                        <li><a href="kids_games_web/spelling_game_no_hint_marks_150.html">Spelling Challenge (150) <span class="badge badge-game">Game</span></a></li>
+                        <li><a href="kids_games_web/spelling_game_marksheet_class6_150.html">Class 6 Spelling Marksheet <span class="badge badge-game">Game</span></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card" style="border-top-color: #3498db;">
+                <h3>गणित (Maths Games)</h3>
+                <div class="scroll-list">
+                    <ul class="resource-list">
+                        <li><a href="kids_games_web/math_counting_game_20.html">Counting Game <span class="badge badge-game">Play</span></a></li>
+                        <li><a href="kids_games_web/math_mega_game_1.html">Math Mega Game <span class="badge badge-game">Play</span></a></li>
+                        <div class="list-category">Addition & Subtraction</div>
+                        <li><a href="kids_games_web/math_addition_game_20_questions.html">Addition (20 Q) <span class="badge badge-game">Play</span></a></li>
+                        <li><a href="kids_games_web/math_addition_game_50.html">Addition (50 Q) <span class="badge badge-game">Play</span></a></li>
+                        <li><a href="kids_games_web/math_subtraction_game_20_questions.html">Subtraction (20 Q) <span class="badge badge-game">Play</span></a></li>
+                        <li><a href="kids_games_web/math_subtraction_game_50.html">Subtraction (50 Q) <span class="badge badge-game">Play</span></a></li>
+                        <div class="list-category">Multiplication & Division</div>
+                        <li><a href="kids_games_web/math_multiplication_game_20_questions.html">Multiplication (20 Q) <span class="badge badge-game">Play</span></a></li>
+                        <li><a href="kids_games_web/math_multiplication_game_50.html">Multiplication (50 Q) <span class="badge badge-game">Play</span></a></li>
+                        <li><a href="kids_games_web/math_division_game_20_questions.html">Division (20 Q) <span class="badge badge-game">Play</span></a></li>
+                        <li><a href="kids_games_web/math_division_game_50.html">Division (50 Q) <span class="badge badge-game">Play</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="class10" class="center-heading">
+            <h2 class="section-title">कक्षा 10 (बोर्ड परीक्षा)</h2>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <h3>विज्ञान (Science)</h3>
+                <div class="scroll-list">
+                    <ul class="resource-list">
+                        <div class="list-category">Short Notes (Web)</div>
+                        <li><a href="10_science_shortnotes_web/2 ACIDS, BASES AND SALTS.html">Acids, Bases & Salts <span class="badge badge-game">Note</span></a></li>
+                        <li><a href="10_science_shortnotes_web/index.html">All Short Notes <span class="badge badge-game">Index</span></a></li>
+                        
+                        <div class="list-category">Solved Papers (Web)</div>
+                        <li><a href="10_science_papers_web/10_science_main_paper_2024.html">Main Paper 2024 <span class="badge badge-quiz">Paper</span></a></li>
+                        <li><a href="10_science_papers_web/10_science_main_paper_2025.html">Main Paper 2025 <span class="badge badge-quiz">Paper</span></a></li>
+                        <li><a href="10_science_papers_web/10_science_model_paper_2025.html">Model Paper 2025 <span class="badge badge-quiz">Model</span></a></li>
+                        <li><a href="10_science_papers_web/10_science_model_paper_2026.html">Model Paper 2026 <span class="badge badge-quiz">Model</span></a></li>
+                        <li><a href="10_science_papers_web/10_science_supplimentry_paper_2025.html">Suppl. Paper 2025 <span class="badge badge-quiz">Paper</span></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <h3>सामाजिक विज्ञान (SST)</h3>
+                <div class="scroll-list">
+                    <ul class="resource-list">
+                        <div class="list-category">Section C & D Solved</div>
+                        <li><a href="10_sst_papers_section_c_d_web/10_sst_board_paper_2025.html">Board Paper 2025 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="10_sst_papers_section_c_d_web/10_sst_board_paperl2024.html">Board Paper 2024 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="10_sst_papers_section_c_d_web/10_sst_modal_paper_2025.html">Model Paper 2025 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="10_sst_papers_section_c_d_web/10_sst_modal_paper_2026.html">Model Paper 2026 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="10_sst_papers_section_c_d_web/10_sst_supplimentry_paper_2024.html">Suppl. Paper 2024 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="10_sst_papers_section_c_d_web/10_sst_supplimentry_paper_2025.html">Suppl. Paper 2025 <span class="badge badge-game">Web</span></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <h3>अंग्रेजी (English)</h3>
+                <div class="scroll-list">
+                    <ul class="resource-list">
+                        <li><a href="10_english_unseen_passage_web/eng_unseen_passage_1.html">Unseen Passage 1 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="10_english_unseen_passage_web/eng_unseen_passage_2.html">Unseen Passage 2 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="10_english_unseen_passage_web/eng_unseen_passage_3.html">Unseen Passage 3 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="10_english_unseen_passage_web/eng_unseen_passage_4.html">Unseen Passage 4 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="10_english_unseen_passage_web/eng_unseen_passage_5.html">Unseen Passage 5 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="10_english_unseen_passage_web/eng_unseen_passage_6.html">Unseen Passage 6 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="10_english_unseen_passage_web/eng_unseen_passage_7.html">Unseen Passage 7 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="10_english_unseen_passage_web/eng_unseen_passage_8.html">Unseen Passage 8 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="10_english_unseen_passage_web/eng_unseen_passage_9.html">Unseen Passage 9 <span class="badge badge-game">Web</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="class12" class="center-heading">
+            <h2 class="section-title">कक्षा 12 (Arts)</h2>
+        </div>
+        <div class="grid">
+            
+            <div class="card">
+                <h3>राजनीति विज्ञान (Pol. Sci)</h3>
+                <div class="scroll-list">
+                    <ul class="resource-list">
+                        <div class="list-category">Papers (Web)</div>
+                        <li><a href="12_pol_sci_papers_web/12_pol_sci_main_paper_2025.html">Main Paper 2025 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="12_pol_sci_papers_web/12_pol_sci_main_paper_2024.html">Main Paper 2024 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="12_pol_sci_papers_web/12_pol_sci_modal_paper_2025.html">Model Paper 2025 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="12_pol_sci_papers_web/12_pol_sci_modal_paper_2026.html">Model Paper 2026 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="12_pol_sci_papers_web/12_pol_sci_supplimentary_paper_2025.html">Suppl. Paper 2025 <span class="badge badge-game">Web</span></a></li>
+
+                        <div class="list-category">Short Notes (PDF)</div>
+                        <li><a href="12_pol_sci_shortnotes_pdf/अंतरराष्ट्रीय_संगठन.pdf">अंतरराष्ट्रीय संगठन <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_pol_sci_shortnotes_pdf/क्षेत्रीय_आकांक्षाएं.pdf">क्षेत्रीय आकांक्षाएं <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_pol_sci_shortnotes_pdf/दो_ध्रुवीयता_का_अंत.pdf">दो ध्रुवीयता का अंत <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_pol_sci_shortnotes_pdf/पर्यावरण_और_प्राकृतिक_संसाधन.pdf">पर्यावरण और प्राकृतिक संसाधन <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_pol_sci_shortnotes_pdf/भारत_के_विदेश_संबंध.pdf">भारत के विदेश संबंध <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_pol_sci_shortnotes_pdf/भारतीय_राजनीति_में_नए_बदलाव.pdf">भारतीय राजनीति में नए बदलाव <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_pol_sci_shortnotes_pdf/राष्ट्र_निर्माण_की_चुनौतियां.pdf">राष्ट्र निर्माण की चुनौतियां <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_pol_sci_shortnotes_pdf/वैश्वीकरण.pdf">वैश्वीकरण <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_pol_sci_shortnotes_pdf/समकालीन_दक्षिण_एशिया.pdf">समकालीन दक्षिण एशिया <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_pol_sci_shortnotes_pdf/समकालीन_विश्व_में_सुरक्षा.pdf">समकालीन विश्व में सुरक्षा <span class="badge badge-pdf">PDF</span></a></li>
+
+                        <div class="list-category">Chapter-wise Quizzes</div>
+                        <li><a href="12_pol_sci_chapterwise_quiz_web/दो_ध्रुवीयता_का_अंत.html">दो ध्रुवीयता का अंत <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_pol_sci_chapterwise_quiz_web/समकालीन_दक्षिण_एशिया.html">समकालीन दक्षिण एशिया <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_pol_sci_chapterwise_quiz_web/अंतरराष्ट्रीय_संगठन.html">अंतरराष्ट्रीय संगठन <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_pol_sci_chapterwise_quiz_web/पर्यावरण_और_प्राकृतिक_संसाधन.html">पर्यावरण और प्राकृतिक संसाधन <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_pol_sci_chapterwise_quiz_web/वैश्वीकरण.html">वैश्वीकरण <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_pol_sci_chapterwise_quiz_web/राष्ट्र_निर्माण_की_चुनौतियां.html">राष्ट्र निर्माण की चुनौतियां <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_pol_sci_chapterwise_quiz_web/भारत_के_विदेश_संबंध.html">भारत के विदेश संबंध <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_pol_sci_chapterwise_quiz_web/क्षेत्रीय_आकांक्षाएं.html">क्षेत्रीय आकांक्षाएं <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_pol_sci_chapterwise_quiz_web/भारतीय_राजनीति_में_नए_बदलाव.html">भारतीय राजनीति में नए बदलाव <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_pol_sci_chapterwise_quiz_web/12_pol_sci_all_lessons_quiz.html">All Chapters Quiz (Combined) <span class="badge badge-quiz">Quiz</span></a></li>
+                        </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>इतिहास (History)</h3>
+                <div class="scroll-list">
+                    <ul class="resource-list">
+                        <div class="list-category">Short Notes (PDF)</div>
+                        <li><a href="12_history_shortnotes_pdf/1 Bricks, Beads and Bones.pdf">1. Bricks, Beads and Bones <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_history_shortnotes_pdf/2 Kings, Farmers and Towns.pdf">2. Kings, Farmers and Towns <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_history_shortnotes_pdf/3 Kinship, Caste and Class.pdf">3. Kinship, Caste and Class <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_history_shortnotes_pdf/4 Thinkers, Beliefs and Buildings.pdf">4. Thinkers, Beliefs and Buildings <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_history_shortnotes_pdf/5 Through the Eyes of Travellers.pdf">5. Through the Eyes of Travellers <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_history_shortnotes_pdf/6 Bhakti-Sufi Traditions.pdf">6. Bhakti-Sufi Traditions <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_history_shortnotes_pdf/7 An Imperial Capital.pdf">7. An Imperial Capital <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_history_shortnotes_pdf/8 Peasants, Zamindars and the State.pdf">8. Peasants, Zamindars and State <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_history_shortnotes_pdf/9 Colonialism and the Countryside.pdf">9. Colonialism and the Countryside <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_history_shortnotes_pdf/10 Rebels and the Raj.pdf">10. Rebels and the Raj <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_history_shortnotes_pdf/11 Mahatma Gandhi and the Nationalist Movement.pdf">11. Mahatma Gandhi & Nationalist <span class="badge badge-pdf">PDF</span></a></li>
+                        <li><a href="12_history_shortnotes_pdf/12 Framing the Constitution.pdf">12. Framing the Constitution <span class="badge badge-pdf">PDF</span></a></li>
+                        
+                        <div class="list-category">Previous Papers (Web)</div>
+                        <li><a href="12_History_papers_web/12_history_main_paper_2025.html">Main Paper 2025 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="12_History_papers_web/12_history_main_paper_2024.html">Main Paper 2024 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="12_History_papers_web/12_history_modal_paper_2025.html">Model Paper 2025 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="12_History_papers_web/12_history_modal_paper_2026.html">Model Paper 2026 <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="12_History_papers_web/12_history_supplimentary_paper_2025.html">Suppl. Paper 2025 <span class="badge badge-game">Web</span></a></li>
+
+                        <div class="list-category">Quizzes (Web)</div>
+                        <li><a href="12_history_quizes_web/1_Bricks_Beads_and_Bones.html">1. Bricks, Beads & Bones <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_history_quizes_web/2_Kings_Farmers_and_Towns.html">2. Kings, Farmers & Towns <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_history_quizes_web/3_Kinship_Caste_and_Class.html">3. Kinship, Caste & Class <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_history_quizes_web/4_Thinkers_Beliefs_and_Buildings.html">4. Thinkers, Beliefs & Buildings <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_history_quizes_web/5_Through_the_Eyes_of_Travellers.html">5. Eyes of Travellers <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_history_quizes_web/6_Bhakti_Sufi_Traditions.html">6. Bhakti Sufi Traditions <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_history_quizes_web/7_An_Imperial_Capital.html">7. An Imperial Capital <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_history_quizes_web/8_Peasants_Zamindars_and_the_State.html">8. Peasants & Zamindars <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_history_quizes_web/9_Colonialism_and the_Countryside.html">9. Colonialism & Countryside <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_history_quizes_web/10_Rebels_and_the_Raj.html">10. Rebels and the Raj <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_history_quizes_web/11_Mahatma_Gandhi_and_the_Nationalis....html">11. Mahatma Gandhi <span class="badge badge-quiz">Quiz</span></a></li>
+                        <li><a href="12_history_quizes_web/12_Framing_the_Constitution.html">12. Constitution <span class="badge badge-quiz">Quiz</span></a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>अंग्रेजी (English)</h3>
+                <div class="scroll-list">
+                    <ul class="resource-list">
+                        <div class="list-category">2024 Papers</div>
+                        <li><a href="12_english_unseen_passage_web/12_2024_main exam_english_unseen_1.html">Main Exam 2024 (Passage 1) <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="12_english_unseen_passage_web/12_2024_main exam_english_unseen_2.html">Main Exam 2024 (Passage 2) <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="12_english_unseen_passage_web/12_2024_SUPPlimentry_english_unseen_1.html">Suppl. Exam 2024 (Passage 1) <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="12_english_unseen_passage_web/12_2024_SUPPlimentry_english_unseen_2.html">Suppl. Exam 2024 (Passage 2) <span class="badge badge-game">Web</span></a></li>
+                        
+                        <div class="list-category">2025 Papers</div>
+                        <li><a href="12_english_unseen_passage_web/12_2025_main exam_english_unseen_1.html">Main Exam 2025 (Passage 1) <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="12_english_unseen_passage_web/12_2025_main exam_english_unseen_2.html">Main Exam 2025 (Passage 2) <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="12_english_unseen_passage_web/12_2025_SUPPlimentry_english_unseen_1.html">Suppl. Exam 2025 (Passage 1) <span class="badge badge-game">Web</span></a></li>
+                        <li><a href="12_english_unseen_passage_web/12_2025_SUPPlimentry_english_unseen_2.html">Suppl. Exam 2025 (Passage 2) <span class="badge badge-game">Web</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="simulations" class="center-heading">
+            <h2 class="section-title">वर्चुअल लैब और मैप्स (Virtual Lab & Maps)</h2>
+        </div>
+        <div class="grid">
+            
+            <div class="card">
+                <h3>Physics (Light)</h3>
+                <div class="scroll-list">
+                    <ul class="resource-list">
+                        <li><a href="Simulation_web/Concave_Mirror.html">Concave Mirror (अवतल दर्पण) <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/Convex_Mirror.html">Convex Mirror (उत्तल दर्पण) <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/Concave_Lens.html">Concave Lens (अवतल लेंस) <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/convex_lens.html">Convex Lens (उत्तल लेंस) <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/Refraction_Glass_Slab.html">Refraction: Glass Slab <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/Refraction_Daily_Life.html">Refraction in Daily Life <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/Dispersion_through_Prism.html">Prism Dispersion (वर्ण विक्षेपण) <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/Scattering_of_Light.html">Scattering of Light <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/Rainbow_simulation.html">Rainbow Formation (इंद्रधनुष) <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/Myopia_simulation.html">Myopia (निकट दृष्टि दोष) <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/Hypermetropia.html">Hypermetropia (दूर दृष्टि दोष) <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/Presbyopia.html">Presbyopia (जरा दृष्टि दोष) <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/New_Cartesian_Convention.html">Sign Convention (चिन्ह परिपाटी) <span class="badge badge-sim">Sim</span></a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Physics (Electricity) & Others</h3>
+                <div class="scroll-list">
+                    <ul class="resource-list">
+                        <li><a href="Simulation_web/Ohm_Law.html">Ohm's Law (ओम का नियम) <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/Potential_&_Potential_Difference.html">Potential & Difference <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/Electromagnetic_Induction.html">Electromagnetic Induction <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/Maxwell's_Right_Hand_Thumb_Rule.html">Right Hand Thumb Rule <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/magnet.html">Magnet (चुंबक) <span class="badge badge-sim">Sim</span></a></li>
+                        <div class="list-category">Chemistry & Bio</div>
+                        <li><a href="Simulation_web/Ph_scale.html">pH Scale <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/Electrolysis_of_Water.html">Electrolysis of Water <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/CuSO4_FeSO4_Displacement.html">Displacement Reaction <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/Alpha_Scattering_Experiment.html">Alpha Scattering Exp. <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/Human_Heart_Working_Mechanism.html">Human Heart (हृदय) <span class="badge badge-sim">Sim</span></a></li>
+                        <li><a href="Simulation_web/Blood.html">Blood (रक्त) <span class="badge badge-sim">Sim</span></a></li>
+                        <div class="list-category">Activities</div>
+                        <li><a href="Simulation_web/Bal_Sansad_evm.html">बाल संसद EVM <span class="badge badge-game">App</span></a></li>
+                        <li><a href="Simulation_web/Hindi_Alphabet.html">Hindi Alphabet <span class="badge badge-game">Game</span></a></li>
+                        <li><a href="Simulation_web/Color_Lab_game.html">Color Lab Game <span class="badge badge-game">Game</span></a></li>
+                        <li><a href="Simulation_web/Magic_Color_Lab.html">Magic Color Lab <span class="badge badge-sim">Fun</span></a></li>
+                        <li><a href="Simulation_web/Magic_Fruit_Basket.html">Magic Fruit Basket <span class="badge badge-game">Fun</span></a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card" style="border-top-color: #d35400;">
+                <h3>मैप एनिमेशन (Map Animations)</h3>
+                <div class="scroll-list">
+                    <ul class="resource-list">
+                        <li><a href="map_animation_ppsx/Asia_Map_Animation.ppsx">Asia Map Animation <span class="badge badge-map">PPSX</span></a></li>
+                        <li><a href="map_animation_ppsx/continent_animation.ppsx">Continent Animation <span class="badge badge-map">PPSX</span></a></li>
+                        <li><a href="map_animation_ppsx/europe_map_animation.ppsx">Europe Map Animation <span class="badge badge-map">PPSX</span></a></li>
+                        <li><a href="map_animation_ppsx/INDIA_Map_Animation.ppsx">India Map Animation <span class="badge badge-map">PPSX</span></a></li>
+                        <li><a href="map_animation_ppsx/india_river_system_animation.ppsx">India River System <span class="badge badge-map">PPSX</span></a></li>
+                        <li><a href="map_animation_ppsx/ocean_current_animation.ppsx">Ocean Current Animation <span class="badge badge-map">PPSX</span></a></li>
+                        <li><a href="map_animation_ppsx/rajasthan_map_animation.ppsx">Rajasthan Map Animation <span class="badge badge-map">PPSX</span></a></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Smart Manch - शिक्षा विभाग, राजस्थान</p>
+        <p>Created by: Rohitash Kumar Bharia</p>
+    </footer>
+
+</body>
+</html>

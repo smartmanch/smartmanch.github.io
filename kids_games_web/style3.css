@@ -1,0 +1,173 @@
+/* style3.css */
+
+/* बॉडी और सामान्य लेआउट */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    margin: 0;
+}
+
+/* हेडर (स्कूल का नाम) */
+header {
+    text-align: center;
+    margin-bottom: 20px;
+    background-color: #004d99; /* गहरा नीला */
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+header h1 {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+/* मुख्य गेम कंटेनर */
+#game-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 800px;
+}
+
+/* शीर्षक */
+h2 {
+    color: #007bff; /* नीला */
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+/* इनपुट फ़ील्ड */
+input[type="text"] {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    width: 60%;
+    max-width: 300px;
+}
+
+/* बटन */
+button {
+    padding: 10px 20px;
+    margin-top: 15px;
+    background-color: #28a745; /* हरा */
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+/* ########## स्कोर डिस्प्ले स्टाइल ########## */
+#current-score {
+    padding: 10px;
+    background-color: #fff3cd; /* हल्का पीला */
+    border: 1px solid #ffeeba;
+    border-radius: 5px;
+    color: #856404; /* गहरा पीला/भूरा टेक्स्ट */
+    font-weight: bold;
+    text-align: right;
+    margin-bottom: 20px;
+}
+#current-score span {
+    font-size: 1.5em;
+    color: #d63384; /* आकर्षक रंग */
+}
+
+/* ########## सूची टेबल स्टाइल ########## */
+#word-list-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+#word-list-table th, #word-list-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+#word-list-table th {
+    background-color: #f2f2f2;
+    color: #555;
+}
+
+/* ########## क्विज विकल्प स्टाइल ########## */
+.question-box {
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.option {
+    display: block;
+    padding: 10px;
+    margin: 8px 0;
+    background-color: #e9ecef; /* हल्का ग्रे */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    user-select: none; /* चयन को रोकता है */
+}
+
+.option:hover {
+    background-color: #d6d8db;
+}
+
+/* क्लिक स्टेट्स (JavaScript द्वारा जोड़े जाएंगे) */
+/* चयनित विकल्प (क्लिक होने पर) */
+.selected {
+    background-color: #ffc107; /* पीला */
+    border: 2px solid #ffc107;
+}
+/* सही उत्तर */
+.correct {
+    background-color: #28a745 !important; /* गहरा हरा */
+    color: white;
+    box-shadow: 0 0 5px #28a745;
+}
+/* गलत उत्तर */
+.incorrect {
+    background-color: #dc3545 !important; /* लाल */
+    color: white;
+    box-shadow: 0 0 5px #dc3545;
+}
+
+/* फीडबैक मैसेज */
+#feedback-message {
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    border: 1px dashed #007bff;
+    background-color: #e7f0ff;
+}
+
+/* ########## मार्कशीट स्टाइल ########## */
+#mark-sheet p {
+    font-size: 18px;
+    padding: 5px;
+    border-bottom: 1px dashed #ccc;
+}
+#mark-sheet strong {
+    color: #007bff;
+}

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Quiz Interface - Sainipura</title>
+    <style>
+        /* --- General & Typography --- */
+        body {
+            font-family: 'Poppins', sans-serif; /* Use a modern font */
+            margin: 0;
+            padding: 0;
+            background-color: #eef4f8; /* Very light background */
+            color: #333;
+            line-height: 1.6;
+        }
+        .header {
+            background-color: #1a73e8; /* Google Blue inspired color */
+            color: white;
+            padding: 25px 0;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2em;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        h2 {
+            color: #1a73e8;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* --- Input Page Styling (Card) --- */
+        #input-page {
+            display: block;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .input-group {
+            margin: 20px auto;
+            max-width: 400px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        .input-group input:focus {
+            border-color: #1a73e8;
+            box-shadow: 0 0 5px rgba(26, 115, 232, 0.5);
+            outline: none;
+        }
+        .start-button {
+            background-color: #fbbc05; /* Yellow/Orange accent */
+            color: #333;
+            padding: 14px 35px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-top: 30px;
+            transition: background-color 0.2s, transform 0.2s;
+            box-shadow: 0 4px #e0a800;
+        }
+        .start-button:hover {
+            background-color: #e0a800;
+            box-shadow: 0 2px #c38f00;
+            transform: translateY(2px);
+        }
+
+        /* --- Quiz Page Styling --- */
+        #quiz-page, #result-page {
+            display: none;
+        }
+        .score-board {
+            background: #4285f4; /* Blue accent */
+            color: white;
+            padding: 18px;
+            text-align: center;
+            font-size: 1.4em;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .passage-card {
+            border-left: 6px solid #fbbc05;
+            padding: 20px;
+            margin-bottom: 30px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .passage-card h3 {
+            color: #1a73e8;
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-top: 0;
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 25px;
+            font-weight: 500;
+            color: #555;
+        }
+        .progress-bar {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 15px;
+        }
+        #progressBarFill {
+            height: 100%;
+            width: 0%;
+            background-color: #34a853; /* Green for progress */
+            border-radius: 10px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* Question Cards */
+        .question {
+            margin-bottom: 25px;
+            padding: 25px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #eee;
+        }
+        .question p strong {
+            font-size: 1.1em;
+            color: #333;
+        }
+        .options button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #b8daff;
+            background-color: #f7faff;
+            color: #1a73e8;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .options button:hover:not(:disabled) {
+            background-color: #1a73e8;
+            color: white;
+            box-shadow: 0 3px 8px rgba(26, 115, 232, 0.4);
+        }
+        .feedback {
+            margin-top: 15px;
+            font-weight: 600;
+            min-height: 20px;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .hint-button {
+            background-color: #ffcc66; /* Lighter hint color */
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        .hint-button:hover {
+            background-color: #ffb733;
+        }
+        .finish-button {
+            display: none;
+            background-color: #34a853; /* Success green */
+            color: white;
+            padding: 18px 40px;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin: 40px auto;
+            display: block;
+            width: fit-content;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px #278d45;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .finish-button:hover {
+            transform: translateY(2px);
+            box-shadow: 0 3px #278d45;
+        }
+        
+        /* Correct/Incorrect Highlighting */
+        .correct {
+            background-color: #34a853 !important;
+            color: white !important;
+            border: 1px solid #34a853 !important;
+            box-shadow: 0 0 10px rgba(52, 168, 83, 0.6);
+        }
+        .incorrect {
+            background-color: #ea4335 !important; /* Red error */
+            color: white !important;
+            border: 1px solid #ea4335 !important;
+        }
+        .disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        /* --- Result Page Styling --- */
+        .result-details {
+            border: 2px solid #1a73e8;
+            background-color: #ffffff;
+            padding: 40px;
+            margin: 30px auto;
+            max-width: 500px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+        .result-details p {
+            font-size: 1.3em;
+            margin: 15px 0;
+            text-align: left;
+            padding-left: 20px;
+        }
+        .result-details strong {
+            color: #1a73e8;
+        }
+        .final-score {
+            font-size: 4.5em;
+            font-weight: 800;
+            color: #34a853;
+            margin-top: 25px;
+            text-shadow: 3px 3px 5px #ccc;
+        }
+        .wishes {
+            margin-top: 40px;
+            font-size: 1.6em;
+            color: #fbbc05;
+            font-weight: 700;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>**राजकीय उच्च माध्यमिक विद्यालय, सैनीपुरा, नवलगढ़, झुंझुनू**</h1>
+    </div>
+
+    <div class="container">
+        
+        <div id="input-page">
+            <h2>📝 Enter Student Details to Start</h2>
+            <div class="input-group">
+                <label for="studentName">Name:</label>
+                <input type="text" id="studentName" required>
+            </div>
+            <div class="input-group">
+                <label for="rollNumber">Roll Number:</label>
+                <input type="text" id="rollNumber" required>
+            </div>
+            <div class="input-group">
+                <label for="className">Class:</label>
+                <input type="text" id="className" required>
+            </div>
+            <button class="start-button" onclick="startQuiz()">Start Quiz</button>
+        </div>
+
+        <div id="quiz-page">
+            <div class="score-board">
+                Current Score: <span id="current-score">0</span>
+            </div>
+            
+            <div class="progress-container">
+                Quiz Progress: <span id="progressText">0/6</span> Questions Answered
+                <div class="progress-bar">
+                    <div id="progressBarFill"></div>
+                </div>
+            </div>
+
+            <h2 style="text-align: left; border-bottom: none; margin-bottom: 10px;">📚 Unseen Passage</h2>
+            <p style="margin-top: 0; color: #555;">Read the following passage carefully before answering the questions.</p>
+
+            <div class="passage-card">
+                <p>The Rig Veda is India's most ancient text. As we know that it is several thousand years old. It gives the northwest region of the Subcontinent the name 'Sapta Sindhava', that is 'the Land of the seven rivers'. The word 'Sindhava' comes from 'Sindhu', which refers to the Indus River. Moving on in time, we see names for other parts of India appear in the literature. The Mahabharata is one of India's most famous texts. It lists many regions such as Kashmir, Kurukshetra, Vanga, Kutch, Kerala. The Mahabharata uses the terms "Bharatavarsha" and Jambudvipa. Bharatavarsha means the country of the Bharatas and Jambudvipa means the "Island of the fruit of the jamun tree".</p>
+            </div>
+            
+            <h2 style="text-align: left; border-bottom: 2px solid #e0e0e0; margin-top: 40px;">✅ Questions (Score: +2 points)</h2>
+
+            <div class="question" id="q1">
+                <p><strong>i) Which text is considered India's most ancient?</strong></p>
+                <div class="options">
+                    <button onclick="checkAnswer(1, 'A', 'C')">A) The Yujurveda</button>
+                    <button onclick="checkAnswer(1, 'B', 'C')">B) The Ramayana</button>
+                    <button onclick="checkAnswer(1, 'C', 'C')">C) The Rig Veda</button>
+                    <button onclick="checkAnswer(1, 'D', 'C')">D) The Sama Veda</button>
+                </div>
+                <div class="feedback" id="feedback-1"></div>
+                <button class="hint-button" onclick="showHint(1, 'C')">Show Hint/Answer (0 Points)</button>
+            </div>
+
+            <div class="question" id="q2">
+                <p><strong>ii) The word 'Sindhava' is derived from which word?</strong></p>
+                <div class="options">
+                    <button onclick="checkAnswer(2, 'A', 'B')">A) The Rig Veda</button>
+                    <button onclick="checkAnswer(2, 'B', 'B')">B) Sindhu</button>
+                    <button onclick="checkAnswer(2, 'C', 'B')">C) The Hindu</button>
+                    <button onclick="checkAnswer(2, 'D', 'B')">D) India</button>
+                </div>
+                <div class="feedback" id="feedback-2"></div>
+                <button class="hint-button" onclick="showHint(2, 'B')">Show Hint/Answer (0 Points)</button>
+            </div>
+            
+            <div class="question" id="q3">
+                <p><strong>iii) Which term refers to the Indus River in the passage?</strong></p>
+                <div class="options">
+                    <button onclick="checkAnswer(3, 'A', 'C')">A) India</button>
+                    <button onclick="checkAnswer(3, 'B', 'C')">B) The Mahabharata</button>
+                    <button onclick="checkAnswer(3, 'C', 'C')">C) Sindhu</button>
+                    <button onclick="checkAnswer(3, 'D', 'C')">D) Sapta Sindhava</button>
+                </div>
+                <div class="feedback" id="feedback-3"></div>
+                <button class="hint-button" onclick="showHint(3, 'C')">Show Hint/Answer (0 Points)</button>
+            </div>
+            
+            <div class="question" id="q4">
+                <p><strong>iv) Which region is NOT listed in the Mahabharata according to the passage?</strong></p>
+                <div class="options">
+                    <button onclick="checkAnswer(4, 'A', 'D')">A) Kashmir</button>
+                    <button onclick="checkAnswer(4, 'B', 'D')">B) Vanga</button>
+                    <button onclick="checkAnswer(4, 'C', 'D')">C) Kerala</button>
+                    <button onclick="checkAnswer(4, 'D', 'D')">D) Bihar</button>
+                </div>
+                <div class="feedback" id="feedback-4"></div>
+                <button class="hint-button" onclick="showHint(4, 'D')">Show Hint/Answer (0 Points)</button>
+            </div>
+
+            <div class="question" id="q5">
+                <p><strong>v) Choose the word from the passage that means 'Well known':</strong></p>
+                <div class="options">
+                    <button onclick="checkAnswer(5, 'A', 'D')">A) Region</button>
+                    <button onclick="checkAnswer(5, 'B', 'D')">B) Refer</button>
+                    <button onclick="checkAnswer(5, 'C', 'D')">C) Appear</button>
+                    <button onclick="checkAnswer(5, 'D', 'D')">D) Famous</button>
+                </div>
+                <div class="feedback" id="feedback-5"></div>
+                <button class="hint-button" onclick="showHint(5, 'D')">Show Hint/Answer (0 Points)</button>
+            </div>
+            
+            <div class="question" id="q6">
+                <p><strong>vi) Find the opposite word of 'Modern' from the passage:</strong></p>
+                <div class="options">
+                    <button onclick="checkAnswer(6, 'A', 'B')">A) Several</button>
+                    <button onclick="checkAnswer(6, 'B', 'B')">B) Ancient</button>
+                    <button onclick="checkAnswer(6, 'C', 'B')">C) Famous</button>
+                    <button onclick="checkAnswer(6, 'D', 'B')">D) Northwest</button>
+                </div>
+                <div class="feedback" id="feedback-6"></div>
+                <button class="hint-button" onclick="showHint(6, 'B')">Show Hint/Answer (0 Points)</button>
+            </div>
+
+            <button class="finish-button" id="finishButton" onclick="showResult()">Finish Quiz and View Result</button>
+        </div>
+
+        <div id="result-page">
+            <h2 style="color: #34a853;">🎉 Quiz Result</h2>
+            <div class="result-details">
+                <p><strong>Name:</strong> <span id="res-name"></span></p>
+                <p><strong>Roll Number:</strong> <span id="res-roll"></span></p>
+                <p><strong>Class:</strong> <span id="res-class"></span></p>
+                <hr>
+                <h3 style="color: #1a73e8; font-size: 1.5em; text-align: center;">Total Score Achieved:</h3>
+                <div class="final-score"><span id="res-score"></span> / 12</div>
+                <p style="text-align: center; color: #555;">(Maximum Possible Score: 12)</p>
+            </div>
+            <div class="wishes">
+                **🌟 All the best for your future, dear student! Keep learning! 🌟**
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Global Variables
+        let score = 0;
+        const correctPoints = 2;
+        const totalQuestions = 6;
+        const questionsAttempted = {}; 
+        let studentInfo = {}; // To store Name, Roll No, Class
+
+        // --- Page Navigation and Setup Functions ---
+
+        function updateProgressBar() {
+            const attemptedCount = Object.keys(questionsAttempted).length;
+            const percentage = (attemptedCount / totalQuestions) * 100;
+            document.getElementById('progressBarFill').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = `${attemptedCount}/${totalQuestions}`;
+        }
+
+        function startQuiz() {
+            const name = document.getElementById('studentName').value.trim();
+            const roll = document.getElementById('rollNumber').value.trim();
+            const className = document.getElementById('className').value.trim();
+
+            if (!name || !roll || !className) {
+                alert("Please fill in all details (Name, Roll Number, Class).");
+                return;
+            }
+
+            studentInfo = { name, roll, className };
+            document.getElementById('input-page').style.display = 'none';
+            document.getElementById('quiz-page').style.display = 'block';
+            updateProgressBar(); // Initialize progress bar
+        }
+
+        function showResult() {
+            // Update result details
+            document.getElementById('res-name').textContent = studentInfo.name;
+            document.getElementById('res-roll').textContent = studentInfo.roll;
+            document.getElementById('res-class').textContent = studentInfo.className;
+            document.getElementById('res-score').textContent = score;
+
+            // Show result page and hide quiz
+            document.getElementById('quiz-page').style.display = 'none';
+            document.getElementById('result-page').style.display = 'block';
+        }
+
+        function checkFinishStatus() {
+            const attemptedCount = Object.keys(questionsAttempted).length;
+            if (attemptedCount === totalQuestions) {
+                document.getElementById('finishButton').style.display = 'block';
+            } else {
+                document.getElementById('finishButton').style.display = 'none';
+            }
+            updateProgressBar();
+        }
+
+        // --- Quiz Logic Functions ---
+
+        function updateScore(points) {
+            score += points;
+            document.getElementById('current-score').textContent = score;
+        }
+
+        function disableQuestion(qNum) {
+            const questionElement = document.getElementById('q' + qNum);
+            const options = questionElement.querySelectorAll('.options button');
+            options.forEach(button => {
+                button.disabled = true;
+                button.classList.add('disabled');
+            });
+            // Disable hint button after first attempt (correct or incorrect)
+            questionElement.querySelector('.hint-button').disabled = true;
+            checkFinishStatus(); // Check if all questions are done and update progress
+        }
+        
+        function getButtonByAnswer(qNum, answerKey) {
+            const questionElement = document.getElementById('q' + qNum);
+            const options = questionElement.querySelectorAll('.options button');
+            
+            let correctButton = null;
+            options.forEach(button => {
+                const buttonText = button.textContent.trim();
+                if (buttonText.startsWith(answerKey + ')')) {
+                    correctButton = button;
+                }
+            });
+            return correctButton;
+        }
+
+
+        function showFeedback(qNum, isCorrect, correctAnsKey, message) {
+            const feedbackElement = document.getElementById('feedback-' + qNum);
+            const correctButton = getButtonByAnswer(qNum, correctAnsKey);
+
+            feedbackElement.textContent = '';
+            const options = document.getElementById('q' + qNum).querySelectorAll('.options button');
+            options.forEach(button => {
+                button.classList.remove('correct', 'incorrect');
+            });
+
+
+            if (isCorrect) {
+                feedbackElement.textContent = '✅ Correct! You scored +' + correctPoints + ' points.';
+                feedbackElement.style.backgroundColor = '#e6ffed';
+                feedbackElement.style.color = '#34a853';
+                correctButton.classList.add('correct');
+            } else {
+                feedbackElement.textContent = message;
+                feedbackElement.style.backgroundColor = '#ffebe6';
+                feedbackElement.style.color = '#ea4335';
+                
+                if (correctButton) {
+                    correctButton.classList.add('correct');
+                }
+            }
+        }
+        
+        function checkAnswer(qNum, userAnsKey, correctAnsKey) {
+            if (questionsAttempted[qNum]) return; 
+
+            let isCorrect = (userAnsKey === correctAnsKey);
+            questionsAttempted[qNum] = true;
+
+            if (isCorrect) {
+                updateScore(correctPoints);
+                showFeedback(qNum, true, correctAnsKey, '');
+            } else {
+                showFeedback(qNum, false, correctAnsKey, '❌ Incorrect Answer. The correct answer is ' + correctAnsKey + '.');
+            }
+
+            const userButton = getButtonByAnswer(qNum, userAnsKey);
+            if(userButton && !isCorrect) {
+                userButton.classList.add('incorrect');
+            }
+
+            disableQuestion(qNum);
+        }
+
+        function showHint(qNum, correctAnsKey) {
+            if (questionsAttempted[qNum]) return; 
+            
+            questionsAttempted[qNum] = true;
+            disableQuestion(qNum);
+
+            showFeedback(qNum, false, correctAnsKey, '💡 Hint used. 0 points awarded. The correct answer is ' + correctAnsKey + '.');
+            
+            const correctButton = getButtonByAnswer(qNum, correctAnsKey);
+            if (correctButton) {
+                correctButton.classList.add('correct');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Antonyms Quiz - 25 Questions</title>
+    <link rel="stylesheet" href="english_quiz_style.css"> 
+</head>
+<body>
+
+    <header>
+        <h1>🏫 Government Senior Secondary School Sainipura, Nawalgarh, Jhunjhunu 🏆</h1>
+    </header>
+
+    <div id="game-container">
+        
+        <div id="info-screen">
+            <h2>👋 Student Information</h2>
+            <label for="student-name">Name:</label>
+            <input type="text" id="student-name" required><br><br>
+            <label for="student-class">Class:</label>
+            <input type="text" id="student-class" required><br><br>
+            <button onclick="showList()">Next</button>
+        </div>
+
+        <div id="list-screen" style="display:none;">
+            <h2>✨ Antonyms List (With Hindi Meaning - For Review)</h2>
+            <table id="word-list-table">
+                </table>
+            <button onclick="startQuiz()">Start Quiz</button>
+        </div>
+
+        <div id="quiz-screen" style="display:none;">
+            <div id="current-score" style="text-align: right; font-size: 1.2em; margin-bottom: 10px;">
+                💰 **Total Coins:** <span>0</span>
+            </div>
+            <h2>📝 English Antonyms Quiz</h2>
+            <p><strong>Instructions:</strong> Choose the **correct opposite (antonym)** of the given word. (2 Coins awarded only for the first correct click)</p>
+            <div id="quiz-area">
+                </div>
+            <button id="next-button" onclick="handleNextQuestion()" style="display:none;">Next Question</button>
+        </div>
+
+        <div id="result-screen" style="display:none;">
+            <h2>🌟 Student Result Card 🌟</h2>
+            <div id="mark-sheet">
+                </div>
+            <p style="margin-top: 20px;">Thank you for playing!</p>
+        </div>
+    </div>
+
+    <script src="english_quiz_script.js"></script> 
+</body>
+</html>

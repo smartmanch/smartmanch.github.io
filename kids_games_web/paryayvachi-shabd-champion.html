@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>पर्यायवाची शब्द गेम - 25 प्रश्न</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #f0fff8; text-align: center; padding: 20px; margin: 0; }
+  .container { max-width: 700px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+  #score-board { font-size: 20px; color: #ff9900; margin-bottom: 20px; font-weight: bold; }
+  #game-area { display: none; }
+  #user-info-area { margin-bottom: 20px; }
+  .user-input { padding: 8px; margin: 5px; font-size: 16px; }
+  #question-text { font-size: 28px; margin: 20px 0; color: #333; }
+  #options-area { display: flex; flex-direction: column; gap: 10px; max-width: 450px; margin: 0 auto; }
+  .option-btn { padding: 10px; font-size: 18px; border-radius: 5px; border: 1px solid #ccc; cursor: pointer; background-color: #f5f5f5; }
+  .option-btn:hover { background-color: #e0f7fa; }
+  #feedback-area { margin-top: 20px; font-size: 20px; min-height: 30px; }
+  .correct-flash { color: green; font-weight: bold; }
+  #marksheet-area { display: none; text-align: left; margin-top: 20px; }
+  .marksheet-row { padding: 5px 0; border-bottom: 1px solid #eee; }
+  #start-btn { padding: 10px 15px; font-size: 16px; color: white; border: none; cursor: pointer; border-radius: 5px; background-color: #007bff; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>पर्यायवाची शब्द चैंपियन (25 प्रश्न)</h1>
+  <div id="user-info-area">
+    <input type="text" id="userName" class="user-input" placeholder="अपना नाम लिखें" autocomplete="off" />
+    <input type="text" id="userClass" class="user-input" placeholder="कक्षा लिखें" autocomplete="off" />
+  </div>
+  <button id="start-btn">गेम शुरू करें</button>
+  <div id="score-board" style="display:none;">
+    सिक्के: <span id="coins">0</span> | प्रश्न: <span id="question-count">0/25</span>
+  </div>
+  <div id="game-area">
+    <div id="question-text"></div>
+    <div id="options-area"></div>
+    <div id="feedback-area"></div>
+  </div>
+  <div id="marksheet-area">
+    <h2>मार्कशीट</h2>
+    <div class="marksheet-row"><strong>नाम:</strong> <span id="ms-name"></span></div>
+    <div class="marksheet-row"><strong>कक्षा:</strong> <span id="ms-class"></span></div>
+    <div class="marksheet-row"><strong>कुल प्रश्न:</strong> <span id="ms-total"></span></div>
+    <div class="marksheet-row"><strong>दोनों सही पर्यायवाची चुने:</strong> <span id="ms-both-correct"></span></div>
+    <div class="marksheet-row"><strong>केवल 1 सही पर्यायवाची चुना:</strong> <span id="ms-one-correct"></span></div>
+    <div class="marksheet-row"><strong>कुल सिक्के अर्जित:</strong> <span id="ms-coins"></span></div>
+  </div>
+</div>
+
+<script>
+const synonymQuestions = [
+  { word: "खुश", correct: ["प्रसन्न", "आनंदित"], wrong: ["दुखी", "बीमार"] },
+  { word: "बड़ा", correct: ["विशाल", "विस्तृत"], wrong: ["छोटा", "पतला"] },
+  { word: "छोटा", correct: ["लघु", "नन्हा"], wrong: ["भारी", "बड़ा"] },
+  { word: "सुंदर", correct: ["मनोहर", "आकर्षक"], wrong: ["कुरूप", "भयंकर"] },
+  { word: "तेज़", correct: ["शीघ्र", "फुर्तीला"], wrong: ["धीमा", "सुस्त"] },
+  { word: "धीमा", correct: ["मंद", "सुस्त"], wrong: ["तेज़", "चंचल"] },
+  { word: "अच्छा", correct: ["उत्तम", "श्रेष्ठ"], wrong: ["बुरा", "गलत"] },
+  { word: "बुरा", correct: ["खराब", "निकृष्ट"], wrong: ["अच्छा", "सही"] },
+  { word: "मित्र", correct: ["दोस्त", "सखा"], wrong: ["शत्रु", "मेहमान"] },
+  { word: "शत्रु", correct: ["दुश्मन", "विरोधी"], wrong: ["मित्र", "भाई"] },
+  { word: "घर", correct: ["आवास", "निकेतन"], wrong: ["स्कूल", "दुकान"] },
+  { word: "विद्या", correct: ["ज्ञान", "शिक्षा"], wrong: ["अज्ञान", "रोग"] },
+  { word: "डर", correct: ["भय", "आतंक"], wrong: ["साहस", "आशा"] },
+  { word: "साहस", correct: ["वीरता", "हिम्मत"], wrong: ["डर", "निराशा"] },
+  { word: "रात", correct: ["निशा", "अंधेरी"], wrong: ["दिन", "सुबह"] },
+  { word: "दिन", correct: ["दिवस", "प्रात"], wrong: ["रात", "अंधेरा"] },
+  { word: "रोग", correct: ["बीमारी", "व्याधि"], wrong: ["तंदुरुस्ती", "स्वास्थ्य"] },
+  { word: "स्वास्थ्य", correct: ["तंदुरुस्ती", "आरोग्य"], wrong: ["रोग", "दर्द"] },
+  { word: "जल", correct: ["पानी", "नीर"], wrong: ["धूल", "अग्नि"] },
+  { word: "अग्नि", correct: ["आग", "ज्वाला"], wrong: ["पानी", "धूल"] },
+  { word: "बालक", correct: ["बच्चा", "शिशु"], wrong: ["वृद्ध", "शिक्षक"] },
+  { word: "माता", correct: ["अम्मा", "मां"], wrong: ["पिता", "भाई"] },
+  { word: "पिता", correct: ["बाबा", "पापा"], wrong: ["माता", "बहन"] },
+  { word: "गुरु", correct: ["शिक्षक", "आचार्य"], wrong: ["विद्यार्थी", "मेहमान"] },
+  { word: "विद्यार्थी", correct: ["शिष्य", "छात्र"], wrong: ["गुरु", "दुकानदार"] }
+];
+
+let allQuestions = [];
+let currentQuestionIndex = 0;
+let coins = 0;
+let bothCorrectCount = 0;
+let oneCorrectCount = 0;
+const TOTAL_QUESTIONS = 25;
+
+const startBtn = document.getElementById('start-btn');
+const gameArea = document.getElementById('game-area');
+const userInfoArea = document.getElementById('user-info-area');
+const scoreBoard = document.getElementById('score-board');
+const marksheetArea = document.getElementById('marksheet-area');
+const userNameInput = document.getElementById('userName');
+const userClassInput = document.getElementById('userClass');
+const questionText = document.getElementById('question-text');
+const optionsArea = document.getElementById('options-area');
+const feedbackArea = document.getElementById('feedback-area');
+const coinsSpan = document.getElementById('coins');
+const questionCountSpan = document.getElementById('question-count');
+const msName = document.getElementById('ms-name');
+const msClass = document.getElementById('ms-class');
+const msTotal = document.getElementById('ms-total');
+const msBothCorrect = document.getElementById('ms-both-correct');
+const msOneCorrect = document.getElementById('ms-one-correct');
+const msCoins = document.getElementById('ms-coins');
+
+startBtn.addEventListener('click', startGame);
+
+function startGame() {
+  const name = userNameInput.value.trim();
+  const userClass = userClassInput.value.trim();
+
+  if (name === "" || userClass === "") {
+    alert("कृपया नाम और कक्षा लिखें!");
+    return;
+  }
+
+  userInfoArea.style.display = 'none';
+  startBtn.style.display = 'none';
+  gameArea.style.display = 'block';
+  scoreBoard.style.display = 'block';
+
+  allQuestions = [...synonymQuestions];
+  allQuestions.sort(() => Math.random() - 0.5);
+
+  currentQuestionIndex = 0;
+  coins = 0;
+  bothCorrectCount = 0;
+  oneCorrectCount = 0;
+  updateUI();
+  loadQuestion();
+}
+
+function loadQuestion() {
+  if (currentQuestionIndex < allQuestions.length && currentQuestionIndex < TOTAL_QUESTIONS) {
+    const currentQ = allQuestions[currentQuestionIndex];
+    questionText.textContent = `'${currentQ.word}' के पर्यायवाची शब्द चुनें (दो सही):`;
+    feedbackArea.textContent = '';
+    feedbackArea.setAttribute('data-answered', 'no');
+
+    currentQ.selectedCorrect = 0;
+    currentQ.questionClosed = false;
+
+    const options = [...currentQ.correct, ...currentQ.wrong];
+    shuffleArray(options);
+    renderOptions(options, currentQ);
+  } else {
+    endGame();
+  }
+}
+
+function renderOptions(options, questionObj) {
+  optionsArea.innerHTML = '';
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = opt;
+    btn.addEventListener('click', function () {
+      handleOptionClick(opt, questionObj, btn);
+    });
+    optionsArea.appendChild(btn);
+  });
+}
+
+function handleOptionClick(selected, questionObj, btnElement) {
+  if (questionObj.questionClosed) {
+    return;
+  }
+
+  const isCorrect = questionObj.correct.includes(selected);
+
+  if (isCorrect) {
+    if (btnElement.getAttribute('data-correct-selected') === 'yes') {
+      return;
+    }
+
+    questionObj.selectedCorrect++;
+    btnElement.style.backgroundColor = '#c8e6c9';
+    btnElement.setAttribute('data-correct-selected', 'yes');
+
+    // पहले दो सही क्लिकों पर ही सिक्के मिलेंगे, उसके बाद नहीं
+    if (questionObj.selectedCorrect <= 2) {
+      coins += 1;
+
+      if (questionObj.selectedCorrect === 1) {
+        oneCorrectCount++;
+        feedbackArea.innerHTML = `<span class='correct-flash'>1 सही पर्यायवाची! +1 सिक्का</span>`;
+      } else if (questionObj.selectedCorrect === 2) {
+        bothCorrectCount++;
+        oneCorrectCount--;
+        feedbackArea.innerHTML = `<span class='correct-flash'>दोनों सही पर्यायवाची! कुल +2 सिक्के</span>`;
+        closeQuestion();
+      }
+    }
+  } else {
+    btnElement.style.backgroundColor = '#ffcdd2';
+    feedbackArea.textContent = 'गलत विकल्प। सही पर्यायवाची ढूँढो।';
+  }
+  updateUI();
+}
+
+function closeQuestion() {
+  const buttons = document.querySelectorAll('.option-btn');
+  buttons.forEach(b => b.disabled = true);
+  const currentQ = allQuestions[currentQuestionIndex];
+  currentQ.questionClosed = true;
+  setTimeout(nextQuestion, 2000);
+}
+
+function nextQuestion() {
+  currentQuestionIndex++;
+  updateUI();
+  loadQuestion();
+}
+
+function updateUI() {
+  coinsSpan.textContent = coins;
+  const shownIndex = currentQuestionIndex > TOTAL_QUESTIONS ? TOTAL_QUESTIONS : currentQuestionIndex;
+  questionCountSpan.textContent = shownIndex + "/" + TOTAL_QUESTIONS;
+}
+
+function endGame() {
+  gameArea.style.display = 'none';
+  scoreBoard.style.display = 'none';
+  marksheetArea.style.display = 'block';
+
+  msName.textContent = userNameInput.value.trim();
+  msClass.textContent = userClassInput.value.trim();
+  msTotal.textContent = TOTAL_QUESTIONS;
+  msBothCorrect.textContent = bothCorrectCount;
+  msOneCorrect.textContent = oneCorrectCount;
+  msCoins.textContent = coins;
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+</script>
+</body>
+</html>

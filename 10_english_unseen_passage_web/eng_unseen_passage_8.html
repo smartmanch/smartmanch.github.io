@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tilly Smith Tsunami Quiz - Learning Mode</title>
+    <style>
+        /* --- General & Typography --- */
+        html, body {
+            height: 100%; 
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif; 
+            background-color: #eef4f8; 
+            color: #333;
+            line-height: 1.6;
+            overflow: hidden; /* Crucial: Hide main body scrollbar */
+        }
+        .header {
+            background-color: #1a73e8; 
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.6em;
+            font-weight: 600;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 10px auto; 
+            padding: 0 10px;
+            height: calc(100vh - 70px); 
+            display: flex;
+            gap: 15px;
+            box-sizing: border-box;
+        }
+        h2 {
+            color: #1a73e8;
+            font-size: 1.4em;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        /* --- Input Page Styling --- */
+        #input-page {
+            width: 100%;
+            background: white;
+            padding: 30px; 
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: block; 
+            height: fit-content;
+        }
+        .input-group { margin: 15px auto; max-width: 400px; text-align: left; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        .start-button { background-color: #fbbc05; color: #333; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 1.1em; margin-top: 20px; box-shadow: 0 3px #e0a800; }
+
+        /* --- Quiz Layout (Side-by-Side View) --- */
+        #quiz-page {
+            display: none;
+            width: 100%;
+            display: flex;
+            gap: 15px;
+            height: 100%; 
+        }
+        
+        .passage-area, .question-area {
+            flex: 1; 
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            height: 100%; 
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .passage-area {
+            background-color: white;
+            overflow-y: auto; /* Allow internal scroll only for the passage content */
+        }
+
+        .question-area {
+            background-color: #f9f9f9;
+            overflow-y: hidden; 
+        }
+        
+        .passage-card { border-left: 6px solid #fbbc05; padding: 10px; background-color: #ffffff; border-radius: 5px; }
+        .passage-card p { font-size: 0.9em; margin: 0; } 
+        .highlight { background-color: #a8dadc; padding: 1px 3px; border-radius: 4px; font-weight: 600; transition: background-color 0.5s; }
+
+        .score-board { background: #4285f4; color: white; padding: 8px; font-size: 1.1em; border-radius: 8px; margin-bottom: 10px; font-weight: 600; }
+        .progress-container { margin-bottom: 10px; font-weight: 500; color: #555; flex-shrink: 0; }
+        
+        /* Question View Container */
+        #questions-container {
+            flex-grow: 1;
+            position: relative;
+            padding: 5px 0;
+            overflow-y: auto; /* Allow internal scroll only for the question/options */
+        }
+
+        .question {
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+            display: none; 
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            transition: opacity 0.3s;
+        }
+        .question.active { display: block; }
+        .question p strong { font-size: 1em; }
+
+        .options button { width: 100%; padding: 10px; margin: 6px 0; border: 1px solid #b8daff; border-radius: 8px; font-size: 0.9em; }
+        .options button:hover:not(:disabled) { background-color: #1a73e8; color: white; }
+        .feedback { margin-top: 8px; padding: 8px; font-size: 0.9em; }
+        
+        .correct { background-color: #34a853 !important; color: white !important; border: 1px solid #34a853 !important; }
+        .incorrect { background-color: #ea4335 !important; color: white !important; border: 1px solid #ea4335 !important; }
+        .disabled { cursor: not-allowed; opacity: 0.8; }
+        .next-button { background-color: #34a853; color: white; padding: 8px 15px; border-radius: 8px; margin-top: 10px; display: none; float: right; font-size: 0.9em; }
+
+        /* --- Result Page Styling --- */
+        #result-page {
+            display: none;
+            width: 100%;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            height: fit-content;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>**राजकीय उच्च माध्यमिक विद्यालय, सैनीपुरा, नवलगढ़, झुंझुनू**</h1>
+    </div>
+
+    <div class="container">
+        
+        <div id="input-page">
+            <h2>📝 Enter Student Details to Start</h2>
+            <div class="input-group">
+                <label for="studentName">Name:</label>
+                <input type="text" id="studentName" required>
+            </div>
+            <div class="input-group">
+                <label for="rollNumber">Roll Number:</label>
+                <input type="text" id="rollNumber" required>
+            </div>
+            <div class="input-group">
+                <label for="className">Class:</label>
+                <input type="text" id="className" required>
+            </div>
+            <button class="start-button" onclick="startQuiz()">Start Quiz</button>
+        </div>
+
+        <div id="quiz-page">
+            
+            <div class="passage-area">
+                <h2 style="border-bottom: 2px solid #eef4f8;">📖 Passage: Tilly Smith and the Tsunami</h2>
+                <div class="passage-card">
+                    <p id="passageContent">
+                        </p>
+                </div>
+            </div>
+
+            <div class="question-area">
+                <div class="score-board">
+                    Current Score: <span id="current-score">0</span>
+                </div>
+                
+                <div class="progress-container">
+                    Question <span id="currentQuestionNumber">1</span> of 9
+                    <div class="progress-bar">
+                        <div id="progressBarFill"></div>
+                    </div>
+                </div>
+
+                <div id="questions-container">
+                    
+                    <div class="question active" id="q1">
+                        <p><strong>i) Why did Tilly’s family come to ‘Thailand’?</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(1, 'A', 'B', 'p1')">A) For a geography lesson</button>
+                            <button onclick="checkAnswer(1, 'B', 'B', 'p1')">B) For celebrating Christmas</button>
+                            <button onclick="checkAnswer(1, 'C', 'B', 'p1')">C) To escape the earthquake</button>
+                            <button onclick="checkAnswer(1, 'D', 'B', 'p1')">D) To see the Tsunami video</button>
+                        </div>
+                        <div class="feedback" id="feedback-1"></div>
+                        <button class="next-button" onclick="nextQuestion(1)">Next Question</button>
+                    </div>
+
+                    <div class="question" id="q2">
+                        <p><strong>ii) What had triggered the Tsunami waves?</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(2, 'A', 'B', 'p2')">A) A volcanic eruption</button>
+                            <button onclick="checkAnswer(2, 'B', 'B', 'p2')">B) A massive earthquake off Northern Sumatra</button>
+                            <button onclick="checkAnswer(2, 'C', 'B', 'p2')">C) Heavy rain</button>
+                            <button onclick="checkAnswer(2, 'D', 'B', 'p2')">D) A huge landslide</button>
+                        </div>
+                        <div class="feedback" id="feedback-2"></div>
+                        <button class="next-button" onclick="nextQuestion(2)">Next Question</button>
+                    </div>
+                    
+                    <div class="question" id="q3">
+                        <p><strong>iii) What did Tilly see that made her remember the Tsunami video?</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(3, 'A', 'C', 'p5')">A) The sea getting smaller</button>
+                            <button onclick="checkAnswer(3, 'B', 'C', 'p5')">B) The water swelling rapidly</button>
+                            <button onclick="checkAnswer(3, 'C', 'C', 'p5')">C) Foaming, bubbles, and whirlpools</button>
+                            <button onclick="checkAnswer(3, 'D', 'C', 'p5')">D) The third floor of the hotel</button>
+                        </div>
+                        <div class="feedback" id="feedback-3"></div>
+                        <button class="next-button" onclick="nextQuestion(3)">Next Question</button>
+                    </div>
+                    
+                    <div class="question" id="q4">
+                        <p><strong>iv) Who taught Tilly about Tsunami in England?</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(4, 'A', 'C', 'p6')">A) Her mother, Penny Smith</button>
+                            <button onclick="checkAnswer(4, 'B', 'C', 'p6')">B) Her sister</button>
+                            <button onclick="checkAnswer(4, 'C', 'C', 'p6')">C) Her geography teacher</button>
+                            <button onclick="checkAnswer(4, 'D', 'C', 'p6')">D) A beach resort guide</button>
+                        </div>
+                        <div class="feedback" id="feedback-4"></div>
+                        <button class="next-button" onclick="nextQuestion(4)">Next Question</button>
+                    </div>
+
+                    <div class="question" id="q5">
+                        <p><strong>v) Why did Tilly scream at her family?</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(5, 'A', 'B', 'p7')">A) She wanted to go to the swimming pool</button>
+                            <button onclick="checkAnswer(5, 'B', 'B', 'p7')">B) She recognized the warning signs</button>
+                            <button onclick="checkAnswer(5, 'C', 'B', 'p7')">C) The water was too cold</button>
+                            <button onclick="checkAnswer(5, 'D', 'B', 'p7')">D) She saw her sister crying</button>
+                        </div>
+                        <div class="feedback" id="feedback-5"></div>
+                        <button class="next-button" onclick="nextQuestion(5)">Next Question</button>
+                    </div>
+                    
+                    <div class="question" id="q6">
+                        <p><strong>vi) Where did Tilly’s family take refuge?</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(6, 'A', 'C', 'p7')">A) The swimming pool</button>
+                            <button onclick="checkAnswer(6, 'B', 'C', 'p7')">B) The resort beach</button>
+                            <button onclick="checkAnswer(6, 'C', 'C', 'p7')">C) The third floor of the hotel</button>
+                            <button onclick="checkAnswer(6, 'D', 'C', 'p7')">D) Northern Sumatra</button>
+                        </div>
+                        <div class="feedback" id="feedback-6"></div>
+                        <button class="next-button" onclick="nextQuestion(6)">Next Question</button>
+                    </div>
+                    
+                    <div class="question" id="q7">
+                        <p><strong>vii) What would have happened if they had stayed on the beach?</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(7, 'A', 'C', 'p8')">A) They would have seen the three waves</button>
+                            <button onclick="checkAnswer(7, 'B', 'C', 'p8')">B) They would have been safe in the sand</button>
+                            <button onclick="checkAnswer(7, 'C', 'C', 'p8')">C) They would not have been alive</button>
+                            <button onclick="checkAnswer(7, 'D', 'C', 'p8')">D) They would have found refuge on the beach</button>
+                        </div>
+                        <div class="feedback" id="feedback-7"></div>
+                        <button class="next-button" onclick="nextQuestion(7)">Next Question</button>
+                    </div>
+                    
+                    <div class="question" id="q8">
+                        <p><strong>viii) Find out the word from the passage which means ‘Sea shore’.</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(8, 'A', 'C', 'p3')">A) Resort</button>
+                            <button onclick="checkAnswer(8, 'B', 'C', 'p3')">B) Water</button>
+                            <button onclick="checkAnswer(8, 'C', 'C', 'p3')">C) Beach</button>
+                            <button onclick="checkAnswer(8, 'D', 'C', 'p3')">D) Swelling</button>
+                        </div>
+                        <div class="feedback" id="feedback-8"></div>
+                        <button class="next-button" onclick="nextQuestion(8)">Next Question</button>
+                    </div>
+
+                    <div class="question" id="q9">
+                        <p><strong>ix) Find out the word from the passage which is opposite to ‘Dead’.</strong></p>
+                        <div class="options">
+                            <button onclick="checkAnswer(9, 'A', 'B', 'p8')">A) Surge</button>
+                            <button onclick="checkAnswer(9, 'B', 'B', 'p8')">B) Alive</button>
+                            <button onclick="checkAnswer(9, 'C', 'B', 'p8')">C) Scream</button>
+                            <button onclick="checkAnswer(9, 'D', 'B', 'p8')">D) Withstood</button>
+                        </div>
+                        <div class="feedback" id="feedback-9"></div>
+                        <button class="next-button" onclick="nextQuestion(9)">Finish Quiz</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="result-page">
+            <h2 style="color: #34a853;">🎉 Quiz Result</h2>
+            <div class="result-details">
+                <p><strong>Name:</strong> <span id="res-name"></span></p>
+                <p><strong>Roll Number:</strong> <span id="res-roll"></span></p>
+                <p><strong>Class:</strong> <span id="res-class"></span></p>
+                <hr>
+                <h3 style="color: #1a73e8; font-size: 1.5em; text-align: center;">Total Score Achieved:</h3>
+                <div class="final-score"><span id="res-score"></span> / 18</div>
+                <p style="text-align: center; color: #555;">(Maximum Possible Score: 18)</p>
+            </div>
+            <div class="wishes">
+                **🌟 All the best for your future, dear student! Keep learning! 🌟**
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Global Variables
+        let score = 0;
+        const correctPoints = 2;
+        const totalQuestions = 9; 
+        const questionsAttempted = {}; // 0: First attempt, 1: First try failed (retry allowed), 2: Finalized
+        let studentInfo = {}; 
+        let currentQNum = 1;
+
+        // --- Passage Mapping (Full Passage with IDs) ---
+        const rawPassage = {
+            'p1': 'The Smith family from South-East England were celebrating Christmas at a beach resort in Southern Thailand. Tilly Smith was a ten-year old school girl; her sister was seven years old.',
+            'p2': 'It was 26 December 2004, deadly Tsunami waves were already on their way. They had been triggered by a massive earthquake off Northern Sumatra earlier that morning.',
+            'p3': '“The water was swelling and kept coming in”, Penny Smith remembered. “The beach was getting smaller and smaller. I didn’t know what was happening.”',
+            'p4': 'But Tilly Smith sensed that something was wrong. Her mind kept going back to a geography lesson she had taken in England just two weeks before she flew out to Thailand with her family.',
+            'p5': 'Tilly saw the sea slowly rise, and start to foam, bubbles and form whirlpools. She remembered that she had seen this in class in a video of a Tsunami that had hit the Hawaiian islands in 1946.',
+            'p6': 'Her geography teacher had shown her class the video and told them that Tsunamis can be caused by earthquakes, volcanoes and landslides.',
+            'p7': 'Tilly started to scream at her family to get off the beach. Tilly’s parents took her and her sister away from the beach, to the swimming pool at the hotel. The family took refuge in the third floor of the hotel.',
+            'p8': 'The building withstood the surge of three Tsunami waves. If they had stayed on the beach, they would not have been alive.',
+        };
+
+        // --- Initialization and UI Functions ---
+
+        function loadPassage() {
+            let passageHtml = '';
+            for (const id in rawPassage) {
+                // Wrap each sentence/section in a span with its ID for highlighting
+                passageHtml += `<span id="${id}">${rawPassage[id]}</span> `;
+            }
+            document.getElementById('passageContent').innerHTML = passageHtml;
+        }
+
+        function updateProgressBar() {
+            const attemptedCount = currentQNum > totalQuestions ? totalQuestions : currentQNum - 1;
+            const percentage = (attemptedCount / totalQuestions) * 100;
+            document.getElementById('progressBarFill').style.width = percentage + '%';
+        }
+
+        function startQuiz() {
+            const name = document.getElementById('studentName').value.trim();
+            const roll = document.getElementById('rollNumber').value.trim();
+            const className = document.getElementById('className').value.trim();
+
+            if (!name || !roll || !className) {
+                alert("Please fill in all details (Name, Roll Number, Class).");
+                return;
+            }
+
+            studentInfo = { name, roll, className };
+            document.getElementById('input-page').style.display = 'none';
+            document.getElementById('quiz-page').style.display = 'flex';
+            loadPassage(); 
+            document.getElementById('q1').classList.add('active'); 
+            document.getElementById('currentQuestionNumber').textContent = 1; 
+            updateProgressBar(); 
+        }
+
+        function showResult() {
+            document.getElementById('res-name').textContent = studentInfo.name;
+            document.getElementById('res-roll').textContent = studentInfo.roll;
+            document.getElementById('res-class').textContent = studentInfo.className;
+            document.getElementById('res-score').textContent = score;
+
+            document.getElementById('quiz-page').style.display = 'none';
+            document.getElementById('result-page').style.display = 'block';
+        }
+
+        // --- Question Navigation ---
+
+        function nextQuestion(qNum) {
+            const currentQuestionElement = document.getElementById('q' + qNum);
+            const nextQNum = qNum + 1;
+            const nextQuestionElement = document.getElementById('q' + nextQNum);
+
+            // Hide current question
+            currentQuestionElement.classList.remove('active');
+            
+            if (nextQuestionElement) {
+                // Show next question
+                nextQuestionElement.classList.add('active');
+                currentQNum = nextQNum;
+                document.getElementById('currentQuestionNumber').textContent = currentQNum;
+                loadPassage(); // Clear any previous passage highlight
+            } else {
+                // If no next question, show results
+                showResult();
+            }
+            updateProgressBar();
+        }
+
+        // --- Helper/UI Functions ---
+
+        function updateScore(points) {
+            score += points;
+            document.getElementById('current-score').textContent = score;
+        }
+
+        function disableQuestionOptions(qNum, enable) {
+            const questionElement = document.getElementById('q' + qNum);
+            const options = questionElement.querySelectorAll('.options button');
+            options.forEach(button => {
+                button.disabled = !enable;
+                if(!enable) button.classList.add('disabled');
+                else button.classList.remove('disabled');
+            });
+        }
+        
+        function getButtonByAnswer(qNum, answerKey) {
+            const options = document.getElementById('q' + qNum).querySelectorAll('.options button');
+            let targetButton = null;
+            options.forEach(button => {
+                const buttonText = button.textContent.trim();
+                if (buttonText.startsWith(answerKey + ')')) {
+                    targetButton = button;
+                }
+            });
+            return targetButton;
+        }
+
+        function highlightPassageSource(sourceId, isCorrect) {
+            loadPassage(); // Clear any existing highlight first
+
+            if (isCorrect) {
+                const highlightedElement = document.getElementById(sourceId);
+                if (highlightedElement) {
+                    highlightedElement.classList.add('highlight');
+                    // Scroll passage area to the highlighted text (internal scroll)
+                    const passageArea = document.querySelector('.passage-area');
+                    passageArea.scrollTop = highlightedElement.offsetTop - passageArea.offsetTop - 50; 
+                }
+            }
+        }
+
+        function showFeedback(qNum, isCorrect, attemptStatus, message, correctAnsKey) {
+            const feedbackElement = document.getElementById('feedback-' + qNum);
+            const correctButton = getButtonByAnswer(qNum, correctAnsKey);
+
+            feedbackElement.textContent = '';
+            
+            // Clear previous highlighting classes from all options
+            const options = document.getElementById('q' + qNum).querySelectorAll('.options button');
+            options.forEach(button => {
+                button.classList.remove('correct', 'incorrect');
+            });
+
+            if (isCorrect) {
+                // Correct Answer (First or Second Try)
+                const points = attemptStatus === 0 ? correctPoints : 0;
+                feedbackElement.textContent = `✅ Correct! ${attemptStatus === 0 ? '+' + correctPoints + ' points awarded.' : 'No points awarded (second attempt). You may now proceed.'}`;
+                feedbackElement.style.backgroundColor = '#e6ffed';
+                feedbackElement.style.color = '#34a853';
+                correctButton.classList.add('correct');
+                
+                // Show Next button and disable options
+                document.getElementById('q' + qNum).querySelector('.next-button').style.display = 'block';
+                disableQuestionOptions(qNum, false);
+            } else {
+                // Incorrect Answer
+                if (attemptStatus === 0) {
+                    // First Fail: Provide hint, ask for retry.
+                    feedbackElement.textContent = `❌ Incorrect. Check the highlighted area in the passage (source) and try again.`;
+                    feedbackElement.style.backgroundColor = '#ffebe6';
+                    feedbackElement.style.color = '#ea4335';
+                    // Options remain enabled
+                } else {
+                    // Second Fail (Final): Finalize and move on.
+                    feedbackElement.textContent = `❌ Incorrect. Attempts exhausted. The correct answer has been marked in green.`;
+                    feedbackElement.style.backgroundColor = '#ffebe6';
+                    feedbackElement.style.color = '#ea4335';
+                    correctButton.classList.add('correct'); // Show the correct answer
+                    
+                    // Show Next button and disable options
+                    document.getElementById('q' + qNum).querySelector('.next-button').style.display = 'block';
+                    disableQuestionOptions(qNum, false);
+                }
+            }
+        }
+        
+        // --- Main Logic ---
+
+        function checkAnswer(qNum, userAnsKey, correctAnsKey, sourceId) {
+            if (questionsAttempted[qNum] === undefined) {
+                questionsAttempted[qNum] = 0; // 0: First attempt
+            }
+            if (questionsAttempted[qNum] === 2) return; 
+
+            const isCorrect = (userAnsKey === correctAnsKey);
+            const currentAttempt = questionsAttempted[qNum];
+            const userButton = getButtonByAnswer(qNum, userAnsKey);
+
+            if (isCorrect) {
+                // Correct Answer
+                if (currentAttempt === 0) {
+                    updateScore(correctPoints); 
+                }
+                questionsAttempted[qNum] = 2; // Finalize
+                highlightPassageSource(sourceId, true); // Highlight source on success
+                showFeedback(qNum, true, currentAttempt, '', correctAnsKey);
+            } else {
+                // Incorrect Answer
+                if (currentAttempt === 0) {
+                    // First Fail
+                    questionsAttempted[qNum] = 1; // Mark for second try
+                    userButton.classList.add('incorrect'); // Highlight user's incorrect choice
+                    highlightPassageSource(sourceId, true); // Highlight source as hint
+                    showFeedback(qNum, false, currentAttempt, '', correctAnsKey);
+                } else {
+                    // Second Fail (Final)
+                    questionsAttempted[qNum] = 2; // Finalize as failed
+                    userButton.classList.add('incorrect'); 
+                    highlightPassageSource(sourceId, false); // Do NOT highlight on second fail
+                    showFeedback(qNum, false, currentAttempt, '', correctAnsKey);
+                }
+            }
+        }
+
+        // Initialize display properties and handlers
+        document.addEventListener('DOMContentLoaded', () => {
+             // Show input page initially
+            document.getElementById('input-page').style.display = 'block';
+            document.getElementById('quiz-page').style.display = 'none';
+        });
+    </script>
+</body>
+</html>

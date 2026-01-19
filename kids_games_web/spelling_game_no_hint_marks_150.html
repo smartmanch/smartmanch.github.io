@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>स्पेलिंग चैंपियन गेम - नो हिंट मार्क्स</title>
+    <style>
+        /* CSS Styling */
+        body { font-family: 'Arial', sans-serif; background-color: #f0f8ff; text-align: center; padding: 20px; margin: 0; }
+        .container { max-width: 600px; margin: auto; background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        #score-board { font-size: 20px; color: #ffbf00; margin-bottom: 20px; font-weight: bold; }
+        #game-area { display: none; }
+        #hindi-word-text { font-size: 28px; margin: 15px 0; color: #333; }
+        #input-container { display: flex; justify-content: center; gap: 5px; margin-bottom: 15px; }
+        .letter-box { width: 40px; height: 40px; font-size: 24px; text-align: center; border: 2px solid #ccc; border-radius: 5px; text-transform: uppercase; }
+        .letter-box:focus { border-color: #007bff; outline: none; }
+        #controls { display: flex; justify-content: center; gap: 10px; }
+        #submit-btn, #hint-btn { padding: 10px 15px; font-size: 16px; color: white; border: none; cursor: pointer; border-radius: 5px; }
+        #submit-btn { background-color: #4CAF50; }
+        #hint-btn { background-color: #ff9800; }
+        #submit-btn:hover { background-color: #45a049; }
+        #hint-btn:hover { background-color: #e68900; }
+        #feedback-area { margin-top: 20px; font-size: 20px; min-height: 30px; }
+        .correct-flash { color: green; font-weight: bold; }
+        #start-btn { padding: 15px 30px; font-size: 20px; background-color: #007bff; color: white; border: none; cursor: pointer; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>स्पेलिंग चैंपियन</h1>
+    <div id="score-board">सिक्के: <span id="coins">0</span> | प्रश्न: <span id="question-count">0/150</span></div>
+
+    <button id="start-btn">शुरू करें</button>
+
+    <div id="game-area">
+        <div id="hindi-word-text"></div>
+        <div id="input-container">
+            <!-- Input boxes will be generated here -->
+        </div>
+        <div id="controls">
+            <button id="submit-btn">चेक करें</button>
+            <button id="hint-btn">हिंट (हिंदी अर्थ)</button>
+        </div>
+        <div id="feedback-area"></div>
+    </div>
+</div>
+
+<script>
+    // JavaScript Logic
+    const words = [
+        { hindi: "पानी", english: "WATER" }, { hindi: "खाना", english: "FOOD" }, { hindi: "घर", english: "HOME" },
+        { hindi: "स्कूल", english: "SCHOOL" }, { hindi: "सुबह", english: "MORNING" }, { hindi: "रात", english: "NIGHT" },
+        { hindi: "दिन", english: "DAY" }, { hindi: "पेड़", english: "TREE" }, { hindi: "फूल", english: "FLOWER" },
+        { hindi: "सूरज", english: "SUN" }, { hindi: "चाँद", english: "MOON" }, { hindi: "तारा", english: "STAR" },
+        { hindi: "हाथ", english: "HAND" }, { hindi: "पैर", english: "LEG" }, { hindi: "आँख", english: "EYE" },
+        { hindi: "कान", english: "EAR" }, { hindi: "नाक", english: "NOSE" }, { hindi: "मुँह", english: "MOUTH" },
+        { hindi: "माँ", english: "MOTHER" }, { hindi: "पिता", english: "FATHER" }, { hindi: "भाई", english: "BROTHER" },
+        { hindi: "बहन", english: "SISTER" }, { hindi: "दोस्त", english: "FRIEND" }, { hindi: "शिक्षक", english: "TEACHER" },
+        { hindi: "किताब", english: "BOOK" }, { hindi: "कलम", english: "PEN" }, { hindi: "कॉपी", english: "NOTEBOOK" },
+        { hindi: "थैला", english: "BAG" }, { hindi: "खेलना", english: "PLAY" }, { hindi: "दौड़ना", english: "RUN" },
+        { hindi: "हँसना", english: "LAUGH" }, { hindi: "रोना", english: "CRY" }, { hindi: "बड़ा", english: "BIG" },
+        { hindi: "छोटा", english: "SMALL" }, { hindi: "ऊपर", english: "UP" }, { hindi: "नीचे", english: "DOWN" },
+        { hindi: "अंदर", english: "INSIDE" }, { hindi: "बाहर", english: "OUTSIDE" }, { hindi: "काला", english: "BLACK" },
+        { hindi: "सफ़ेद", english: "WHITE" }, { hindi: "लाल", english: "RED" }, { hindi: "हरा", english: "GREEN" },
+        { hindi: "पीला", english: "YELLOW" }, { hindi: "बैठना", english: "SIT" }, { hindi: "खड़ा होना", english: "STAND" },
+        { hindi: "आना", english: "COME" }, { hindi: "जाना", english: "GO" }, { hindi: "दरवाजा", english: "DOOR" },
+        { hindi: "खिड़की", english: "WINDOW" }, { hindi: "सफ़ाई", english: "CLEANING" }
+    ];
+
+    let allQuestions = [];
+    let currentQuestionIndex = 0;
+    let coins = 0;
+    let hintUsedForCurrentQuestion = false; // यह ट्रैक करेगा कि हिंट का उपयोग हुआ है या नहीं
+    const TOTAL_ROUNDS = 3;
+
+    const startBtn = document.getElementById('start-btn');
+    const gameArea = document.getElementById('game-area');
+    const hindiWordText = document.getElementById('hindi-word-text');
+    const inputContainer = document.getElementById('input-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const hintBtn = document.getElementById('hint-btn');
+    const feedbackArea = document.getElementById('feedback-area');
+    const coinsSpan = document.getElementById('coins');
+    const questionCountSpan = document.getElementById('question-count');
+
+    startBtn.addEventListener('click', startGame);
+    submitBtn.addEventListener('click', checkAnswer);
+    hintBtn.addEventListener('click', showHint);
+
+    function startGame() {
+        startBtn.style.display = 'none';
+        gameArea.style.display = 'block';
+        for (let i = 0; i < TOTAL_ROUNDS; i++) {
+            allQuestions = allQuestions.concat(words);
+        }
+        currentQuestionIndex = 0;
+        coins = 0;
+        updateUI();
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        if (currentQuestionIndex < allQuestions.length) {
+            const currentQ = allQuestions[currentQuestionIndex];
+            hindiWordText.textContent = `शब्द: ${currentQ.hindi}`;
+            createInputBoxes(currentQ.english.length);
+            feedbackArea.textContent = '';
+            submitBtn.disabled = false;
+            hintUsedForCurrentQuestion = false; // नए प्रश्न के लिए हिंट उपयोग फ्लैग रीसेट करें
+        } else {
+            endGame();
+        }
+    }
+
+    function createInputBoxes(length) {
+        inputContainer.innerHTML = '';
+        for (let i = 0; i < length; i++) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.maxLength = 1;
+            input.classList.add('letter-box');
+            input.addEventListener('input', function() {
+                if (this.value.length === this.maxLength) {
+                    const nextInput = this.nextElementSibling;
+                    if (nextInput) {
+                        nextInput.focus();
+                    }
+                }
+            });
+            inputContainer.appendChild(input);
+        }
+        inputContainer.firstChild.focus();
+    }
+
+    function showHint() {
+        const currentQ = allQuestions[currentQuestionIndex];
+        alert(`यह शब्द है: ${currentQ.english}`);
+        hintUsedForCurrentQuestion = true; // हिंट उपयोग फ्लैग को TRUE करें
+        // हिंट देने के बाद भी बच्चा स्पेलिंग टाइप करके सीख सकता है, बस उसे सिक्के नहीं मिलेंगे।
+    }
+
+    function checkAnswer() {
+        const inputs = document.querySelectorAll('.letter-box');
+        let userAnswer = '';
+        inputs.forEach(input => {
+            userAnswer += input.value.toUpperCase();
+        });
+
+        const correctAnswer = allQuestions[currentQuestionIndex].english.toUpperCase();
+
+        if (userAnswer === correctAnswer) {
+            if (!hintUsedForCurrentQuestion) {
+                coins += 2; // केवल तभी सिक्के दें जब हिंट का उपयोग न हुआ हो
+                feedbackArea.innerHTML = `<span class="correct-flash">सही जवाब! +2 सिक्के! स्पेलिंग: ${correctAnswer}</span>`;
+            } else {
+                feedbackArea.innerHTML = `<span class="correct-flash">सही जवाब! (हिंट का उपयोग किया गया, इसलिए कोई सिक्का नहीं मिला) स्पेलिंग: ${correctAnswer}</span>`;
+            }
+            
+            submitBtn.disabled = true;
+
+            // 3 बार स्पेलिंग दिखाने की प्रक्रिया
+            let flashCount = 0;
+            const flashInterval = setInterval(() => {
+                if (flashCount < 3) {
+                   // स्पेलिंग फ्लैश के दौरान
+                } else {
+                    clearInterval(flashInterval);
+                    setTimeout(nextQuestion, 500);
+                }
+                flashCount++;
+            }, 1000);
+
+        } else {
+            feedbackArea.textContent = "गलत जवाब। फिर से कोशिश करें।";
+            inputs.forEach(input => input.value = '');
+            inputContainer.firstChild.focus();
+        }
+        updateUI();
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        updateUI();
+        loadQuestion();
+    }
+
+    function updateUI() {
+        coinsSpan.textContent = coins;
+        questionCountSpan.textContent = `${currentQuestionIndex}/${allQuestions.length}`;
+    }
+
+    function endGame() {
+        gameArea.style.display = 'none';
+        hindiWordText.textContent = "गेम खत्म! आप स्पेलिंग चैंपियन बन गए!";
+        feedbackArea.innerHTML = `<p>आपने कुल ${coins} सिक्के जीते हैं। बहुत बढ़िया!</p>`;
+    }
+</script>
+
+</body>
+</html>

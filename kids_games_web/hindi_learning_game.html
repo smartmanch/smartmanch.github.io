@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>हिंदी सीखें गेम - सरल हिंदी</title>
+    <style>
+        /* CSS Styling */
+        body { font-family: 'Arial', sans-serif; background-color: #f0f8ff; text-align: center; padding: 20px; margin: 0; }
+        .container { max-width: 600px; margin: auto; background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        #score-board { font-size: 20px; color: #ffbf00; margin-bottom: 20px; font-weight: bold; }
+        #game-area { display: none; }
+        #user-info-area { margin-bottom: 20px; }
+        .user-input { padding: 8px; margin: 5px; font-size: 16px; }
+        #question-text { font-size: 40px; margin: 20px 0; color: #333; }
+        #answer-box { padding: 10px; font-size: 24px; width: 150px; text-align: center; }
+        #controls { display: flex; justify-content: center; gap: 10px; margin-top: 15px; }
+        #submit-btn, #hint-btn, #start-btn { padding: 10px 15px; font-size: 16px; color: white; border: none; cursor: pointer; border-radius: 5px; }
+        #submit-btn { background-color: #4CAF50; }
+        #hint-btn { background-color: #ff9800; }
+        #start-btn { background-color: #007bff; }
+        #feedback-area { margin-top: 20px; font-size: 20px; min-height: 30px; }
+        .correct-flash { color: green; font-weight: bold; }
+        #marksheet-area { display: none; text-align: left; margin-top: 20px; }
+        .marksheet-row { padding: 5px 0; border-bottom: 1px solid #eee; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>हिंदी सीखें (कक्षा 1-2)</h1>
+
+    <div id="user-info-area">
+        <input type="text" id="userName" class="user-input" placeholder="अपना नाम लिखें" autocomplete="off">
+        <input type="text" id="userClass" class="user-input" placeholder="कक्षा लिखें" autocomplete="off">
+    </div>
+    
+    <button id="start-btn">गेम शुरू करें</button>
+
+    <div id="score-board" style="display: none;">सिक्के: <span id="coins">0</span> | प्रश्न: <span id="question-count">0/20</span></div>
+
+    <div id="game-area">
+        <div id="question-text"></div>
+        <input type="text" id="answer-box" placeholder="उत्तर लिखें" autocomplete="off">
+        <div id="controls">
+            <button id="submit-btn">चेक करें</button>
+            <button id="hint-btn">हिंट (उत्तर देखें)</button>
+        </div>
+        <div id="feedback-area"></div>
+    </div>
+
+    <div id="marksheet-area">
+        <h2>मार्कशीट</h2>
+        <div class="marksheet-row"><strong>नाम:</strong> <span id="ms-name"></span></div>
+        <div class="marksheet-row"><strong>कक्षा:</strong> <span id="ms-class"></span></div>
+        <div class="marksheet-row"><strong>कुल प्रश्न:</strong> <span id="ms-total"></span></div>
+        <div class="marksheet-row"><strong>सही उत्तर (बिना हिंट):</strong> <span id="ms-correct-no-hint"></span></div>
+        <div class="marksheet-row"><strong>सही उत्तर (हिंट के साथ):</strong> <span id="ms-correct-with-hint"></span></div>
+        <div class="marksheet-row"><strong>कुल सिक्के अर्जित:</strong> <span id="ms-coins"></span></div>
+    </div>
+</div>
+
+<script>
+    // JavaScript Logic for Hindi Learning Game
+    const words = [
+        { question: "चित्र देखकर सही शब्द लिखें (आम)", answer: "आम" },
+        { question: "चित्र देखकर सही शब्द लिखें (घर)", answer: "घर" },
+        { question: "चित्र देखकर सही शब्द लिखें (नल)", answer: "नल" },
+        { question: "चित्र देखकर सही शब्द लिखें (बस)", answer: "बस" },
+        { question: "चित्र देखकर सही शब्द लिखें (फल)", answer: "फल" },
+        { question: "चित्र देखकर सही शब्द लिखें (किताब)", answer: "किताब" },
+        { question: "चित्र देखकर सही शब्द लिखें (तितली)", answer: "तितली" },
+        { question: "चित्र देखकर सही शब्द लिखें (मछली)", answer: "मछली" },
+        { question: "चित्र देखकर सही शब्द लिखें (हाथी)", answer: "हाथी" },
+        { question: "चित्र देखकर सही शब्द लिखें (घोड़ा)", answer: "घोड़ा" },
+        { question: "चित्र देखकर सही शब्द लिखें (बिल्ली)", answer: "बिल्ली" },
+        { question: "चित्र देखकर सही शब्द लिखें (कुत्ता)", answer: "कुत्ता" },
+        { question: "चित्र देखकर सही शब्द लिखें (स्कूल)", answer: "स्कूल" },
+        { question: "चित्र देखकर सही शब्द लिखें (पेड़)", answer: "पेड़" },
+        { question: "चित्र देखकर सही शब्द लिखें (सूरज)", answer: "सूरज" },
+        { question: "चित्र देखकर सही शब्द लिखें (चाँद)", answer: "चाँद" },
+        { question: "चित्र देखकर सही शब्द लिखें (पेंसिल)", answer: "पेंसिल" },
+        { question: "चित्र देखकर सही शब्द लिखें (रबड़)", answer: "रबड़" },
+        { question: "चित्र देखकर सही शब्द लिखें (पानी)", answer: "पानी" },
+        { question: "चित्र देखकर सही शब्द लिखें (खाना)", answer: "खाना" }
+    ];
+
+    let allQuestions = [];
+    let currentQuestionIndex = 0;
+    let coins = 0;
+    let hintUsedForCurrentQuestion = false;
+    let correctAnswersNoHint = 0;
+    let correctAnswersWithHint = 0;
+    const TOTAL_QUESTIONS = 20;
+
+    const startBtn = document.getElementById('start-btn');
+    const gameArea = document.getElementById('game-area');
+    const userInfoArea = document.getElementById('user-info-area');
+    const scoreBoard = document.getElementById('score-board');
+    const marksheetArea = document.getElementById('marksheet-area');
+    const userNameInput = document.getElementById('userName');
+    const userClassInput = document.getElementById('userClass');
+    const questionText = document.getElementById('question-text');
+    const answerBox = document.getElementById('answer-box');
+    const submitBtn = document.getElementById('submit-btn');
+    const hintBtn = document.getElementById('hint-btn');
+    const feedbackArea = document.getElementById('feedback-area');
+    const coinsSpan = document.getElementById('coins');
+    const questionCountSpan = document.getElementById('question-count');
+
+    startBtn.addEventListener('click', startGame);
+    submitBtn.addEventListener('click', checkAnswer);
+    hintBtn.addEventListener('click', showHint);
+    answerBox.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            checkAnswer();
+        }
+    });
+
+    function startGame() {
+        const name = userNameInput.value.trim();
+        const userClass = userClassInput.value.trim();
+
+        if (name === "" || userClass === "") {
+            alert("कृपया अपना नाम और कक्षा लिखें!");
+            return;
+        }
+
+        userInfoArea.style.display = 'none';
+        startBtn.style.display = 'none';
+        gameArea.style.display = 'block';
+        scoreBoard.style.display = 'block';
+        
+        // प्रश्नों को मिला दें (शफ़ल करें)
+        allQuestions = words.sort(() => Math.random() - 0.5);
+        currentQuestionIndex = 0;
+        coins = 0;
+        correctAnswersNoHint = 0;
+        correctAnswersWithHint = 0;
+        updateUI();
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        if (currentQuestionIndex < allQuestions.length) {
+            const currentQ = allQuestions[currentQuestionIndex];
+            // नोट: चित्र दिखाने के लिए इस कोड को और विकसित करना होगा, अभी केवल टेक्स्ट है।
+            questionText.textContent = currentQ.question; 
+            answerBox.value = '';
+            answerBox.focus();
+            feedbackArea.textContent = '';
+            submitBtn.disabled = false;
+            hintUsedForCurrentQuestion = false;
+        } else {
+            endGame();
+        }
+    }
+
+    function showHint() {
+        const currentQ = allQuestions[currentQuestionIndex];
+        alert(`सही उत्तर है: ${currentQ.answer}`);
+        hintUsedForCurrentQuestion = true;
+    }
+
+    function checkAnswer() {
+        const userAnswer = answerBox.value.trim();
+        const correctAnswer = allQuestions[currentQuestionIndex].answer;
+
+        if (userAnswer === correctAnswer) {
+            if (!hintUsedForCurrentQuestion) {
+                coins += 2;
+                correctAnswersNoHint++;
+                feedbackArea.innerHTML = `<span class="correct-flash">सही जवाब! +2 सिक्के! उत्तर: ${correctAnswer}</span>`;
+            } else {
+                correctAnswersWithHint++;
+                feedbackArea.innerHTML = `<span class="correct-flash">सही जवाब! (हिंट का उपयोग किया गया) उत्तर: ${correctAnswer}</span>`;
+            }
+            
+            submitBtn.disabled = true;
+            setTimeout(nextQuestion, 2000); 
+
+        } else {
+            feedbackArea.textContent = "गलत जवाब। फिर से कोशिश करें।";
+            answerBox.focus();
+        }
+        updateUI();
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        updateUI();
+        loadQuestion();
+    }
+
+    function updateUI() {
+        coinsSpan.textContent = coins;
+        questionCountSpan.textContent = `${currentQuestionIndex}/${allQuestions.length}`;
+    }
+
+    function endGame() {
+        gameArea.style.display = 'none';
+        scoreBoard.style.display = 'none';
+        marksheetArea.style.display = 'block';
+        
+        // मार्कशीट भरें
+        document.getElementById('ms-name').textContent = userNameInput.value.trim();
+        document.getElementById('ms-class').textContent = userClassInput.value.trim();
+        document.getElementById('ms-total').textContent = allQuestions.length;
+        document.getElementById('ms-correct-no-hint').textContent = correctAnswersNoHint;
+        document.getElementById('ms-correct-with-hint').textContent = correctAnswersWithHint;
+        document.getElementById('ms-coins').textContent = coins;
+    }
+</script>
+
+</body>
+</html>

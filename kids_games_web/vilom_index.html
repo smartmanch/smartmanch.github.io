@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>विलोम शब्द क्विज - 25 प्रश्न</title>
+    <link rel="stylesheet" href="vilom_style.css"> 
+</head>
+<body>
+
+    <header>
+        <h1>🏫 राजकीय उच्च माध्यमिक विद्यालय सैनीपुरा, नवलगढ़, झुंझुनूं 🏆</h1>
+    </header>
+
+    <div id="game-container">
+        
+        <div id="info-screen">
+            <h2>👋 विद्यार्थी जानकारी</h2>
+            <label for="student-name">नाम:</label>
+            <input type="text" id="student-name" required><br><br>
+            <label for="student-class">कक्षा:</label>
+            <input type="text" id="student-class" required><br><br>
+            <button onclick="showList()">अगला</button>
+        </div>
+
+        <div id="list-screen" style="display:none;">
+            <h2>✨ विलोम शब्दों की सूची (स्मरण हेतु)</h2>
+            <table id="word-list-table">
+                </table>
+            <button onclick="startQuiz()">क्विज शुरू करें</button>
+        </div>
+
+        <div id="quiz-screen" style="display:none;">
+            <div id="current-score" style="text-align: right; font-size: 1.2em; margin-bottom: 10px;">
+                💰 **कुल कोइन:** <span>0</span>
+            </div>
+            <h2>📝 विलोम शब्द क्विज</h2>
+            <p><strong>निर्देश:</strong> दिए गए शब्द का **सही विलोम** चुनें। (केवल प्रथम सही क्लिक पर 2 कोइन)</p>
+            <div id="quiz-area">
+                </div>
+            <button id="next-button" onclick="handleNextQuestion()" style="display:none;">अगला प्रश्न</button>
+        </div>
+
+        <div id="result-screen" style="display:none;">
+            <h2>🌟 विद्यार्थी का परिणाम कार्ड 🌟</h2>
+            <div id="mark-sheet">
+                </div>
+            <p style="margin-top: 20px;">खेलने के लिए धन्यवाद!</p>
+        </div>
+    </div>
+
+    <script src="vilom_script.js"></script> 
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>स्पेलिंग चैंपियन गेम - शरीर के अंग</title>
+    <style>
+        /* CSS Styling */
+        body { font-family: 'Arial', sans-serif; background-color: #f0f8ff; text-align: center; padding: 20px; margin: 0; }
+        .container { max-width: 600px; margin: auto; background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        #score-board { font-size: 20px; color: #ffbf00; margin-bottom: 20px; font-weight: bold; }
+        #game-area { display: none; }
+        #hindi-word-text { font-size: 28px; margin: 15px 0; color: #333; }
+        #input-container { display: flex; justify-content: center; gap: 5px; margin-bottom: 15px; }
+        .letter-box { width: 40px; height: 40px; font-size: 24px; text-align: center; border: 2px solid #ccc; border-radius: 5px; text-transform: uppercase; }
+        .letter-box:focus { border-color: #007bff; outline: none; }
+        #controls { display: flex; justify-content: center; gap: 10px; }
+        #submit-btn, #hint-btn { padding: 10px 15px; font-size: 16px; color: white; border: none; cursor: pointer; border-radius: 5px; }
+        #submit-btn { background-color: #4CAF50; }
+        #hint-btn { background-color: #ff9800; }
+        #feedback-area { margin-top: 20px; font-size: 20px; min-height: 30px; }
+        .correct-flash { color: green; font-weight: bold; }
+        #start-btn { padding: 15px 30px; font-size: 20px; background-color: #007bff; color: white; border: none; cursor: pointer; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>स्पेलिंग चैंपियन (शरीर के अंग)</h1>
+    <div id="score-board">सिक्के: <span id="coins">0</span> | प्रश्न: <span id="question-count">0/150</span></div>
+
+    <button id="start-btn">शुरू करें</button>
+
+    <div id="game-area">
+        <div id="hindi-word-text"></div>
+        <div id="input-container">
+            <!-- Input boxes will be generated here -->
+        </div>
+        <div id="controls">
+            <button id="submit-btn">चेक करें</button>
+            <button id="hint-btn">हिंट (हिंदी अर्थ)</button>
+        </div>
+        <div id="feedback-area"></div>
+    </div>
+</div>
+
+<script>
+    // JavaScript Logic (शरीर के अंगों की सूची यहाँ है)
+    const words = [
+        { hindi: "सिर", english: "HEAD" },
+        { hindi: "बाल", english: "HAIR" },
+        { hindi: "आंख", english: "EYE" },
+        { hindi: "कान", english: "EAR" },
+        { hindi: "नाक", english: "NOSE" },
+        { hindi: "मुंह", english: "MOUTH" },
+        { hindi: "होंठ", english: "LIPS" },
+        { hindi: "दांत", english: "TEETH" },
+        { hindi: "जीभ", english: "TONGUE" },
+        { hindi: "गाल", english: "CHEEK" },
+        { hindi: "ठोड़ी", english: "CHIN" },
+        { hindi: "गर्दन", english: "NECK" },
+        { hindi: "कंधा", english: "SHOULDER" },
+        { hindi: "हाथ", english: "HAND" },
+        { hindi: "बांह", english: "ARM" },
+        { hindi: "कोहनी", english: "ELBOW" },
+        { hindi: "कलाई", english: "WRIST" },
+        { hindi: "अंगुली", english: "FINGER" },
+        { hindi: "अंगूठा", english: "THUMB" },
+        { hindi: "नाखून", english: "NAIL" },
+        { hindi: "छाती", english: "CHEST" },
+        { hindi: "पेट", english: "STOMACH" },
+        { hindi: "कमर", english: "WAIST" },
+        { hindi: "पीठ", english: "BACK" },
+        { hindi: "टांग", english: "LEG" },
+        { hindi: "पैर", english: "FOOT" },
+        { hindi: "जांघ", english: "THIGH" },
+        { hindi: "घुटना", english: "KNEE" },
+        { hindi: "टखना", english: "ANKLE" },
+        { hindi: "एड़ी", english: "HEEL" },
+        { hindi: "पैर की उंगली", english: "TOE" },
+        { hindi: "त्वचा", english: "SKIN" },
+        { hindi: "हड्डी", english: "BONE" },
+        { hindi: "मांसपेशी", english: "MUSCLE" },
+        { hindi: "खून", english: "BLOOD" },
+        { hindi: "दिल", english: "HEART" },
+        { hindi: "दिमाग", english: "BRAIN" },
+        { hindi: "फेफड़े", english: "LUNGS" },
+        { hindi: "जिगर", english: "LIVER" },
+        { hindi: "गुर्दा", english: "KIDNEY" },
+        { hindi: "नस", english: "VEIN" },
+        { hindi: "चेहरा", english: "FACE" },
+        { hindi: "शरीर", english: "BODY" },
+        { hindi: "आंत", english: "INTESTINE" },
+        { hindi: "पैर का तलवा", english: "SOLE" },
+        { hindi: "हथेली", english: "PALM" },
+        { hindi: "पलकें", english: "EYELIDS" },
+        { hindi: "भौंहें", english: "EYEBROWS" },
+        { hindi: "कंकाल", english: "SKELETON" },
+        { hindi: "पाचन तंत्र", english: "DIGESTIVE SYSTEM" }
+    ];
+
+    let allQuestions = [];
+    let currentQuestionIndex = 0;
+    let coins = 0;
+    let hintUsedForCurrentQuestion = false;
+    const TOTAL_ROUNDS = 3;
+
+    const startBtn = document.getElementById('start-btn');
+    const gameArea = document.getElementById('game-area');
+    const hindiWordText = document.getElementById('hindi-word-text');
+    const inputContainer = document.getElementById('input-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const hintBtn = document.getElementById('hint-btn');
+    const feedbackArea = document.getElementById('feedback-area');
+    const coinsSpan = document.getElementById('coins');
+    const questionCountSpan = document.getElementById('question-count');
+
+    startBtn.addEventListener('click', startGame);
+    submitBtn.addEventListener('click', checkAnswer);
+    hintBtn.addEventListener('click', showHint);
+
+    function startGame() {
+        startBtn.style.display = 'none';
+        gameArea.style.display = 'block';
+        for (let i = 0; i < TOTAL_ROUNDS; i++) {
+            allQuestions = allQuestions.concat(words);
+        }
+        currentQuestionIndex = 0;
+        coins = 0;
+        updateUI();
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        if (currentQuestionIndex < allQuestions.length) {
+            const currentQ = allQuestions[currentQuestionIndex];
+            hindiWordText.textContent = `शब्द: ${currentQ.hindi}`;
+            createInputBoxes(currentQ.english.length);
+            feedbackArea.textContent = '';
+            submitBtn.disabled = false;
+            hintUsedForCurrentQuestion = false;
+        } else {
+            endGame();
+        }
+    }
+
+    function createInputBoxes(length) {
+        inputContainer.innerHTML = '';
+        for (let i = 0; i < length; i++) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.maxLength = 1;
+            input.classList.add('letter-box');
+            input.addEventListener('input', function() {
+                if (this.value.length === this.maxLength) {
+                    const nextInput = this.nextElementSibling;
+                    if (nextInput) {
+                        nextInput.focus();
+                    }
+                }
+            });
+            inputContainer.appendChild(input);
+        }
+        inputContainer.firstChild.focus();
+    }
+
+    function showHint() {
+        const currentQ = allQuestions[currentQuestionIndex];
+        alert(`यह शब्द है: ${currentQ.english}`);
+        hintUsedForCurrentQuestion = true;
+    }
+
+    function checkAnswer() {
+        const inputs = document.querySelectorAll('.letter-box');
+        let userAnswer = '';
+        inputs.forEach(input => {
+            userAnswer += input.value.toUpperCase();
+        });
+
+        const correctAnswer = allQuestions[currentQuestionIndex].english.toUpperCase();
+
+        if (userAnswer === correctAnswer) {
+            if (!hintUsedForCurrentQuestion) {
+                coins += 2;
+                feedbackArea.innerHTML = `<span class="correct-flash">सही जवाब! +2 सिक्के! स्पेलिंग: ${correctAnswer}</span>`;
+            } else {
+                feedbackArea.innerHTML = `<span class="correct-flash">सही जवाब! (हिंट का उपयोग किया गया, इसलिए कोई सिक्का नहीं मिला) स्पेलिंग: ${correctAnswer}</span>`;
+            }
+            
+            submitBtn.disabled = true;
+
+            let flashCount = 0;
+            const flashInterval = setInterval(() => {
+                if (flashCount < 3) {
+                   // Displaying the spelling during flash
+                } else {
+                    clearInterval(flashInterval);
+                    setTimeout(nextQuestion, 500);
+                }
+                flashCount++;
+            }, 1000);
+
+        } else {
+            feedbackArea.textContent = "गलत जवाब। फिर से कोशिश करें।";
+            inputs.forEach(input => input.value = '');
+            inputContainer.firstChild.focus();
+        }
+        updateUI();
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        updateUI();
+        loadQuestion();
+    }
+
+    function updateUI() {
+        coinsSpan.textContent = coins;
+        questionCountSpan.textContent = `${currentQuestionIndex}/${allQuestions.length}`;
+    }
+
+    function endGame() {
+        gameArea.style.display = 'none';
+        hindiWordText.textContent = "गेम खत्म! आप स्पेलिंग चैंपियन बन गए!";
+        feedbackArea.innerHTML = `<p>आपने कुल ${coins} सिक्के जीते हैं। बहुत बढ़िया!</p>`;
+    }
+</script>
+
+</body>
+</html>

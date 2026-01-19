@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RBSE History Supplementary Paper 2025 - Interactive</title>
+    <style>
+        :root {
+            --primary: #c0392b; /* History theme color */
+            --secondary: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --btn-hover: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            border-bottom: 4px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        header h1 { color: var(--primary); margin: 0; font-size: 2.2em; }
+        header h2 { color: var(--dark); margin: 10px 0; font-size: 1.5em; }
+        header p { font-weight: bold; color: #555; }
+
+        /* Login Section */
+        #login-view {
+            text-align: center;
+            padding: 50px;
+            background: #fdf2f2;
+            border-radius: 10px;
+            border: 1px solid #ebccd1;
+        }
+        input, select {
+            padding: 12px;
+            margin: 10px;
+            width: 80%;
+            max-width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button.start-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 15px;
+        }
+        button.start-btn:hover { background-color: var(--btn-hover); }
+
+        /* Paper Section */
+        #paper-view { display: none; }
+        .student-info-bar {
+            background: var(--dark);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .section-heading {
+            background-color: #e67e22;
+            color: white;
+            padding: 10px 15px;
+            margin-top: 40px;
+            border-radius: 5px;
+            font-size: 1.4em;
+            text-transform: uppercase;
+        }
+
+        .question-block {
+            background: #fff;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .q-txt { font-weight: 600; font-size: 1.1em; color: var(--dark); }
+        
+        .ans-toggle {
+            background-color: #34495e;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        .ans-toggle:hover { background-color: #2c3e50; }
+
+        .answer-content {
+            display: none;
+            background-color: #e8f8f5;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border-left: 4px solid var(--success);
+            color: #0e6251;
+        }
+        
+        .long-answer { text-align: justify; white-space: pre-line; }
+        .or-divider {
+            text-align: center;
+            margin: 20px 0;
+            font-weight: bold;
+            color: #e67e22;
+            border-top: 1px dashed #ccc;
+            border-bottom: 1px dashed #ccc;
+            padding: 5px;
+        }
+
+        /* Quiz Section */
+        #quiz-view { display: none; }
+        .quiz-card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+        .options label {
+            display: block;
+            padding: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .options label:hover { background-color: #f0f0f0; }
+
+        /* Results */
+        #result-view { display: none; text-align: center; }
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            background: var(--dark);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2em;
+            font-weight: bold;
+            border: 5px solid var(--success);
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: left; }
+        th, td { border: 1px solid #ddd; padding: 10px; }
+        th { background-color: var(--primary); color: white; }
+        .correct { color: green; font-weight: bold; }
+        .wrong { color: red; font-weight: bold; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>RBSE पूरक परीक्षा 2025 (Supplementary)</h1>
+        <h2>इतिहास (History) - मॉडल हल प्रश्न पत्र</h2>
+        <p>समय: 3:15 घण्टे | पूर्णांक: 80</p>
+    </header>
+
+    <div id="login-view">
+        <h3>परीक्षा शुरू करने के लिए विवरण भरें</h3>
+        <input type="text" id="sName" placeholder="विद्यार्थी का नाम" required><br>
+        <select id="sClass">
+            <option value="12th Arts">कक्षा 12वीं (Arts)</option>
+        </select><br>
+        <input type="number" id="sRoll" placeholder="रोल नंबर" required><br>
+        <button class="start-btn" onclick="startPaper()">पेपर शुरू करें</button>
+    </div>
+
+    <div id="paper-view">
+        <div class="student-info-bar">
+            <span id="dispName"></span>
+            <span id="dispRoll"></span>
+        </div>
+
+        <div class="section-heading">खण्ड-अ (Section-A)</div>
+        
+        <div class="question-block">
+            <p class="q-txt">प्रश्न 1. बहुविकल्पीय प्रश्न (18 प्रश्न):</p>
+            <small>(उत्तर देखने के लिए 'उत्तर देखें' बटन पर क्लिक करें)</small>
+            <hr>
+            
+            <div>i) प्रभावती गुप्त किस गुप्त शासक की पुत्री थी? <button class="ans-toggle" onclick="toggle('a1_1')">उत्तर देखें</button><div id="a1_1" class="answer-content">उत्तर: (ब) चन्द्रगुप्त द्वितीय</div></div><hr>
+            <div>ii) शासकों की प्रतिमा और नाम के साथ सबसे पहले सिक्के किन शासकों ने जारी किए? <button class="ans-toggle" onclick="toggle('a1_2')">उत्तर देखें</button><div id="a1_2" class="answer-content">उत्तर: (अ) हिन्द-यूनानी</div></div><hr>
+            <div>iii) वी.एस. सुकथांकर के नेतृत्व में महाभारत का समालोचनात्मक संस्करण कार्य कब शुरू हुआ? <button class="ans-toggle" onclick="toggle('a1_3')">उत्तर देखें</button><div id="a1_3" class="answer-content">उत्तर: (अ) 1919</div></div><hr>
+            <div>iv) निम्न में से कौनसा युग्म सुमेलित है? (चिंतक - देश) <button class="ans-toggle" onclick="toggle('a1_4')">उत्तर देखें</button><div id="a1_4" class="answer-content">उत्तर: (स) सुकरात - यूनान (सही युग्म)</div></div><hr>
+            <div>v) बुद्ध ने अपना प्रथम उपदेश कहां दिया? <button class="ans-toggle" onclick="toggle('a1_5')">उत्तर देखें</button><div id="a1_5" class="answer-content">उत्तर: (स) सारनाथ</div></div><hr>
+            <div>vi) अल-बिरूनी का जन्म कहां हुआ? <button class="ans-toggle" onclick="toggle('a1_6')">उत्तर देखें</button><div id="a1_6" class="answer-content">उत्तर: (अ) उज्बेकिस्तान (ख्वारिज्म)</div></div><hr>
+            <div>vii) 'किताब उल हिन्द' पुस्तक का लेखक कौन था? <button class="ans-toggle" onclick="toggle('a1_7')">उत्तर देखें</button><div id="a1_7" class="answer-content">उत्तर: (द) अल-बिरूनी</div></div><hr>
+            <div>viii) अलवार कौन थे? <button class="ans-toggle" onclick="toggle('a1_8')">उत्तर देखें</button><div id="a1_8" class="answer-content">उत्तर: (ब) विष्णु भक्त</div></div><hr>
+            <div>ix) ख्वाजा मुइनुद्दीन चिश्ती की दरगाह में अकबर कितनी बार आया? <button class="ans-toggle" onclick="toggle('a1_9')">उत्तर देखें</button><div id="a1_9" class="answer-content">उत्तर: (स) चौदह बार (14 times)</div></div><hr>
+            <div>x) कृष्णदेव राय का संबंध किस वंश से था? <button class="ans-toggle" onclick="toggle('a1_10')">उत्तर देखें</button><div id="a1_10" class="answer-content">उत्तर: (स) तुलुव वंश</div></div><hr>
+            <div>xi) हरिहर और बुक्का द्वारा किस साम्राज्य की स्थापना की गई? <button class="ans-toggle" onclick="toggle('a1_11')">उत्तर देखें</button><div id="a1_11" class="answer-content">उत्तर: (द) विजयनगर</div></div><hr>
+            <div>xii) आइन-ए-अकबरी का लेखन कार्य कब पूरा हुआ? <button class="ans-toggle" onclick="toggle('a1_12')">उत्तर देखें</button><div id="a1_12" class="answer-content">उत्तर: (स) 1598 (पाँच संशोधनों के बाद)</div></div><hr>
+            <div>xiii) मुगलकाल में बंगाल किसके लिए मशहूर था? <button class="ans-toggle" onclick="toggle('a1_13')">उत्तर देखें</button><div id="a1_13" class="answer-content">उत्तर: (ब) चीनी (Sugar) और चावल/रेशम। (दिए गए विकल्पों में चीनी उपयुक्त है)</div></div><hr>
+            <div>xiv) कपास आपूर्ति संघ की स्थापना 1857 में कहाँ हुई? <button class="ans-toggle" onclick="toggle('a1_14')">उत्तर देखें</button><div id="a1_14" class="answer-content">उत्तर: (अ) ब्रिटेन</div></div><hr>
+            <div>xv) फ्रांसिस बुकानन किस कम्पनी का कर्मचारी था? <button class="ans-toggle" onclick="toggle('a1_15')">उत्तर देखें</button><div id="a1_15" class="answer-content">उत्तर: (अ) ब्रिटिश ईस्ट इंडिया कम्पनी</div></div><hr>
+            <div>xvi) झाँसी में 1857 के आन्दोलन का नेतृत्व किसने किया? <button class="ans-toggle" onclick="toggle('a1_16')">उत्तर देखें</button><div id="a1_16" class="answer-content">उत्तर: (स) रानी लक्ष्मीबाई</div></div><hr>
+            <div>xvii) संविधान निर्माण के दौरान हुई चर्चाओं के मुद्रित रिकॉर्ड कितने खण्डों में प्रकाशित हुए? <button class="ans-toggle" onclick="toggle('a1_17')">उत्तर देखें</button><div id="a1_17" class="answer-content">उत्तर: (अ) 11 खण्डों में</div></div><hr>
+            <div>xviii) संविधान निर्माण में किसकी भूमिका 'मुख्य योजनाकार' (Chief Draughtsman) की थी? <button class="ans-toggle" onclick="toggle('a1_18')">उत्तर देखें</button><div id="a1_18" class="answer-content">उत्तर: (ब) एस. एन. मुखर्जी</div></div>
+        </div>
+
+        <div class="question-block">
+            <p class="q-txt">प्रश्न 2. रिक्त स्थानों की पूर्ति कीजिए:</p>
+            <div>i) सोने के सिक्के बड़े पैमाने पर प्रथम शताब्दी ईसवी में ______ राजाओं ने जारी किए थे। <button class="ans-toggle" onclick="toggle('a2_1')">उत्तर</button><div id="a2_1" class="answer-content">कुषाण (Kushan)</div></div><br>
+            <div>ii) 1951-52 में पुरातत्ववेता ______ ने हस्तिनापुर में उत्खनन किया। <button class="ans-toggle" onclick="toggle('a2_2')">उत्तर</button><div id="a2_2" class="answer-content">बी. बी. लाल (B.B. Lal)</div></div><br>
+            <div>iii) बर्नियर मुगलकालीन शहरों को ______ कहता है। <button class="ans-toggle" onclick="toggle('a2_3')">उत्तर</button><div id="a2_3" class="answer-content">शिविर नगर (Camp Towns)</div></div><br>
+            <div>iv) राजकीय केन्द्र के सबसे सुंदर भवनों में एक ______ महल है। <button class="ans-toggle" onclick="toggle('a2_4')">उत्तर</button><div id="a2_4" class="answer-content">कमल (Lotus Mahal)</div></div><br>
+            <div>v) मुगल काल के भारतीय फारसी स्त्रोत किसान के लिए आमतौर पर ______ शब्द का इस्तेमाल करते थे। <button class="ans-toggle" onclick="toggle('a2_5')">उत्तर</button><div id="a2_5" class="answer-content">रैयत (Ryot) या मुजरियान</div></div><br>
+            <div>vi) सन 1793 में बंगाल में ______ बंदोबस्त लागू हो गया था। <button class="ans-toggle" onclick="toggle('a2_6')">उत्तर</button><div id="a2_6" class="answer-content">इस्तमरारी (Permanent Settlement)</div></div>
+        </div>
+
+        <div class="question-block">
+            <p class="q-txt">प्रश्न 3. अति लघूत्तरात्मक प्रश्न (11 प्रश्न):</p>
+            <div>i) भारतीय पुरातात्विक सर्वेक्षण के पहले डायरेक्टर जनरल कौन थे? <button class="ans-toggle" onclick="toggle('a3_1')">उत्तर</button><div id="a3_1" class="answer-content">अलेक्जेंडर कनिंघम (Alexander Cunningham)</div></div><hr>
+            <div>ii) समुद्रगुप्त के राजकवि कौन थे? <button class="ans-toggle" onclick="toggle('a3_2')">उत्तर</button><div id="a3_2" class="answer-content">हरिषेण (Harishena)</div></div><hr>
+            <div>iii) बौद्ध भिक्षु फा शिएन किस देश से आए थे? <button class="ans-toggle" onclick="toggle('a3_3')">उत्तर</button><div id="a3_3" class="answer-content">चीन (China)</div></div><hr>
+            <div>iv) मनुस्मृति में पैतृक जायदाद के बंटवारे के संबंध में क्या प्रावधान है? <button class="ans-toggle" onclick="toggle('a3_4')">उत्तर</button><div id="a3_4" class="answer-content">पैतृक जायदाद का पुत्रों में समान बंटवारा होना चाहिए, लेकिन ज्येष्ठ पुत्र को विशेष भाग मिलना चाहिए।</div></div><hr>
+            <div>v) बुद्ध का अन्तिम निर्देश क्या था? <button class="ans-toggle" onclick="toggle('a3_5')">उत्तर</button><div id="a3_5" class="answer-content">"तुम सब अपने लिए खुद ही ज्योति बनो" (अप्प दीपो भव)।</div></div><hr>
+            <div>vi) अकबर के काल का सरकारी इतिहासकार कौन था? <button class="ans-toggle" onclick="toggle('a3_6')">उत्तर</button><div id="a3_6" class="answer-content">अबुल फजल (Abul Fazl)</div></div><hr>
+            <div>vii) तालीकोटा के युद्ध में विजयनगर की सेना का नेतृत्व किसने किया? <button class="ans-toggle" onclick="toggle('a3_7')">उत्तर</button><div id="a3_7" class="answer-content">राम राय (Rama Raya)</div></div><hr>
+            <div>viii) मुगलकाल में पंचायत के मुखिया को क्या कहा जाता था? <button class="ans-toggle" onclick="toggle('a3_8')">उत्तर</button><div id="a3_8" class="answer-content">मुकद्दम या मंडल (Muqaddam or Mandal)</div></div><hr>
+            <div>ix) पाँचवी रिपोर्ट ब्रिटिश संसद में कब पेश की गई? <button class="ans-toggle" onclick="toggle('a3_9')">उत्तर</button><div id="a3_9" class="answer-content">1813 ई. में</div></div><hr>
+            <div>x) गांधी जी 1918 में गुजरात के किस अभियान में संलग्न रहे? <button class="ans-toggle" onclick="toggle('a3_10')">उत्तर</button><div id="a3_10" class="answer-content">खेड़ा सत्याग्रह (किसानों के लिए) और अहमदाबाद मिल मजदूर आंदोलन।</div></div><hr>
+            <div>xi) जवाहर लाल नेहरू ने संविधान सभा के समक्ष कौनसा प्रस्ताव पेश किया? <button class="ans-toggle" onclick="toggle('a3_11')">उत्तर</button><div id="a3_11" class="answer-content">उद्देश्य प्रस्ताव (Objectives Resolution)</div></div>
+        </div>
+
+        <div class="section-heading">खण्ड-ब (Section-B) - लघूत्तरात्मक</div>
+        
+        <div class="question-block"><p class="q-txt">4) सिन्धु घाटी सभ्यता के गृह स्थापत्य की कोई दो विशेषताएँ लिखिए।</p>
+        <button class="ans-toggle" onclick="toggle('a4')">उत्तर देखें</button><div id="a4" class="answer-content">1. आंगन: घरों के केंद्र में एक आंगन होता था जिसके चारों ओर कमरे बने होते थे।<br>2. गोपनीयता: भूमि तल पर बनी दीवारों में खिड़कियां नहीं होती थीं और मुख्य द्वार से आंतरिक भाग सीधा नहीं दिखता था।</div></div>
+
+        <div class="question-block"><p class="q-txt">5) अशोक द्वारा अपनाई गई कोई दो उपाधियों का नाम लिखिए।</p>
+        <button class="ans-toggle" onclick="toggle('a5')">उत्तर देखें</button><div id="a5" class="answer-content">1. देवानांपिय (देवताओं का प्रिय)<br>2. पियदस्सी (देखने में सुंदर)</div></div>
+
+        <div class="question-block"><p class="q-txt">6) गौत्र व्यवस्था के दो नियम लिखिए।</p>
+        <button class="ans-toggle" onclick="toggle('a6')">उत्तर देखें</button><div id="a6" class="answer-content">1. विवाह के पश्चात स्त्रियों को पिता के स्थान पर पति का गोत्र अपनाना पड़ता था।<br>2. एक ही गोत्र के सदस्यों में विवाह वर्जित था।</div></div>
+
+        <div class="question-block"><p class="q-txt">7) बर्नियर के अनुसार राजकीय भूस्वामित्व के कारण उत्पादन पर क्या प्रभाव पड़ता था?</p>
+        <button class="ans-toggle" onclick="toggle('a7')">उत्तर देखें</button><div id="a7" class="answer-content">बर्नियर का मानना था कि चूंकि किसान जमीन के मालिक नहीं थे, इसलिए वे कृषि में सुधार या निवेश नहीं करते थे। इससे कृषि उत्पादन कम होता था और भूमि बंजर हो जाती थी।</div></div>
+
+        <div class="question-block"><p class="q-txt">8) सगुण और निर्गुण भक्ति परम्परा में अन्तर स्पष्ट कीजिए।</p>
+        <button class="ans-toggle" onclick="toggle('a8')">उत्तर देखें</button><div id="a8" class="answer-content"><strong>सगुण:</strong> इसमें ईश्वर की आराधना मूर्ति रूप में (जैसे शिव, विष्णु, देवी) की जाती है।<br><strong>निर्गुण:</strong> इसमें ईश्वर को निराकार मानकर पूजा की जाती है, मूर्ति पूजा नहीं होती।</div></div>
+
+        <div class="question-block"><p class="q-txt">9) विजयनगर साम्राज्य में धार्मिक केन्द्र के महत्व के कोई दो कारण लिखिए।</p>
+        <button class="ans-toggle" onclick="toggle('a9')">उत्तर देखें</button><div id="a9" class="answer-content">1. वैधता: राजा देवताओं (जैसे विरूपाक्ष) से अपना संबंध जोड़कर अपनी सत्ता को वैधता प्रदान करते थे।<br>2. राजधानी का चयन: तुंगभद्रा नदी के किनारे स्थित इन पवित्र स्थलों को राजधानी के लिए चुना गया था।</div></div>
+
+        <div class="question-block"><p class="q-txt">10) मुगल काल में कौनसी फसलें जिन्स-ए-कामिल थी?</p>
+        <button class="ans-toggle" onclick="toggle('a10')">उत्तर देखें</button><div id="a10" class="answer-content">कपास और गन्ना जैसी सर्वोत्तम (नगदी) फसलें 'जिन्स-ए-कामिल' कहलाती थीं क्योंकि इनसे राज्य को अधिक राजस्व मिलता था।</div></div>
+
+        <div class="question-block"><p class="q-txt">11) दक्कन दंगा आयोग क्या था?</p>
+        <button class="ans-toggle" onclick="toggle('a11')">उत्तर देखें</button><div id="a11" class="answer-content">1875 में दक्कन के किसानों द्वारा साहूकारों के खिलाफ किए गए विद्रोहों की जाँच के लिए ब्रिटिश सरकार द्वारा गठित एक आयोग था। इसने 1878 में अपनी रिपोर्ट ब्रिटिश संसद में पेश की।</div></div>
+
+        <div class="question-block"><p class="q-txt">12) 1857 के विद्रोह के समय भारतीय सैनिकों में व्याप्त असन्तोष के कोई दो कारण लिखिए।</p>
+        <button class="ans-toggle" onclick="toggle('a12')">उत्तर देखें</button><div id="a12" class="answer-content">1. वेतन और भत्ते: कम वेतन और पदोन्नति में भेदभाव।<br>2. धार्मिक कारण: नए एनफील्ड राइफल के कारतूसों में गाय और सूअर की चर्बी होने की अफवाह, जिससे उनका धर्म भ्रष्ट होने का डर था।</div></div>
+
+        <div class="question-block"><p class="q-txt">13) दूसरा गोलमेज सम्मेलन कहां आयोजित हुआ? उसमें कांग्रेस का नेतृत्व किसने किया?</p>
+        <button class="ans-toggle" onclick="toggle('a13')">उत्तर देखें</button><div id="a13" class="answer-content">स्थान: लंदन।<br>नेतृत्व: महात्मा गांधी (कांग्रेस के एकमात्र प्रतिनिधि)।</div></div>
+
+        <div class="section-heading">खण्ड-स (Section-C) - दीर्घ उत्तरीय (विस्तार से)</div>
+
+        <div class="question-block">
+            <p class="q-txt">14) (अथवा 1) सिंधु घाटी सभ्यता के विशाल स्नानागार की कौन-कौन सी विशेषताएँ आज भी प्रासंगिक है?</p>
+            <button class="ans-toggle" onclick="toggle('a14_1')">विस्तृत उत्तर देखें</button>
+            <div id="a14_1" class="answer-content long-answer">
+                <strong>विशाल स्नानागार की प्रासंगिकता और विशेषताएँ:</strong>
+                
+                मोहनजोदड़ो का 'विशाल स्नानागार' (Great Bath) दुर्ग क्षेत्र में स्थित एक आयताकार जलाशय है। इसकी निम्नलिखित विशेषताएँ आज भी वास्तुकला और जल प्रबंधन के लिए प्रासंगिक हैं:
+
+                1. <strong>जलरोधी तकनीक:</strong> जलाशय के तल को जलरोधी बनाने के लिए ईंटों को जमाकर और जिप्सम के गारे का प्रयोग किया गया था। आज भी स्विमिंग पूल या टैंक बनाते समय वॉटरप्रूफिंग एक महत्वपूर्ण तकनीक है।
+                2. <strong>जल निकासी व्यवस्था:</strong> स्नानागार से गंदे पानी को निकालने के लिए एक नाली थी जो एक बड़े नाले में मिलती थी। आधुनिक सीवरेज सिस्टम भी इसी सिद्धांत पर कार्य करता है कि गंदे पानी का उचित निस्तारण हो।
+                3. <strong>स्वच्छता और अनुष्ठान:</strong> इसके चारों ओर बने कमरे और उत्तर-दक्षिण में सीढ़ियाँ यह दर्शाती हैं कि इसका प्रयोग सार्वजनिक या धार्मिक स्नान के लिए होता था। भारत में आज भी कुंभ जैसे मेलों में नदियों या कुंडों में सामूहिक स्नान की परंपरा जारी है।
+            </div>
+
+            <div class="or-divider">अथवा / OR</div>
+
+            <p class="q-txt">14) (अथवा 2) आप कैसे कह सकते है कि मोहनजोदड़ो एक नियोजित शहरी केन्द्र था?</p>
+            <button class="ans-toggle" onclick="toggle('a14_2')">विस्तृत उत्तर देखें</button>
+            <div id="a14_2" class="answer-content long-answer">
+                <strong>मोहनजोदड़ो: एक नियोजित शहरी केंद्र</strong>
+
+                मोहनजोदड़ो की खुदाई से प्राप्त प्रमाण यह सिद्ध करते हैं कि यह एक सुव्यवस्थित और योजनाबद्ध शहर था:
+
+                1. <strong>बस्ती का विभाजन:</strong> शहर दो भागों में विभाजित था - 'दुर्ग' (Citadel) और 'निचला शहर'। दुर्ग ऊँचाई पर था जहाँ महत्वपूर्ण इमारतें थीं, जबकि निचला शहर आवासीय था। यह विभाजन योजना का हिस्सा था।
+                2. <strong>ईंटों का अनुपात:</strong> सभी इमारतों में पक्की ईंटों का प्रयोग किया गया था जिनका एक निश्चित अनुपात (4:2:1) था।
+                3. <strong>ग्रिड पद्धति:</strong> सड़कें और गलियाँ एक-दूसरे को समकोण पर काटती थीं, जैसे कि पूरा शहर एक ग्रिड (जाल) की तरह बसाया गया हो।
+                4. <strong>जल निकासी प्रणाली:</strong> नालियाँ बहुत ही नियोजित तरीके से बनाई गई थीं। पहले नालियों के साथ गलियाँ बनाई गईं और फिर उनके अगल-बगल घर बनाए गए। हर घर का पानी गली की नाली में जाता था।
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p class="q-txt">15) (अथवा 1) सूफीमत के विकास में खानकाह और सिलसिला की भूमिका की विवेचना कीजिए।</p>
+            <button class="ans-toggle" onclick="toggle('a15_1')">विस्तृत उत्तर देखें</button>
+            <div id="a15_1" class="answer-content long-answer">
+                <strong>सूफीमत में खानकाह और सिलसिला की भूमिका:</strong>
+
+                1. <strong>खानकाह (Khanqah):</strong> यह सूफी संतों का निवास स्थान या आश्रम होता था। यहाँ पीर (शेख) अपने शिष्यों (मुरीदों) के साथ रहते थे। खानकाह सामाजिक जीवन का केंद्र था जहाँ आम लोग, अमीर और गरीब सभी आध्यात्मिक मार्गदर्शन और आशीर्वाद लेने आते थे। यहाँ लंगर (मुफ्त भोजन) चलता था जो समानता का प्रतीक था। इसने सूफी विचारों को जन-जन तक पहुँचाया।
+
+                2. <strong>सिलसिला (Silsila):</strong> इसका शाब्दिक अर्थ है 'जंजीर'। यह शेख और मुरीद के बीच एक निरंतर रिश्ते को दर्शाता है जो पैगंबर मुहम्मद तक जाता है। अलग-अलग सिलसिलों (जैसे चिश्ती, सुहरावर्दी) ने सूफी शिक्षाओं को संगठित किया। दीक्षा के विशेष अनुष्ठान (जैसे सिर मुंडाना) और पीर के प्रति अटूट श्रद्धा ने सूफीवाद को एक संस्थागत रूप दिया।
+            </div>
+
+            <div class="or-divider">अथवा / OR</div>
+
+            <p class="q-txt">15) (अथवा 2) आज भी कर्नाटक में लिगांयत समुदाय का महत्व है। कथन का विवेचना कीजिए।</p>
+            <button class="ans-toggle" onclick="toggle('a15_2')">विस्तृत उत्तर देखें</button>
+            <div id="a15_2" class="answer-content long-answer">
+                <strong>कर्नाटक में लिंगायत समुदाय का महत्व:</strong>
+
+                12वीं शताब्दी में बासवन्ना द्वारा स्थापित वीरशैव या लिंगायत परंपरा आज भी कर्नाटक के सामाजिक और राजनीतिक जीवन में अत्यंत प्रभावशाली है:
+
+                1. <strong>धार्मिक सुधार:</strong> लिंगायत शिव की आराधना 'लिंग' रूप में करते हैं। उन्होंने जाति प्रथा और ब्राह्मणवादी वर्चस्व का विरोध किया। ये विचार आज भी सामाजिक समानता के आंदोलनों को प्रेरित करते हैं।
+                2. <strong>सामाजिक प्रथाएँ:</strong> वे पुनर्जन्म में विश्वास नहीं करते और मृतकों को दफनाने (समाधि) की प्रथा का पालन करते हैं। उन्होंने विधवा विवाह और वयस्क विवाह को मान्यता दी, जो प्रगतिशील कदम थे।
+                3. <strong>राजनीतिक प्रभाव:</strong> कर्नाटक की राजनीति में लिंगायत समुदाय एक बड़ा वोट बैंक है और राज्य की नीतियों को प्रभावित करता है। उनके मठ और शिक्षण संस्थान समाज सेवा में बड़ी भूमिका निभाते हैं।
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p class="q-txt">16) (अथवा 1) 1857 के आन्दोलन में विभिन्न नेताओं के योगदान का मूल्यांकन कीजिए।</p>
+            <button class="ans-toggle" onclick="toggle('a16_1')">विस्तृत उत्तर देखें</button>
+            <div id="a16_1" class="answer-content long-answer">
+                <strong>1857 के विद्रोह में नेताओं का योगदान:</strong>
+
+                1. <strong>बहादुर शाह जफर (दिल्ली):</strong> विद्रोहियों के दबाव में नेतृत्व स्वीकार किया। उनके नाम ने विद्रोह को एक वैधता और अखिल भारतीय स्वरूप प्रदान किया।
+                2. <strong>रानी लक्ष्मीबाई (झाँसी):</strong> अपने राज्य को बचाने और अंग्रेजों की अन्यायपूर्ण नीतियों के खिलाफ वीरता से लड़ीं। वे विद्रोह का सबसे तेजस्वी प्रतीक बन गईं।
+                3. <strong>नाना साहिब (कानपुर):</strong> पेशवा बाजीराव द्वितीय के दत्तक पुत्र। उन्होंने कानपुर में विद्रोह का नेतृत्व किया और अंग्रेजों को खदेड़ दिया।
+                4. <strong>कुंवर सिंह (बिहार):</strong> आरा (जगदीशपुर) के 80 वर्षीय जमींदार। उन्होंने अपनी ढलती उम्र के बावजूद गुरिल्ला युद्ध पद्धति से अंग्रेजों को कड़ी टक्कर दी।
+                5. <strong>बेगम हजरत महल (लखनऊ):</strong> अपने अवयस्क पुत्र बिरजिस कद्र को नवाब घोषित कर लखनऊ में विद्रोह का संचालन किया और अंग्रेजों का कड़ा मुकाबला किया।
+            </div>
+
+            <div class="or-divider">अथवा / OR</div>
+
+            <p class="q-txt">16) (अथवा 2) '1857 के विद्रोह को कुचलना अंग्रेजों के लिए बहुत आसान साबित नही हुआ' कथन का मूल्यांकन कीजिए।</p>
+            <button class="ans-toggle" onclick="toggle('a16_2')">विस्तृत उत्तर देखें</button>
+            <div id="a16_2" class="answer-content long-answer">
+                <strong>1857 के विद्रोह को कुचलने में अंग्रेजों की कठिनाइयाँ:</strong>
+
+                यह कथन पूर्णतः सत्य है। अंग्रेजों को विद्रोह दबाने में लगभग दो साल लग गए:
+
+                1. <strong>व्यापक जनसमर्थन:</strong> अवध और उत्तर भारत में यह केवल सैनिक विद्रोह नहीं था, बल्कि इसमें किसान, जमींदार और आम जनता भी शामिल हो गई थी। अंग्रेजों को हर गाँव को दोबारा जीतना पड़ा।
+                2. <strong>मार्शल लॉ:</strong> अंग्रेजों को उत्तर भारत में मार्शल लॉ लगाना पड़ा। सामान्य अंग्रेजों को भी भारतीयों को सजा देने का अधिकार दे दिया गया।
+                3. <strong>सैनिक सहायता:</strong> उन्हें ब्रिटेन से नई सैनिक टुकड़ियाँ मंगवानी पड़ीं।
+                4. <strong>दोतरफा हमला:</strong> दिल्ली को दोबारा जीतने के लिए उन्हें पंजाब और कलकत्ता दोनों तरफ से सेनाएँ भेजनी पड़ीं। कूटनीति का सहारा लेकर उन्होंने जमींदारों को तोड़ना शुरू किया।
+                इन तथ्यों से स्पष्ट है कि यह संघर्ष अंग्रेजों के लिए बहुत कठिन था।
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p class="q-txt">17) (अथवा 1) संविधान में प्रदत तीन सूचियों के विषयों की विवेचना कीजिए।</p>
+            <button class="ans-toggle" onclick="toggle('a17_1')">विस्तृत उत्तर देखें</button>
+            <div id="a17_1" class="answer-content long-answer">
+                <strong>संविधान की तीन सूचियाँ:</strong>
+
+                संविधान सभा ने केंद्र और राज्यों के बीच शक्तियों के बंटवारे के लिए तीन सूचियाँ बनाईं:
+
+                1. <strong>संघ सूची (Union List):</strong> इसमें राष्ट्रीय महत्व के विषय रखे गए जैसे - रक्षा, विदेश मामले, संचार, रेलवे और मुद्रा। इन पर कानून बनाने का अधिकार केवल केंद्र सरकार (संसद) को है।
+                2. <strong>राज्य सूची (State List):</strong> इसमें क्षेत्रीय महत्व के विषय हैं जैसे - पुलिस, कृषि, स्वास्थ्य, भूमि और कानून व्यवस्था। इन पर सामान्यतः राज्य सरकारें कानून बनाती हैं।
+                3. <strong>समवर्ती सूची (Concurrent List):</strong> इसमें वे विषय हैं जिनमें केंद्र और राज्य दोनों की रुचि हो सकती है, जैसे - शिक्षा, वन, विवाह और उत्तराधिकार। इन पर दोनों कानून बना सकते हैं, लेकिन विवाद होने पर केंद्र का कानून मान्य होगा।
+            </div>
+
+            <div class="or-divider">अथवा / OR</div>
+
+            <p class="q-txt">17) (अथवा 2) 'हम सिर्फ नकल करने के लिए नही है' संविधान निर्माण के सन्दर्भ में इस कथन की विवेचना कीजिए।</p>
+            <button class="ans-toggle" onclick="toggle('a17_2')">विस्तृत उत्तर देखें</button>
+            <div id="a17_2" class="answer-content long-answer">
+                <strong>'हम सिर्फ नकल करने के लिए नहीं हैं':</strong>
+
+                यह कथन जवाहरलाल नेहरू ने उद्देश्य प्रस्ताव पेश करते समय कहा था। इसका अर्थ था:
+
+                1. <strong>मौलिकता:</strong> यद्यपि भारतीय संविधान ने अन्य देशों के संविधानों (जैसे अमेरिका, ब्रिटेन) से प्रेरणा ली, लेकिन यह उनकी हूबहू नकल नहीं था।
+                2. <strong>भारतीय संदर्भ:</strong> संविधान निर्माताओं ने हर प्रावधान को भारतीय परिस्थितियों, संस्कृति और इतिहास के अनुरूप ढाला। उदाहरण के लिए, पश्चिमी लोकतंत्र के साथ-साथ भारत की सामाजिक विविधता को देखते हुए आरक्षण और अल्पसंख्यकों के अधिकारों को शामिल किया गया।
+                3. <strong>नई प्रयोग:</strong> भारत ने सार्वभौमिक वयस्क मताधिकार जैसे क्रांतिकारी कदम उठाए, जो उस समय कई विकसित देशों में भी पूरी तरह लागू नहीं थे। अतः भारतीय संविधान एक स्वतंत्र और विचारशील राष्ट्र की उपज है।
+            </div>
+        </div>
+
+        <div class="section-heading">खण्ड-द (Section-D) - निबंधात्मक (विस्तार से)</div>
+
+        <div class="question-block">
+            <p class="q-txt">18) (अथवा 1) स्तूप क्यों और कैसे बनाए जाते थे? समझाइये।</p>
+            <button class="ans-toggle" onclick="toggle('a18_1')">निबंधात्मक उत्तर देखें</button>
+            <div id="a18_1" class="answer-content long-answer">
+                <strong>स्तूप: निर्माण के कारण और प्रक्रिया</strong>
+
+                <strong>स्तूप क्यों बनाए जाते थे?</strong>
+                1. <strong>पवित्र अवशेष:</strong> स्तूप का शाब्दिक अर्थ 'ढेर' होता है। ये उन स्थानों पर बनाए गए जहाँ बुद्ध के अवशेष (जैसे दाँत, भस्म) या उनके द्वारा प्रयोग की गई वस्तुएँ गाड़ी गई थीं। इसलिए ये बौद्ध धर्म के पवित्र प्रतीक बन गए।
+                2. <strong>चैत्य और श्रद्धा:</strong> बौद्ध परंपरा में कुछ जगहें पवित्र मानी जाती थीं (चैत्य)। अशोक ने बुद्ध के अवशेषों को बांटकर उन पर स्तूप बनवाए ताकि लोग श्रद्धा प्रकट कर सकें।
+                3. <strong>धार्मिक पुण्य:</strong> स्तूप बनवाना पुण्य का काम माना जाता था। राजा, व्यापारी और सामान्य जन दान देकर इनका निर्माण करवाते थे।
+
+                <strong>स्तूप कैसे बनाए जाते थे?</strong>
+                1. <strong>संरचना:</strong> स्तूप एक अर्द्धगोलाकार मिट्टी का टीला होता था जिसे बाद में 'अण्ड' कहा गया। इसके ऊपर एक 'हर्मिका' (छज्जा) होती थी जो देवताओं के घर का प्रतीक थी। हर्मिका से एक मस्तूल निकलता था जिसे 'यष्टि' कहते थे और उस पर छतरी लगी होती थी।
+                2. <strong>वेदिका और तोरण:</strong> स्तूप के चारों ओर एक वेदिका (रेलगाड़ी) होती थी जो पवित्र स्थल को सामान्य दुनिया से अलग करती थी। इसमें प्रवेश के लिए चार दिशाओं में भव्य 'तोरण द्वार' होते थे।
+                3. <strong>दान और निर्माण:</strong> स्तूपों की वेदिकाओं और खंभों पर मिले अभिलेखों से पता चलता है कि इनका निर्माण राजाओं (जैसे सातवाहन), श्रेणियों (जैसे हाथीदांत कामगार) और भिक्षु-भिक्षुणियों के दान से हुआ। साँची और भरहुत के स्तूप इसके उत्तम उदाहरण हैं।
+            </div>
+
+            <div class="or-divider">अथवा / OR</div>
+
+            <p class="q-txt">18) (अथवा 2) साँची क्यों बच गया जबकि अमरावती नष्ट हो गया? समझाइये।</p>
+            <button class="ans-toggle" onclick="toggle('a18_2')">निबंधात्मक उत्तर देखें</button>
+            <div id="a18_2" class="answer-content long-answer">
+                <strong>साँची का बचना और अमरावती का नष्ट होना:</strong>
+
+                अमरावती (आंध्र प्रदेश) का स्तूप साँची (मध्य प्रदेश) से भी अधिक भव्य था, लेकिन वह नष्ट हो गया जबकि साँची आज भी सुरक्षित है। इसके प्रमुख कारण निम्नलिखित हैं:
+
+                1. <strong>खोज का समय:</strong> अमरावती की खोज 1796 में हुई थी, जब पुरातत्व का महत्व कम समझा जाता था। साँची की खोज 1818 में हुई जब तक विद्वान इन स्मारकों के महत्व को समझने लगे थे।
+                2. <strong>लूट-खसोट:</strong> 19वीं सदी में स्थानीय राजाओं, ब्रिटिश अधिकारियों और एशियाटिक सोसाइटी के लोगों ने अमरावती की मूर्तियाँ और पत्थर उखाड़कर अपने बागानों या संग्रहालयों (लंदन, कलकत्ता, मद्रास) में भेज दिए। इसे बुरी तरह लूटा गया।
+                3. <strong>एच.एच. कोल की नीति:</strong> पुरातत्वविद् एच.एच. कोल ने लिखा कि मूल कृतियों को लूटने के बजाय उनके प्लास्टर कास्ट (नकल) संग्रहालयों में रखने चाहिए। साँची के मामले में इस नीति का पालन हुआ, लेकिन अमरावती के लिए यह बहुत देर से आई सलाह थी।
+                4. <strong>भोपाल के शासकों का संरक्षण:</strong> साँची को भोपाल की बेगमों (शाहजहाँ बेगम और सुल्तान जहाँ बेगम) का संरक्षण मिला। उन्होंने इसके रखरखाव और संग्रहालय बनाने के लिए धन दिया। उन्होंने अंग्रेजों को प्लास्टर कास्ट देकर मूल तोरण द्वारों को वहीं रहने दिया। अमरावती को ऐसा कोई स्थानीय संरक्षक नहीं मिला।
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p class="q-txt">19) (अथवा 1) नमक यात्रा किन कारणों से उल्लेखनीय थी? वर्णन कीजिए।</p>
+            <button class="ans-toggle" onclick="toggle('a19_1')">निबंधात्मक उत्तर देखें</button>
+            <div id="a19_1" class="answer-content long-answer">
+                <strong>नमक यात्रा (दांडी मार्च) का महत्व:</strong>
+
+                12 मार्च 1930 को साबरमती आश्रम से शुरू हुई गांधीजी की दांडी यात्रा भारतीय इतिहास में तीन मुख्य कारणों से उल्लेखनीय थी:
+
+                1. <strong>गांधीजी का वैश्विक कद:</strong> इस यात्रा ने महात्मा गांधी को दुनिया की नजरों में ला दिया। अमेरिकी और यूरोपीय प्रेस (जैसे 'टाइम' मैगजीन) ने इस यात्रा का व्यापक कवरेज किया। शुरुआत में मजाक उड़ाने वाली प्रेस अंत में गांधीजी की प्रशंसक बन गई।
+                2. <strong>महिलाओं की भागीदारी:</strong> यह पहला राष्ट्रवादी आंदोलन था जिसमें महिलाओं ने बड़ी संख्या में भाग लिया। कमलादेवी चट्टोपाध्याय ने गांधीजी को समझाया था कि वे आंदोलन को केवल पुरुषों तक सीमित न रखें। हजारों महिलाओं ने नमक कानून तोड़ा और शराब की दुकानों पर धरना दिया।
+                3. <strong>अंग्रेजों को चेतावनी:</strong> नमक यात्रा और उसके बाद हुए सविनय अवज्ञा आंदोलन ने अंग्रेजों को यह एहसास करा दिया कि अब उनका राज बहुत दिन तक नहीं टिकेगा और उन्हें भारतीयों को सत्ता में हिस्सा देना ही पड़ेगा।
+                4. <strong>प्रतीक का चयन:</strong> 'नमक' जैसे साधारण घरेलू वस्तु को चुनकर गांधीजी ने अमीर-गरीब, हिंदू-मुस्लिम सभी को एक साथ जोड़ दिया, क्योंकि नमक पर टैक्स हर भारतीय को चुभता था। यह उनकी राजनीतिक बुद्धिमत्ता का प्रमाण था।
+            </div>
+
+            <div class="or-divider">अथवा / OR</div>
+
+            <p class="q-txt">19) (अथवा 2) असहयोग आंदोलन का वर्णन कीजिए।</p>
+            <button class="ans-toggle" onclick="toggle('a19_2')">निबंधात्मक उत्तर देखें</button>
+            <div id="a19_2" class="answer-content long-answer">
+                <strong>असहयोग आंदोलन (1920-1922):</strong>
+
+                यह गांधीजी के नेतृत्व में चलाया गया पहला जन-आंदोलन था।
+
+                1. <strong>कारण:</strong> जलियांवाला बाग हत्याकांड (1919), रॉलेट एक्ट और खिलाफत का मुद्दा। गांधीजी ने कहा कि यदि हम अंग्रेजों का सहयोग बंद कर दें तो स्वराज एक साल में मिल जाएगा।
+                2. <strong>कार्यक्रम:</strong>
+                   - सरकारी उपाधियों का त्याग।
+                   - सरकारी स्कूलों, कॉलेजों और अदालतों का बहिष्कार।
+                   - विदेशी कपड़ों की होली जलाना और खादी का प्रचार।
+                   - हिंदू-मुस्लिम एकता पर जोर।
+                3. <strong>व्यापकता:</strong> हजारों छात्रों ने स्कूल छोड़े, वकीलों (मोतीलाल नेहरू, सी.आर. दास) ने वकालत छोड़ी। यह कस्बों और गांवों तक फैल गया। आंध्र प्रदेश में वन कानूनों का विरोध हुआ, तो अवध में किसान आंदोलन हुआ।
+                4. <strong>चौरी-चौरा और समाप्ति:</strong> फरवरी 1922 में गोरखपुर के चौरी-चौरा में भीड़ ने एक पुलिस थाने में आग लगा दी, जिससे 22 पुलिसकर्मी मारे गए। हिंसा से दुखी होकर गांधीजी ने आंदोलन तत्काल वापस ले लिया।
+                5. <strong>महत्व:</strong> यद्यपि स्वराज नहीं मिला, लेकिन इसने राष्ट्रवाद को सुदूर गांवों तक पहुँचा दिया और गांधीजी को निर्विवाद जन नेता बना दिया।
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p class="q-txt">20) मानचित्र कार्य (ऐतिहासिक स्थल)</p>
+            <p><strong>विकल्प 1:</strong> आगरा, कालीबंगन, अवध, पूना, मैसूर</p>
+            <p><strong>विकल्प 2:</strong> इलाहाबाद, बनावली, दिल्ली, कलकत्ता, सूरत</p>
+            <button class="ans-toggle" onclick="toggle('a20')">स्थानों की स्थिति देखें</button>
+            <div id="a20" class="answer-content long-answer">
+                <strong>मानचित्र स्थलों की स्थिति (राज्यवार):</strong>
+
+                <strong>सेट (अ) के स्थान:</strong>
+                1. <strong>आगरा:</strong> उत्तर प्रदेश (यमुना किनारे)।
+                2. <strong>कालीबंगन:</strong> राजस्थान (हनुमानगढ़ जिला)।
+                3. <strong>अवध:</strong> उत्तर प्रदेश (लखनऊ के आसपास का क्षेत्र)।
+                4. <strong>पूना (पुणे):</strong> महाराष्ट्र।
+                5. <strong>मैसूर:</strong> कर्नाटक।
+
+                <strong>सेट (ब) के स्थान:</strong>
+                1. <strong>इलाहाबाद (प्रयागराज):</strong> उत्तर प्रदेश।
+                2. <strong>बनावली:</strong> हरियाणा (फतेहाबाद जिला)।
+                3. <strong>दिल्ली:</strong> भारत की राजधानी क्षेत्र।
+                4. <strong>कलकत्ता (कोलकाता):</strong> पश्चिम बंगाल।
+                5. <strong>सूरत:</strong> गुजरात।
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 50px;">
+            <button class="start-btn" onclick="startQuiz()" style="background-color: #8e44ad;">अब क्विज शुरू करें</button>
+        </div>
+
+    </div>
+
+    <div id="quiz-view">
+        <h2 style="text-align: center; color: var(--dark);">इतिहास मेगा क्विज (50 प्रश्न)</h2>
+        <div id="quiz-container"></div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="start-btn" onclick="submitQuiz()">क्विज सबमिट करें</button>
+        </div>
+    </div>
+
+    <div id="result-view">
+        <h2>आपका परिणाम</h2>
+        <div class="score-circle" id="score-display">0 / 50</div>
+        <h3>उत्तर तालिका</h3>
+        <table id="result-table">
+            <thead>
+                <tr>
+                    <th>प्रश्न</th>
+                    <th>आपका उत्तर</th>
+                    <th>सही उत्तर</th>
+                    <th>स्थिति</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button class="start-btn" onclick="location.reload()" style="margin-top: 20px;">पुनः प्रयास करें</button>
+    </div>
+
+</div>
+
+<script>
+    // Quiz Questions Data (Generated from the paper content + Syllabus based)
+    const quizData = [
+        { q: "प्रभावती गुप्त किस गुप्त शासक की पुत्री थी?", options: ["समुद्रगुप्त", "चन्द्रगुप्त द्वितीय", "कुमारगुप्त", "स्कन्दगुप्त"], ans: 1 },
+        { q: "सबसे पहले शासकों की प्रतिमा वाले सिक्के किसने जारी किए?", options: ["हिन्द-यूनानी", "शक", "कुषाण", "गुप्त"], ans: 0 },
+        { q: "महाभारत का समालोचनात्मक संस्करण कार्य कब शुरू हुआ?", options: ["1919", "1924", "1944", "1966"], ans: 0 },
+        { q: "सुकरात किस देश के चिंतक थे?", options: ["इराक", "ईरान", "यूनान", "भारत"], ans: 2 },
+        { q: "बुद्ध ने अपना प्रथम उपदेश कहां दिया?", options: ["लुम्बिनी", "बोधगया", "सारनाथ", "कुशीनगर"], ans: 2 },
+        { q: "अल-बिरूनी का जन्म कहां हुआ?", options: ["उज्बेकिस्तान", "मोरक्को", "फ्रांस", "इटली"], ans: 0 },
+        { q: "'किताब उल हिन्द' का लेखक कौन था?", options: ["इब्न बतूता", "बर्नियर", "मार्को पोलो", "अल-बिरूनी"], ans: 3 },
+        { q: "अलवार संत किसके भक्त थे?", options: ["शिव", "विष्णु", "इन्द्र", "बुद्ध"], ans: 1 },
+        { q: "अकबर ख्वाजा मुइनुद्दीन चिश्ती की दरगाह पर कितनी बार आया?", options: ["12", "14", "16", "18"], ans: 1 },
+        { q: "कृष्णदेव राय किस वंश से संबंधित थे?", options: ["संगम", "सुलुव", "तुलुव", "अराविदु"], ans: 2 },
+        { q: "विजयनगर साम्राज्य की स्थापना किसने की?", options: ["हरिहर और बुक्का", "कृष्णदेव राय", "राम राय", "सदाशिव"], ans: 0 },
+        { q: "आइन-ए-अकबरी का लेखन कब पूरा हुआ?", options: ["1598", "1556", "1576", "1592"], ans: 0 },
+        { q: "कपास आपूर्ति संघ की स्थापना 1857 में कहाँ हुई?", options: ["भारत", "ब्रिटेन", "अमेरिका", "फ्रांस"], ans: 1 },
+        { q: "फ्रांसिस बुकानन किस कम्पनी का कर्मचारी था?", options: ["ईस्ट इंडिया कम्पनी", "फ्रेंच कम्पनी", "डच कम्पनी", "पुर्तगाली कम्पनी"], ans: 0 },
+        { q: "झाँसी में 1857 के विद्रोह का नेतृत्व किसने किया?", options: ["नाना साहिब", "कुंवर सिंह", "रानी लक्ष्मीबाई", "बेगम हजरत महल"], ans: 2 },
+        { q: "संविधान सभा में 'मुख्य योजनाकार' कौन थे?", options: ["बी.आर. अम्बेडकर", "एस.एन. मुखर्जी", "के.एम. मुंशी", "जे.एल. नेहरू"], ans: 1 },
+        { q: "सोने के सिक्के बड़े पैमाने पर किसने जारी किए?", options: ["मौर्य", "गुप्त", "कुषाण", "सातवाहन"], ans: 2 },
+        { q: "हस्तिनापुर का उत्खनन किसने किया?", options: ["बी.बी. लाल", "दयाराम साहनी", "राखलदास बनर्जी", "कनिंघम"], ans: 0 },
+        { q: "बर्नियर ने मुगल शहरों को क्या कहा?", options: ["शिविर नगर", "स्वर्ण नगर", "गंदे नगर", "व्यापारिक नगर"], ans: 0 },
+        { q: "विजयनगर का 'कमल महल' कहाँ स्थित है?", options: ["धार्मिक केन्द्र", "राजकीय केन्द्र", "शहरी केन्द्र", "नदी तट"], ans: 1 },
+        { q: "मुगल काल में 'रैयत' का अर्थ क्या था?", options: ["राजा", "सैनिक", "किसान", "व्यापारी"], ans: 2 },
+        { q: "इस्तमरारी बंदोबस्त कब लागू हुआ?", options: ["1757", "1764", "1793", "1857"], ans: 2 },
+        { q: "ASI के पहले डायरेक्टर जनरल कौन थे?", options: ["व्हीलर", "कनिंघम", "मार्शल", "प्रिंसेप"], ans: 1 },
+        { q: "हरिषेण किसके राजकवि थे?", options: ["अशोक", "चन्द्रगुप्त", "समुद्रगुप्त", "हर्षवर्धन"], ans: 2 },
+        { q: "फा शिएन किस देश का यात्री था?", options: ["जापान", "चीन", "कोरिया", "तिब्बत"], ans: 1 },
+        { q: "अकबर का सरकारी इतिहासकार कौन था?", options: ["बदायूँनी", "अबुल फजल", "फैजी", "टोडरमल"], ans: 1 },
+        { q: "तालीकोटा का युद्ध कब हुआ?", options: ["1526", "1556", "1565", "1761"], ans: 2 },
+        { q: "पांचवी रिपोर्ट ब्रिटिश संसद में कब पेश हुई?", options: ["1813", "1833", "1853", "1858"], ans: 0 },
+        { q: "खेड़ा सत्याग्रह किस वर्ष हुआ?", options: ["1915", "1917", "1918", "1920"], ans: 2 },
+        { q: "उद्देश्य प्रस्ताव किसने पेश किया?", options: ["गांधीजी", "नेहरू", "पटेल", "अम्बेडकर"], ans: 1 },
+        { q: "अशोक की 'देवानांपिय' उपाधि का अर्थ क्या है?", options: ["सुंदर दिखने वाला", "देवताओं का प्रिय", "महान राजा", "विश्व विजेता"], ans: 1 },
+        { q: "सिंधु सभ्यता में विशाल स्नानागार कहाँ मिला?", options: ["हड़प्पा", "लोथल", "मोहनजोदड़ो", "कालीबंगा"], ans: 2 },
+        { q: "मनुस्मृति के अनुसार स्त्री के धन को क्या कहते थे?", options: ["दहेज", "स्त्रीधन", "वधुमूल्य", "उपहार"], ans: 1 },
+        { q: "विजयनगर किस नदी के किनारे बसा था?", options: ["कावेरी", "कृष्णा", "तुंगभद्रा", "गोदावरी"], ans: 2 },
+        { q: "मुगल काल में 'जिन्स-ए-कामिल' फसल कौन सी थी?", options: ["गेहूँ", "चावल", "कपास", "बाजरा"], ans: 2 },
+        { q: "दक्कन दंगा आयोग की रिपोर्ट कब पेश हुई?", options: ["1875", "1878", "1880", "1857"], ans: 1 },
+        { q: "दूसरा गोलमेज सम्मेलन कहाँ हुआ?", options: ["दिल्ली", "लंदन", "पेरिस", "न्यूयॉर्क"], ans: 1 },
+        { q: "नमक यात्रा (दांडी मार्च) कब शुरू हुई?", options: ["1920", "1930", "1942", "1947"], ans: 1 },
+        { q: "असहयोग आंदोलन कब वापस लिया गया?", options: ["1920", "1922", "1930", "1942"], ans: 1 },
+        { q: "साँची का स्तूप किस राज्य में है?", options: ["महाराष्ट्र", "बिहार", "मध्य प्रदेश", "उत्तर प्रदेश"], ans: 2 },
+        { q: "बासवन्ना ने किस संप्रदाय की स्थापना की?", options: ["वैष्णव", "शैव", "वीरशैव (लिंगायत)", "बौद्ध"], ans: 2 },
+        { q: "कालीबंगन किस राज्य में स्थित है?", options: ["गुजरात", "हरियाणा", "पंजाब", "राजस्थान"], ans: 3 },
+        { q: "1857 में कानपुर में नेतृत्व किसने किया?", options: ["नाना साहिब", "तात्या टोपे", "बेगम हजरत", "कुंवर सिंह"], ans: 0 },
+        { q: "संविधान की संघ सूची में कौन सा विषय है?", options: ["कृषि", "पुलिस", "रक्षा", "जेल"], ans: 2 },
+        { q: "प्रयाग प्रशस्ति की रचना किस भाषा में हुई?", options: ["पाली", "प्राकृत", "संस्कृत", "तमिल"], ans: 2 },
+        { q: "विजयनगर के शासकों को क्या कहा जाता था?", options: ["सुल्तान", "राय", "बादशाह", "राणा"], ans: 1 },
+        { q: "हड़प्पा सभ्यता में मनके बनाने के लिए कौन सा पत्थर प्रसिद्ध था?", options: ["कार्नीलियन", "संगमरमर", "ग्रेनाइट", "बलुआ पत्थर"], ans: 0 },
+        { q: "महात्मा गांधी के राजनीतिक गुरु कौन थे?", options: ["तिलक", "गोखले", "लाजपत राय", "नेहरू"], ans: 1 },
+        { q: "संविधान सभा के अध्यक्ष कौन थे?", options: ["नेहरू", "अम्बेडकर", "राजेन्द्र प्रसाद", "पटेल"], ans: 2 },
+        { q: "बनावली किस राज्य में स्थित है?", options: ["राजस्थान", "हरियाणा", "पंजाब", "गुजरात"], ans: 1 }
+    ];
+
+    // Functions
+    function startPaper() {
+        const name = document.getElementById('sName').value;
+        const roll = document.getElementById('sRoll').value;
+        if(name && roll) {
+            document.getElementById('dispName').innerText = "विद्यार्थी: " + name;
+            document.getElementById('dispRoll').innerText = "रोल नं: " + roll;
+            document.getElementById('login-view').style.display = 'none';
+            document.getElementById('paper-view').style.display = 'block';
+            window.scrollTo(0,0);
+        } else {
+            alert("कृपया नाम और रोल नंबर भरें।");
+        }
+    }
+
+    function toggle(id) {
+        const el = document.getElementById(id);
+        if (el.style.display === "block") {
+            el.style.display = "none";
+        } else {
+            el.style.display = "block";
+        }
+    }
+
+    function startQuiz() {
+        document.getElementById('paper-view').style.display = 'none';
+        document.getElementById('quiz-view').style.display = 'block';
+        window.scrollTo(0,0);
+        
+        const container = document.getElementById('quiz-container');
+        let html = '';
+        
+        quizData.forEach((q, index) => {
+            let optionsHtml = '';
+            q.options.forEach((opt, i) => {
+                optionsHtml += `<label><input type="radio" name="q${index}" value="${i}"> ${opt}</label>`;
+            });
+            
+            html += `
+                <div class="quiz-card">
+                    <p class="q-txt">${index + 1}. ${q.q}</p>
+                    <div class="options">${optionsHtml}</div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
+
+    function submitQuiz() {
+        let score = 0;
+        let tableHtml = '';
+        
+        quizData.forEach((q, index) => {
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            let userAnswer = 'अनुत्तरित';
+            let isCorrect = false;
+            let statusClass = 'wrong';
+            let statusText = '❌';
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                userAnswer = q.options[val];
+                if (val === q.ans) {
+                    score++;
+                    isCorrect = true;
+                    statusClass = 'correct';
+                    statusText = '✅';
+                }
+            }
+
+            tableHtml += `
+                <tr>
+                    <td>${q.q}</td>
+                    <td class="${statusClass}">${userAnswer}</td>
+                    <td class="correct">${q.options[q.ans]}</td>
+                    <td>${statusText}</td>
+                </tr>
+            `;
+        });
+
+        document.getElementById('quiz-view').style.display = 'none';
+        document.getElementById('result-view').style.display = 'block';
+        document.getElementById('score-display').innerText = `${score} / 50`;
+        document.querySelector('#result-table tbody').innerHTML = tableHtml;
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>

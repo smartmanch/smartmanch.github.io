@@ -1,0 +1,153 @@
+/* pdf_quiz_bandhutva_style.css */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f8ff; /* AliceBlue */
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    margin: 0;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+    background-color: #4a148c; /* Deep Purple */
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#game-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 800px;
+}
+
+h2 {
+    color: #4a148c; /* Deep Purple */
+    border-bottom: 2px solid #4a148c;
+    padding-bottom: 5px;
+    margin-top: 0;
+}
+
+#info-screen, #study-screen, #quiz-screen, #result-screen {
+    padding: 15px;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+}
+
+input[type="text"] {
+    width: 90%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #008080; /* Teal */
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    margin-top: 20px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #006666;
+}
+
+/* Study Material Styling */
+#study-material-list {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.qa-item {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #eee;
+}
+
+.qa-question {
+    font-weight: bold;
+    color: #4a148c;
+}
+
+.qa-answer {
+    margin-top: 5px;
+    padding: 5px;
+    background-color: #f3f3ff;
+    border-left: 3px solid #7e57c2;
+    white-space: pre-wrap;
+}
+
+/* Quiz Styling */
+.question-box {
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.option {
+    display: block;
+    padding: 10px;
+    margin: 8px 0;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    user-select: none;
+}
+
+.option:hover {
+    background-color: #d6d8db;
+}
+
+/* Click States */
+.correct {
+    background-color: #28a745 !important; /* Green */
+    color: white;
+    box-shadow: 0 0 5px #28a745;
+}
+.incorrect {
+    background-color: #dc3545 !important; /* Red */
+    color: white;
+    box-shadow: 0 0 5px #dc3545;
+}
+
+/* Feedback Message */
+#feedback-message {
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    font-size: 1.1em;
+}
+
+/* Marksheet */
+#mark-sheet p {
+    font-size: 18px;
+    padding: 5px;
+    border-bottom: 1px dotted #ccc;
+}

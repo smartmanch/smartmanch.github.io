@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Of Studies - Comprehension Quiz</title>
+    <style>
+        /* CSS Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        /* Login Screen */
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            display: block;
+            margin: 20px auto;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        /* Passage Box */
+        #passage-box {
+            background-color: #fdfdfd;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-left: 5px solid #3498db;
+            margin-bottom: 30px;
+            max-height: 350px;
+            overflow-y: auto;
+            line-height: 1.9;
+            font-size: 16px;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        /* Highlight Class */
+        .highlight-active {
+            background-color: #fff12e; /* Bright Yellow */
+            color: #000;
+            font-weight: bold;
+            border-radius: 3px;
+            padding: 2px 0;
+            box-shadow: 0 0 5px rgba(255, 241, 46, 0.8);
+            transition: background-color 0.3s ease;
+        }
+
+        /* Quiz Section */
+        .question-text {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .options {
+            display: grid;
+            gap: 10px;
+        }
+        .option-btn {
+            background-color: white;
+            border: 2px solid #ddd;
+            color: #333;
+            text-align: left;
+            width: 100%;
+            margin: 0;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+        .option-btn:hover:not(:disabled) {
+            background-color: #f0f0f0;
+            border-color: #bbb;
+        }
+        
+        /* Feedback Colors */
+        .correct {
+            background-color: #d4edda !important;
+            border-color: #28a745 !important;
+            color: #155724 !important;
+        }
+        .wrong {
+            background-color: #f8d7da !important;
+            border-color: #dc3545 !important;
+            color: #721c24 !important;
+        }
+
+        /* Marksheet */
+        .marksheet {
+            text-align: center;
+            border: 2px solid #2c3e50;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .score-big {
+            font-size: 32px;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="login-screen">
+        <h1>Student Login</h1>
+        <div class="input-group">
+            <label>Student Name:</label>
+            <input type="text" id="studentName" placeholder="Enter your full name">
+        </div>
+        <div class="input-group">
+            <label>Roll Number:</label>
+            <input type="text" id="rollNumber" placeholder="Enter roll number">
+        </div>
+        <button onclick="startQuiz()">Start Quiz</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+        <h2>Reading Comprehension</h2>
+        
+        <div id="passage-box">
+            <span id="ref-q1">Studies serve for delight, for ornament, and for ability.</span> Their chief use for delight is in privateness and retiring; for ornament, is in discourse; and for ability, is in the judgement and disposition of business; for expert men can execute, and perhaps judge of particulars, one by one; but the general counsels, and the plots and marshalling of affairs come best from those that are learned. To spend too much time in studies is sloth; to use them too much for ornament is affectation; to make judgement wholly by their rules is the humor of a scholar. They perfect nature, and are perfected by experience; for natural abilities are like natural plants, that need <span id="ref-q9">pruning</span>, by study; and studies themselves do give forth directions too much at large, except they be bounded in by experience. <span id="ref-q2"><span id="ref-q8">Crafty</span> men <span id="ref-q7">contemn</span> study, simple men admire them</span>, and wise men use them; for they teach not their own use; but is a wisdom without them and above them, won by observation. Read not to contradict and confute; nor to believe and take for granted; nor to find talk and discourse, but so weigh and consider. Some books are to tasted, others to be swallowed, and <span id="ref-q5">some few to be chewed and digested</span>; that is some books are to be read only in parts; others to be read but curiously; and <span id="ref-q5-b">some few to be read wholly, and with diligence and attention</span>. Some books also may be read by deputy, and extracts made of them by others; but that would be only in the less important, arguments and the meaner sort of books; else distilled books are like common distilled waters, flashy things. Reading maketh a full man; <span id="ref-q6">conference a ready man</span>; and writing an exact man. And therefore, if a man write little, he had need have a great memory; if he confer little, he had need have a present wit: and if he read little, he had need have much cunning, to seem to know that he doth not. Histories make men wise; poets, witty; the mathematics, subtle; <span id="ref-q4">natural philosophy, deep; moral grave</span>; logic and rhetoric, able to contend : <span id="ref-q3">Abeunt studia in mores!</span> Nay, there is no stond or impediment in the wit, but may be wrought out by fit studies; like as diseases of the body, may have appropriate exercises.
+        </div>
+
+        <div id="question-container">
+            </div>
+
+        <button id="next-btn" class="hidden" onclick="loadNextQuestion()">Next Question</button>
+        <button id="finish-btn" class="hidden" onclick="showResults()">View Marksheet</button>
+    </div>
+
+    <div id="result-screen" class="hidden">
+        <h1>Quiz Marksheet</h1>
+        <div class="marksheet">
+            <p><strong>Name:</strong> <span id="res-name"></span></p>
+            <p><strong>Roll No:</strong> <span id="res-roll"></span></p>
+            <hr>
+            <p>Total Questions: 9</p>
+            <p>Your Score:</p>
+            <div class="score-big"><span id="res-score">0</span> / 18</div>
+            <br>
+            <button onclick="location.reload()">Restart Quiz</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Data Configuration ---
+    // Note: I have created spans in the passage above with IDs matching these keys.
+    const quizData = [
+        {
+            q: "i) What do studies serve?",
+            options: ["For money, fame, and power", "For delight, ornament, and ability", "For criticism and contradiction", "For teaching others only"],
+            correct: 1, 
+            refId: "ref-q1" 
+        },
+        {
+            q: "ii) Who criticise studies and who admire them?",
+            options: ["Wise men criticise, simple men admire", "Simple men criticise, crafty men admire", "Crafty men criticise (contemn), simple men admire", "Teachers criticise, students admire"],
+            correct: 2,
+            refId: "ref-q2"
+        },
+        {
+            q: "iii) What does ‘Abuent studia in mores’ mean?",
+            options: ["Studies go into manners/character", "Studies are difficult to learn", "Study more to gain more", "Absent students are punished"],
+            correct: 0,
+            refId: "ref-q3" // Refers to the Latin phrase in text
+        },
+        {
+            q: "iv) What makes a man deep, moral and grave?",
+            options: ["History and Poetry", "Mathematics and Logic", "Natural Philosophy and Moral Philosophy", "Writing and Conference"],
+            correct: 2,
+            refId: "ref-q4"
+        },
+        {
+            q: "v) ‘Some few books to be chewed and digested’ - explain this phrase.",
+            options: ["Books should be eaten", "Read only in parts", "Read wholly, with diligence and attention", "Read by deputy"],
+            correct: 2,
+            refId: "ref-q5-b" // Highlights the explanation part
+        },
+        {
+            q: "vi) How does a man become “a ready man”?",
+            options: ["By writing", "By reading", "By conference (discussion)", "By thinking"],
+            correct: 2,
+            refId: "ref-q6"
+        },
+        {
+            q: "vii) Find the word from the passage which means 'Condemn' (Criticise).",
+            options: ["Confute", "Contemn", "Contend", "Confer"],
+            correct: 1,
+            refId: "ref-q7"
+        },
+        {
+            q: "viii) Find the word from the passage which means 'Wily' (Clever/Sly).",
+            options: ["Crafty", "Simple", "Wise", "Expert"],
+            correct: 0,
+            refId: "ref-q8"
+        },
+        {
+            q: "ix) Find the word from the passage for: 'to cut branches to give a better shape'.",
+            options: ["Marshalling", "Distilled", "Pruning", "Exercising"],
+            correct: 2,
+            refId: "ref-q9"
+        }
+    ];
+
+    // --- State Variables ---
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let studentName = "";
+    let rollNumber = "";
+    let attemptsOnCurrent = 0; 
+
+    // --- Functions ---
+
+    function startQuiz() {
+        const nameInput = document.getElementById('studentName').value;
+        const rollInput = document.getElementById('rollNumber').value;
+
+        if (nameInput.trim() === "" || rollInput.trim() === "") {
+            alert("Please enter both Name and Roll Number.");
+            return;
+        }
+
+        studentName = nameInput;
+        rollNumber = rollInput;
+
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        // Clear previous highlights
+        clearHighlights();
+
+        const qContainer = document.getElementById('question-container');
+        const nextBtn = document.getElementById('next-btn');
+        const finishBtn = document.getElementById('finish-btn');
+        
+        qContainer.innerHTML = "";
+        nextBtn.classList.add('hidden');
+        finishBtn.classList.add('hidden');
+        attemptsOnCurrent = 0;
+
+        const data = quizData[currentQuestionIndex];
+
+        // Create Question UI
+        const qTitle = document.createElement('div');
+        qTitle.className = 'question-text';
+        qTitle.innerText = `Q${currentQuestionIndex + 1}: ${data.q}`;
+        qContainer.appendChild(qTitle);
+
+        const optContainer = document.createElement('div');
+        optContainer.className = 'options';
+
+        data.options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(btn, index, data.correct, data.refId);
+            optContainer.appendChild(btn);
+        });
+
+        qContainer.appendChild(optContainer);
+    }
+
+    function checkAnswer(btnElement, selectedIndex, correctIndex, refId) {
+        const allBtns = document.querySelectorAll('.option-btn');
+
+        if (selectedIndex === correctIndex) {
+            // Correct Answer
+            btnElement.classList.add('correct');
+            
+            // Highlight Passage Text
+            highlightPassage(refId);
+
+            // Add points ONLY on first attempt
+            if (attemptsOnCurrent === 0) {
+                score += 2;
+            }
+
+            // Disable all buttons
+            allBtns.forEach(btn => btn.disabled = true);
+
+            // Show Next/Finish Button
+            if (currentQuestionIndex < quizData.length - 1) {
+                document.getElementById('next-btn').classList.remove('hidden');
+            } else {
+                document.getElementById('finish-btn').classList.remove('hidden');
+            }
+
+        } else {
+            // Wrong Answer
+            btnElement.classList.add('wrong');
+            btnElement.disabled = true; 
+            attemptsOnCurrent++; 
+        }
+    }
+
+    function highlightPassage(id) {
+        // Find the specific span in the passage
+        const el = document.getElementById(id);
+        if (el) {
+            el.classList.add('highlight-active');
+            
+            // Auto-scroll the passage box so the highlighted text is visible
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    function clearHighlights() {
+        // Remove highlight class from all spans
+        const highlighted = document.querySelectorAll('.highlight-active');
+        highlighted.forEach(el => el.classList.remove('highlight-active'));
+        
+        // Scroll back to top of passage for new question
+        document.getElementById('passage-box').scrollTop = 0;
+    }
+
+    function loadNextQuestion() {
+        currentQuestionIndex++;
+        loadQuestion();
+    }
+
+    function showResults() {
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+
+        document.getElementById('res-name').innerText = studentName;
+        document.getElementById('res-roll').innerText = rollNumber;
+        document.getElementById('res-score').innerText = score;
+    }
+</script>
+
+</body>
+</html>

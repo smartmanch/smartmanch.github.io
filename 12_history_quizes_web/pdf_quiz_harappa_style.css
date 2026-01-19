@@ -1,0 +1,159 @@
+/* pdf_quiz_harappa_style.css */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f8ff; /* AliceBlue */
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    margin: 0;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+    background-color: #008080; /* Teal */
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#game-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 800px;
+}
+
+h2 {
+    color: #008080; /* Teal */
+    border-bottom: 2px solid #008080;
+    padding-bottom: 5px;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+button {
+    padding: 10px 20px;
+    margin-top: 15px;
+    background-color: #ff6347; /* Tomato */
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #e5533d;
+}
+
+/* Score Display */
+#current-score {
+    padding: 10px;
+    background-color: #fffacd; /* LemonChiffon */
+    border: 1px solid #ffd700;
+    border-radius: 5px;
+    color: #8b4513;
+    font-weight: bold;
+    text-align: right;
+    margin-bottom: 20px;
+}
+#current-score span {
+    font-size: 1.5em;
+    color: #008080; 
+}
+
+/* Quiz Options */
+.question-box {
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.option {
+    display: block;
+    padding: 10px;
+    margin: 8px 0;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    user-select: none;
+}
+
+.option:hover {
+    background-color: #d6d8db;
+}
+
+/* Click States */
+.correct {
+    background-color: #28a745 !important; /* Green */
+    color: white;
+    box-shadow: 0 0 5px #28a745;
+}
+.incorrect {
+    background-color: #dc3545 !important; /* Red */
+    color: white;
+    box-shadow: 0 0 5px #dc3545;
+}
+
+/* Feedback Message */
+#feedback-message {
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    font-size: 1.1em;
+}
+
+/* Marksheet */
+#mark-sheet p {
+    font-size: 18px;
+    padding: 5px;
+    border-bottom: 1px dashed #ccc;
+}
+#mark-sheet strong {
+    color: #008080;
+}
+
+/* New Study Material Styling */
+#study-material-list .qa-item {
+    margin-bottom: 25px;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    background-color: #f7fcfd;
+}
+
+#study-material-list .qa-question {
+    font-weight: bold;
+    color: #008080;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+}
+
+#study-material-list .qa-answer {
+    padding-left: 10px;
+    border-left: 3px solid #ff6347;
+    margin-top: 8px;
+    font-style: italic;
+    white-space: pre-wrap; /* Ensures the markdown bolding in JS is formatted correctly */
+}

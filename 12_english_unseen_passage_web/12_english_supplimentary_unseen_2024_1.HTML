@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purity and Health - Quiz</title>
+    <style>
+        /* CSS Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        /* Login Screen */
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            display: block;
+            margin: 20px auto;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        /* Passage Box */
+        #passage-box {
+            background-color: #fdfdfd;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-left: 5px solid #3498db;
+            margin-bottom: 30px;
+            max-height: 350px;
+            overflow-y: auto;
+            line-height: 1.9;
+            font-size: 16px;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        /* Highlight Class */
+        .highlight-active {
+            background-color: #fff12e; /* Bright Yellow */
+            color: #000;
+            font-weight: bold;
+            border-radius: 3px;
+            padding: 2px 0;
+            box-shadow: 0 0 5px rgba(255, 241, 46, 0.8);
+            transition: background-color 0.3s ease;
+        }
+
+        /* Quiz Section */
+        .question-text {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .options {
+            display: grid;
+            gap: 10px;
+        }
+        .option-btn {
+            background-color: white;
+            border: 2px solid #ddd;
+            color: #333;
+            text-align: left;
+            width: 100%;
+            margin: 0;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+        .option-btn:hover:not(:disabled) {
+            background-color: #f0f0f0;
+            border-color: #bbb;
+        }
+        
+        /* Feedback Colors */
+        .correct {
+            background-color: #d4edda !important;
+            border-color: #28a745 !important;
+            color: #155724 !important;
+        }
+        .wrong {
+            background-color: #f8d7da !important;
+            border-color: #dc3545 !important;
+            color: #721c24 !important;
+        }
+
+        /* Marksheet */
+        .marksheet {
+            text-align: center;
+            border: 2px solid #2c3e50;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .score-big {
+            font-size: 32px;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="login-screen">
+        <h1>Student Login</h1>
+        <div class="input-group">
+            <label>Student Name:</label>
+            <input type="text" id="studentName" placeholder="Enter your full name">
+        </div>
+        <div class="input-group">
+            <label>Roll Number:</label>
+            <input type="text" id="rollNumber" placeholder="Enter roll number">
+        </div>
+        <button onclick="startQuiz()">Start Quiz</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+        <h2>Reading Comprehension</h2>
+        
+        <div id="passage-box">
+            <span id="ref-q1">We want purity - pure food, pure water, pure air.</span> We long for pure surroundings. We yearn for pure heart and pure love. We prefer pure environment and pure society. <span id="ref-q2">We are fond of purity because purity promotes health.</span> Impurities are injurious to health. Purity provides peace of mind. Impurities impair the mind. <span id="ref-q3">Both for bodily health and mental health, we need purity.</span> We do require environmental purity for overall health.<br><br>
+            Purity of body is physical health. Purity of speech is unsullied truth. Purity of heart is unselfish love. Purity of thought, righteous reason. Purity of mind is wholesome peace. Purity of action is sincere and unselfish service. Purity of society is harmonious unity. Purity of environment is soul - elevating serenity.<br><br>
+            In the Mahabharata, there is an interesting <span id="ref-q7">episode</span> to illustrate the nature of purity. The Pandavas and Kauravas were Drona’s disciples. They were once summoned by the <span id="ref-q8">preceptor</span> <span id="ref-q4">Drona</span> for a test. The eldest of the Pandavas, Yudhishthira, was asked to bring one bad person from the society. The eldest of the Kauravas, Duryodhana, was asked to fetch one good person from the same society in Hasthinapura. After a thorough search, both the cousins returned empty - handed. <span id="ref-q5">The pure minded Yudhishthira found everyone to be pious and pure. The impure mind of Duryodhana found everyone to be evil and impure.</span> As is the mind so is the vision.<br><br>
+            <span id="ref-q6">Purity of mind makes our vision, words and deeds pure.</span> It has also the power to purify people. Evil has no place in the presence of purity. Nor can it face purity, as darkness cannot face the sun. It only gets changed in to purity. Fools who come to scoff remain to pray in the presence of purity. Villains who come to harm stand in adoration in the presence of purity. Murderers become votaries of peace in the presence of purity.<br><br>
+            Pavaharibaba was a saint. He was Pure and Pious. He lived a very simple life. One day, when he was asleep, a thief entered his dwelling place and took away the <span id="ref-q9">vessel</span> containing food. The saint woke up and saw the running thief. Immediately he picked up the remaining two vessels containing boiled vegetables and curd and ran after him. The thief stopped and the saint approached him with all purity of love and said “Child, the food is insufficient for you. You may have this also. Please sit and eat without hurry.
+        </div>
+
+        <div id="question-container">
+            </div>
+
+        <button id="next-btn" class="hidden" onclick="loadNextQuestion()">Next Question</button>
+        <button id="finish-btn" class="hidden" onclick="showResults()">View Marksheet</button>
+    </div>
+
+    <div id="result-screen" class="hidden">
+        <h1>Quiz Marksheet</h1>
+        <div class="marksheet">
+            <p><strong>Name:</strong> <span id="res-name"></span></p>
+            <p><strong>Roll No:</strong> <span id="res-roll"></span></p>
+            <hr>
+            <p>Total Questions: 9</p>
+            <p>Your Score:</p>
+            <div class="score-big"><span id="res-score">0</span> / 18</div>
+            <br>
+            <button onclick="location.reload()">Restart Quiz</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Data Configuration ---
+    const quizData = [
+        {
+            q: "i) What do we want?",
+            options: ["We want money and fame", "We want purity - pure food, pure water, pure air", "We want a big house", "We want to travel"],
+            correct: 1, 
+            refId: "ref-q1" 
+        },
+        {
+            q: "ii) Why are we fond of purity?",
+            options: ["Because it looks good", "Because it is expensive", "Because purity promotes health", "Because everyone likes it"],
+            correct: 2,
+            refId: "ref-q2"
+        },
+        {
+            q: "iii) Why do we need purity?",
+            options: ["For social status", "Both for bodily health and mental health", "To impress others", "To pass the exam"],
+            correct: 1,
+            refId: "ref-q3"
+        },
+        {
+            q: "iv) Who was the preceptor of the Pandavas and Kauravas?",
+            options: ["Bhishma", "Krishna", "Drona", "Vidura"],
+            correct: 2,
+            refId: "ref-q4" // Points to Drona's sentence
+        },
+        {
+            q: "v) Why did both Yudhishthira and Duryodhana return empty - handed?",
+            options: ["Because they were lazy", "Because there were no people in the city", "Because of their own mindsets (pure mind vs impure mind)", "Because Drona cancelled the test"],
+            correct: 2,
+            refId: "ref-q5"
+        },
+        {
+            q: "vi) What makes our vision, words and deeds pure?",
+            options: ["Purity of mind", "Purity of clothes", "Eating good food", "Reading books"],
+            correct: 0,
+            refId: "ref-q6"
+        },
+        {
+            q: "vii) Find out the word from the passage which means : 'Event'",
+            options: ["Episode", "Serenity", "Disciples", "Vision"],
+            correct: 0,
+            refId: "ref-q7"
+        },
+        {
+            q: "viii) Find out the word from the passage which means : 'Teacher'",
+            options: ["Saint", "Preceptor", "Disciple", "Villain"],
+            correct: 1,
+            refId: "ref-q8"
+        },
+        {
+            q: "ix) Find out the word from the passage which means : 'Utensil'",
+            options: ["Vessel", "Curd", "Dwelling", "Vegetables"],
+            correct: 0,
+            refId: "ref-q9"
+        }
+    ];
+
+    // --- State Variables ---
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let studentName = "";
+    let rollNumber = "";
+    let attemptsOnCurrent = 0; 
+
+    // --- Functions ---
+
+    function startQuiz() {
+        const nameInput = document.getElementById('studentName').value;
+        const rollInput = document.getElementById('rollNumber').value;
+
+        if (nameInput.trim() === "" || rollInput.trim() === "") {
+            alert("Please enter both Name and Roll Number.");
+            return;
+        }
+
+        studentName = nameInput;
+        rollNumber = rollInput;
+
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        // Clear previous highlights
+        clearHighlights();
+
+        const qContainer = document.getElementById('question-container');
+        const nextBtn = document.getElementById('next-btn');
+        const finishBtn = document.getElementById('finish-btn');
+        
+        qContainer.innerHTML = "";
+        nextBtn.classList.add('hidden');
+        finishBtn.classList.add('hidden');
+        attemptsOnCurrent = 0;
+
+        const data = quizData[currentQuestionIndex];
+
+        // Create Question UI
+        const qTitle = document.createElement('div');
+        qTitle.className = 'question-text';
+        qTitle.innerText = `Q${currentQuestionIndex + 1}: ${data.q}`;
+        qContainer.appendChild(qTitle);
+
+        const optContainer = document.createElement('div');
+        optContainer.className = 'options';
+
+        data.options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(btn, index, data.correct, data.refId);
+            optContainer.appendChild(btn);
+        });
+
+        qContainer.appendChild(optContainer);
+    }
+
+    function checkAnswer(btnElement, selectedIndex, correctIndex, refId) {
+        const allBtns = document.querySelectorAll('.option-btn');
+
+        if (selectedIndex === correctIndex) {
+            // Correct Answer
+            btnElement.classList.add('correct');
+            
+            // Highlight Passage Text
+            highlightPassage(refId);
+
+            // Add points ONLY on first attempt
+            if (attemptsOnCurrent === 0) {
+                score += 2;
+            }
+
+            // Disable all buttons
+            allBtns.forEach(btn => btn.disabled = true);
+
+            // Show Next/Finish Button
+            if (currentQuestionIndex < quizData.length - 1) {
+                document.getElementById('next-btn').classList.remove('hidden');
+            } else {
+                document.getElementById('finish-btn').classList.remove('hidden');
+            }
+
+        } else {
+            // Wrong Answer
+            btnElement.classList.add('wrong');
+            btnElement.disabled = true; 
+            attemptsOnCurrent++; 
+        }
+    }
+
+    function highlightPassage(id) {
+        // Find the specific span in the passage
+        const el = document.getElementById(id);
+        if (el) {
+            el.classList.add('highlight-active');
+            
+            // Auto-scroll the passage box so the highlighted text is visible
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    function clearHighlights() {
+        // Remove highlight class from all spans
+        const highlighted = document.querySelectorAll('.highlight-active');
+        highlighted.forEach(el => el.classList.remove('highlight-active'));
+        
+        // Scroll back to top of passage for new question
+        document.getElementById('passage-box').scrollTop = 0;
+    }
+
+    function loadNextQuestion() {
+        currentQuestionIndex++;
+        loadQuestion();
+    }
+
+    function showResults() {
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+
+        document.getElementById('res-name').innerText = studentName;
+        document.getElementById('res-roll').innerText = rollNumber;
+        document.getElementById('res-score').innerText = score;
+    }
+</script>
+
+</body>
+</html>

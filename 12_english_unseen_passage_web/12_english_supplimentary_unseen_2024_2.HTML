@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water: The Beauty of Countryside - Quiz</title>
+    <style>
+        /* CSS Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        /* Login Screen */
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            display: block;
+            margin: 20px auto;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        /* Passage Box */
+        #passage-box {
+            background-color: #fdfdfd;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-left: 5px solid #3498db;
+            margin-bottom: 30px;
+            max-height: 350px;
+            overflow-y: auto;
+            line-height: 1.9;
+            font-size: 16px;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        /* Highlight Class */
+        .highlight-active {
+            background-color: #fff12e; /* Bright Yellow */
+            color: #000;
+            font-weight: bold;
+            border-radius: 3px;
+            padding: 2px 0;
+            box-shadow: 0 0 5px rgba(255, 241, 46, 0.8);
+            transition: background-color 0.3s ease;
+        }
+
+        /* Quiz Section */
+        .question-text {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .options {
+            display: grid;
+            gap: 10px;
+        }
+        .option-btn {
+            background-color: white;
+            border: 2px solid #ddd;
+            color: #333;
+            text-align: left;
+            width: 100%;
+            margin: 0;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+        .option-btn:hover:not(:disabled) {
+            background-color: #f0f0f0;
+            border-color: #bbb;
+        }
+        
+        /* Feedback Colors */
+        .correct {
+            background-color: #d4edda !important;
+            border-color: #28a745 !important;
+            color: #155724 !important;
+        }
+        .wrong {
+            background-color: #f8d7da !important;
+            border-color: #dc3545 !important;
+            color: #721c24 !important;
+        }
+
+        /* Marksheet */
+        .marksheet {
+            text-align: center;
+            border: 2px solid #2c3e50;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .score-big {
+            font-size: 32px;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="login-screen">
+        <h1>Student Login</h1>
+        <div class="input-group">
+            <label>Student Name:</label>
+            <input type="text" id="studentName" placeholder="Enter your full name">
+        </div>
+        <div class="input-group">
+            <label>Roll Number:</label>
+            <input type="text" id="rollNumber" placeholder="Enter roll number">
+        </div>
+        <button onclick="startQuiz()">Start Quiz</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+        <h2>Reading Comprehension</h2>
+        
+        <div id="passage-box">
+            <span id="ref-q1">There is nothing which adds so much to the beauty of the countryside as water</span>, be it just a little stream trickling over the rocks, or <span id="ref-q2">a little pond by the wayside where the cattle quench their thirst of an evening</span>. The rainfed tanks that are so common in South India - also? Often so sadly neglected in their maintenance are a cheering sight when they are full. They are of course, shallow, but this is less evident since the water is silt - laden and throws the light back, and the bottom does not therefore show up. These tanks play a vital role in South Indian agriculture. In Mysore, for <span id="ref-q5">example</span>, much of the rice is grown in them. Some of these tanks are surprisingly large and it is a beautiful sight to see the sunrise or set over one of them. Water in a landscape may be compared to the eyes in a human face. It reflects the mood of the hour, <span id="ref-q3">being bright and gay when the Sun Shines, turning to dark and gloomy when the sky is over cast</span>.<br><br>
+            <span id="ref-q4">One of the most remarkable facts about water is its power to carry silt or finely divided soil in suspension.</span> This is the origin of the characteristic colour of the water in rain fed tanks. This colour varies with the nature of earth in the catchment area and is most vivid immediately after a fresh inflow following rain. Swiftly flowing water can carry fairly large and heavy particles. The finest particles, however, remain floating within the liquid inspite of their greater density and are carried to distances. Such particles are of course, extremly small, but their number is great and incredibly large amounts of solid matter can be transported in this way. When silt - laden water mixes with the salt water of the sea, there is a rapid precipitation of the suspended matter. This can be readily seen when one travels by steamer down a great river to the deep sea. The colour of the water changes successively from the muddy red or brown of silt through varying shades of yellow and green finally to the blue of the deep sea. Those great tracts of land have been formed by silt thus deposited is evident on an examination of soil in alluvial areas. Such land, consisting as it does of finely divided matter, is <span id="ref-q6">usually very fertile</span>.
+        </div>
+
+        <div id="question-container">
+            </div>
+
+        <button id="next-btn" class="hidden" onclick="loadNextQuestion()">Next Question</button>
+        <button id="finish-btn" class="hidden" onclick="showResults()">View Marksheet</button>
+    </div>
+
+    <div id="result-screen" class="hidden">
+        <h1>Quiz Marksheet</h1>
+        <div class="marksheet">
+            <p><strong>Name:</strong> <span id="res-name"></span></p>
+            <p><strong>Roll No:</strong> <span id="res-roll"></span></p>
+            <hr>
+            <p>Total Questions: 6</p>
+            <p>Your Score:</p>
+            <div class="score-big"><span id="res-score">0</span> / 12</div>
+            <br>
+            <button onclick="location.reload()">Restart Quiz</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Data Configuration ---
+    const quizData = [
+        {
+            q: "i) Name the thing which adds so much to the beauty of the countryside.",
+            options: ["Green Trees", "Water", "High Mountains", "Wild Animals"],
+            correct: 1, 
+            refId: "ref-q1" 
+        },
+        {
+            q: "ii) Where does the cattle quench their thirst of an evening?",
+            options: ["In a big river", "At their shed", "In a little pond by the wayside", "From the rain"],
+            correct: 2,
+            refId: "ref-q2"
+        },
+        {
+            q: "iii) How does water in a landscape reflect the mood of the hour?",
+            options: ["By changing its shape", "By drying up quickly", "By flowing very fast", "Being bright when sun shines, dark when overcast"],
+            correct: 3,
+            refId: "ref-q3"
+        },
+        {
+            q: "iv) Which is the most remarkable fact about water?",
+            options: ["Its power to carry silt or soil in suspension", "It is tasteless", "It is used for drinking", "It has no colour"],
+            correct: 0,
+            refId: "ref-q4"
+        },
+        {
+            q: "v) Write the word from the passage which means : ‘Illustration’.",
+            options: ["Evident", "Example", "Sight", "Fact"],
+            correct: 1,
+            refId: "ref-q5"
+        },
+        {
+            q: "vi) Write the opposite word of ‘Barren’ (from the passage).",
+            options: ["Shallow", "Gloomy", "Fertile", "Muddy"],
+            correct: 2,
+            refId: "ref-q6"
+        }
+    ];
+
+    // --- State Variables ---
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let studentName = "";
+    let rollNumber = "";
+    let attemptsOnCurrent = 0; 
+
+    // --- Functions ---
+
+    function startQuiz() {
+        const nameInput = document.getElementById('studentName').value;
+        const rollInput = document.getElementById('rollNumber').value;
+
+        if (nameInput.trim() === "" || rollInput.trim() === "") {
+            alert("Please enter both Name and Roll Number.");
+            return;
+        }
+
+        studentName = nameInput;
+        rollNumber = rollInput;
+
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        // Clear previous highlights
+        clearHighlights();
+
+        const qContainer = document.getElementById('question-container');
+        const nextBtn = document.getElementById('next-btn');
+        const finishBtn = document.getElementById('finish-btn');
+        
+        qContainer.innerHTML = "";
+        nextBtn.classList.add('hidden');
+        finishBtn.classList.add('hidden');
+        attemptsOnCurrent = 0;
+
+        const data = quizData[currentQuestionIndex];
+
+        // Create Question UI
+        const qTitle = document.createElement('div');
+        qTitle.className = 'question-text';
+        qTitle.innerText = `Q${currentQuestionIndex + 1}: ${data.q}`;
+        qContainer.appendChild(qTitle);
+
+        const optContainer = document.createElement('div');
+        optContainer.className = 'options';
+
+        data.options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(btn, index, data.correct, data.refId);
+            optContainer.appendChild(btn);
+        });
+
+        qContainer.appendChild(optContainer);
+    }
+
+    function checkAnswer(btnElement, selectedIndex, correctIndex, refId) {
+        const allBtns = document.querySelectorAll('.option-btn');
+
+        if (selectedIndex === correctIndex) {
+            // Correct Answer
+            btnElement.classList.add('correct');
+            
+            // Highlight Passage Text
+            highlightPassage(refId);
+
+            // Add points ONLY on first attempt
+            if (attemptsOnCurrent === 0) {
+                score += 2;
+            }
+
+            // Disable all buttons
+            allBtns.forEach(btn => btn.disabled = true);
+
+            // Show Next/Finish Button
+            if (currentQuestionIndex < quizData.length - 1) {
+                document.getElementById('next-btn').classList.remove('hidden');
+            } else {
+                document.getElementById('finish-btn').classList.remove('hidden');
+            }
+
+        } else {
+            // Wrong Answer
+            btnElement.classList.add('wrong');
+            btnElement.disabled = true; 
+            attemptsOnCurrent++; 
+        }
+    }
+
+    function highlightPassage(id) {
+        // Find the specific span in the passage
+        const el = document.getElementById(id);
+        if (el) {
+            el.classList.add('highlight-active');
+            
+            // Auto-scroll the passage box so the highlighted text is visible
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    function clearHighlights() {
+        // Remove highlight class from all spans
+        const highlighted = document.querySelectorAll('.highlight-active');
+        highlighted.forEach(el => el.classList.remove('highlight-active'));
+        
+        // Scroll back to top of passage for new question
+        document.getElementById('passage-box').scrollTop = 0;
+    }
+
+    function loadNextQuestion() {
+        currentQuestionIndex++;
+        loadQuestion();
+    }
+
+    function showResults() {
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+
+        document.getElementById('res-name').innerText = studentName;
+        document.getElementById('res-roll').innerText = rollNumber;
+        document.getElementById('res-score').innerText = score;
+    }
+</script>
+
+</body>
+</html>

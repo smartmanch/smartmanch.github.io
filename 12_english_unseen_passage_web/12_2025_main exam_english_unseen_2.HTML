@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Habit Quiz</title>
+    <style>
+        /* CSS Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        /* Login Screen */
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            display: block;
+            margin: 20px auto;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        /* Passage Box */
+        #passage-box {
+            background-color: #fdfdfd;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-left: 5px solid #3498db;
+            margin-bottom: 30px;
+            max-height: 300px;
+            overflow-y: auto;
+            line-height: 1.8;
+            font-size: 16px;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        /* Highlight Class for Correct Answer Reference */
+        .highlight-active {
+            background-color: #fff12e; /* Bright Yellow */
+            color: #000;
+            font-weight: bold;
+            border-radius: 3px;
+            padding: 2px 0;
+            box-shadow: 0 0 5px rgba(255, 241, 46, 0.8);
+            transition: background-color 0.3s ease;
+        }
+
+        /* Quiz Section */
+        .question-text {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .options {
+            display: grid;
+            gap: 10px;
+        }
+        .option-btn {
+            background-color: white;
+            border: 2px solid #ddd;
+            color: #333;
+            text-align: left;
+            width: 100%;
+            margin: 0;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+        .option-btn:hover:not(:disabled) {
+            background-color: #f0f0f0;
+            border-color: #bbb;
+        }
+        
+        /* Feedback Colors */
+        .correct {
+            background-color: #d4edda !important;
+            border-color: #28a745 !important;
+            color: #155724 !important;
+        }
+        .wrong {
+            background-color: #f8d7da !important;
+            border-color: #dc3545 !important;
+            color: #721c24 !important;
+        }
+
+        /* Marksheet */
+        .marksheet {
+            text-align: center;
+            border: 2px solid #2c3e50;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .score-big {
+            font-size: 32px;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="login-screen">
+        <h1>Student Login</h1>
+        <div class="input-group">
+            <label>Student Name:</label>
+            <input type="text" id="studentName" placeholder="Enter your full name">
+        </div>
+        <div class="input-group">
+            <label>Roll Number:</label>
+            <input type="text" id="rollNumber" placeholder="Enter roll number">
+        </div>
+        <button onclick="startQuiz()">Start Quiz</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+        <h2>Reading Comprehension</h2>
+        
+        <div id="passage-box">
+            <span id="ref-q1">The habit of reading is one of the greatest resources of mankind</span>; and we enjoy reading books that belong to us much more than if they are borrowed. <span id="ref-q2">A borrowed book is like a guest in the house</span>; <span id="ref-q6">it must be treated with punctiliousness, with a certain considerate formality</span>. You must see that it sustains no damage; it must not suffer while under your roof. You cannot leave it carelessly, you cannot mark it, you cannot turn down the pages, you cannot use it familiarly. And then, someday, although this is seldom done. You really ought to return it.<br><br>
+            But your own books belong to you; you treat them with that affectionate intimacy that annihilates formality. Books are for use, not for show; you should own no book that you are afraid to markup, or afraid to place on the table, wide open and face down. A good reason for marking favourite passages in books is that this practice <span id="ref-q3">enables you to remember more easily the significant sayings</span>, to refer to them quickly, and then later years, it is like visiting a forest where you once blazed a trail. You have the pleasure of going over the old ground, and recalling both the intellectual scenery and your own earlier self.<br><br>
+            Everyone should begin collecting a private library in youth; the instinct of private property, which is fundamental in human beings, can here be cultivated with every advantage and no evils. One should have one’s own bookshelves, which should not have doors, glass windows, or keys; they should be free and accessible to the hand as well as to the eye. <span id="ref-q4">The best of mural decorations is books</span>; they are more varied in color and appearance than any wallpaper, they are more attractive in design and they have the prime advantage of being separate personalities, so that if you sit alone in the room in the firelight, you are surrounded with intimate friends. The knowledge that they are there in plain view is both stimulating and refreshing. You do not have to read them all. Most of my indoor life is spent in a room <span id="ref-q5">containing six thousand books</span>; and I have a stock answer to the invariable question that comes from strangers. “Have you read all of these books?” “Some of them twice.” This reply is both true and unexpected.
+        </div>
+
+        <div id="question-container">
+            </div>
+
+        <button id="next-btn" class="hidden" onclick="loadNextQuestion()">Next Question</button>
+        <button id="finish-btn" class="hidden" onclick="showResults()">View Marksheet</button>
+    </div>
+
+    <div id="result-screen" class="hidden">
+        <h1>Quiz Marksheet</h1>
+        <div class="marksheet">
+            <p><strong>Name:</strong> <span id="res-name"></span></p>
+            <p><strong>Roll No:</strong> <span id="res-roll"></span></p>
+            <hr>
+            <p>Total Questions: 6</p>
+            <p>Your Score:</p>
+            <div class="score-big"><span id="res-score">0</span> / 12</div>
+            <br>
+            <button onclick="location.reload()">Restart Quiz</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Data Configuration ---
+    const quizData = [
+        {
+            q: "i) Which is one of the greatest resources of mankind?",
+            options: ["The habit of reading", "Collecting money", "Visiting forests", "Writing letters"],
+            correct: 0, 
+            refId: "ref-q1" 
+        },
+        {
+            q: "ii) What thing is like a guest in the house?",
+            options: ["A piece of furniture", "A borrowed book", "An old friend", "A painting"],
+            correct: 1,
+            refId: "ref-q2"
+        },
+        {
+            q: "iii) How is it good to mark the favourite passages?",
+            options: ["It keeps the book clean", "It increases the book's value", "It enables you to remember significant sayings", "It makes the pages colorful"],
+            correct: 2,
+            refId: "ref-q3"
+        },
+        {
+            q: "iv) What is the best of mural decorations?",
+            options: ["Wallpaper", "Glass windows", "Books", "Paintings"],
+            correct: 2,
+            refId: "ref-q4"
+        },
+        {
+            q: "v) How many books were in the narrator’s room?",
+            options: ["Six hundred", "Six thousand", "Sixteen", "Sixty"],
+            correct: 1,
+            refId: "ref-q5"
+        },
+        {
+            q: "vi) How should a borrowed book be treated?",
+            options: ["Carelessly and freely", "With affection and intimacy", "With punctiliousness and considerate formality", "By marking it with a pen"],
+            correct: 2,
+            refId: "ref-q6"
+        }
+    ];
+
+    // --- State Variables ---
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let studentName = "";
+    let rollNumber = "";
+    let attemptsOnCurrent = 0; 
+
+    // --- Functions ---
+
+    function startQuiz() {
+        const nameInput = document.getElementById('studentName').value;
+        const rollInput = document.getElementById('rollNumber').value;
+
+        if (nameInput.trim() === "" || rollInput.trim() === "") {
+            alert("Please enter both Name and Roll Number.");
+            return;
+        }
+
+        studentName = nameInput;
+        rollNumber = rollInput;
+
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        // Clear previous highlights
+        clearHighlights();
+
+        const qContainer = document.getElementById('question-container');
+        const nextBtn = document.getElementById('next-btn');
+        const finishBtn = document.getElementById('finish-btn');
+        
+        qContainer.innerHTML = "";
+        nextBtn.classList.add('hidden');
+        finishBtn.classList.add('hidden');
+        attemptsOnCurrent = 0;
+
+        const data = quizData[currentQuestionIndex];
+
+        // Create Question UI
+        const qTitle = document.createElement('div');
+        qTitle.className = 'question-text';
+        qTitle.innerText = `Q${currentQuestionIndex + 1}: ${data.q}`;
+        qContainer.appendChild(qTitle);
+
+        const optContainer = document.createElement('div');
+        optContainer.className = 'options';
+
+        data.options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(btn, index, data.correct, data.refId);
+            optContainer.appendChild(btn);
+        });
+
+        qContainer.appendChild(optContainer);
+    }
+
+    function checkAnswer(btnElement, selectedIndex, correctIndex, refId) {
+        const allBtns = document.querySelectorAll('.option-btn');
+
+        if (selectedIndex === correctIndex) {
+            // Correct Answer
+            btnElement.classList.add('correct');
+            
+            // Highlight Passage Text
+            highlightPassage(refId);
+
+            // Add points ONLY on first attempt
+            if (attemptsOnCurrent === 0) {
+                score += 2;
+            }
+
+            // Disable all buttons
+            allBtns.forEach(btn => btn.disabled = true);
+
+            // Show Next/Finish Button
+            if (currentQuestionIndex < quizData.length - 1) {
+                document.getElementById('next-btn').classList.remove('hidden');
+            } else {
+                document.getElementById('finish-btn').classList.remove('hidden');
+            }
+
+        } else {
+            // Wrong Answer
+            btnElement.classList.add('wrong');
+            btnElement.disabled = true; 
+            attemptsOnCurrent++; 
+        }
+    }
+
+    function highlightPassage(id) {
+        // Find the specific span in the passage
+        const el = document.getElementById(id);
+        if (el) {
+            el.classList.add('highlight-active');
+            
+            // Auto-scroll the passage box so the highlighted text is visible
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    function clearHighlights() {
+        // Remove highlight class from all spans
+        const highlighted = document.querySelectorAll('.highlight-active');
+        highlighted.forEach(el => el.classList.remove('highlight-active'));
+        
+        // Scroll back to top of passage for new question
+        document.getElementById('passage-box').scrollTop = 0;
+    }
+
+    function loadNextQuestion() {
+        currentQuestionIndex++;
+        loadQuestion();
+    }
+
+    function showResults() {
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+
+        document.getElementById('res-name').innerText = studentName;
+        document.getElementById('res-roll').innerText = rollNumber;
+        document.getElementById('res-score').innerText = score;
+    }
+</script>
+
+</body>
+</html>

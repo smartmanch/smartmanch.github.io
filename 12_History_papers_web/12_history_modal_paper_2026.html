@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RBSE History Model Paper 2026 - Interactive Exam</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --light-bg: #f5f7fa;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 { color: var(--primary-color); margin: 0; font-size: 2.2em; }
+        .header h2 { color: var(--accent-color); margin: 10px 0; }
+        .header p { font-weight: bold; color: #555; }
+
+        /* Login Section */
+        #login-section {
+            text-align: center;
+            padding: 40px;
+            background: #eef2f3;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+        }
+        .input-group { margin: 15px 0; }
+        input, select {
+            padding: 12px;
+            width: 80%;
+            max-width: 350px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        input:focus { border-color: var(--accent-color); outline: none; }
+        
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn:hover { background-color: #2980b9; }
+
+        /* Paper Sections */
+        #paper-content { display: none; }
+        .section-title {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            margin-top: 40px;
+            border-radius: 8px;
+            font-size: 1.3em;
+            letter-spacing: 1px;
+        }
+
+        .question-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--accent-color);
+        }
+
+        .q-text { font-weight: 600; font-size: 1.05em; margin-bottom: 10px; color: var(--secondary-color); }
+        
+        /* Answer Button & Box */
+        .toggle-btn {
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        .toggle-btn:hover { background-color: #d68910; }
+
+        .answer-box {
+            display: none;
+            background-color: #e8f5e9;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 6px;
+            border-left: 4px solid var(--success-color);
+            color: #1b5e20;
+            font-size: 0.95em;
+        }
+        .detailed-answer { line-height: 1.8; text-align: justify; }
+        .detailed-answer ul { padding-left: 20px; }
+        .detailed-answer li { margin-bottom: 8px; }
+
+        /* OR Divider */
+        .or-divider {
+            text-align: center;
+            margin: 30px 0;
+            font-weight: bold;
+            color: #c0392b;
+            position: relative;
+        }
+        .or-divider span { background: white; padding: 0 15px; position: relative; z-index: 1; }
+        .or-divider::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: #e74c3c;
+            z-index: 0;
+        }
+
+        /* Quiz Section */
+        #quiz-section { display: none; margin-top: 40px; }
+        .quiz-intro-box {
+            background: #fff8e1;
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+            border: 2px solid #ffca28;
+        }
+        .quiz-question {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .quiz-options label {
+            display: block;
+            padding: 10px;
+            margin: 5px 0;
+            background: #f9f9f9;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .quiz-options label:hover { background: #e3f2fd; }
+        .quiz-options input { width: auto; margin-right: 10px; }
+
+        /* Results */
+        #result-section { display: none; text-align: center; }
+        .score-card {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9em; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: var(--primary-color); color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .correct { color: green; font-weight: bold; }
+        .incorrect { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>राजकीय उच्च माध्यमिक विद्यालय</h1>
+        <h2>इतिहास (History) - मॉडल पेपर 2026</h2>
+        <p>कक्षा: 12वीं | समय: 3:15 घण्टे | पूर्णांक: 80</p>
+    </div>
+
+    <div id="login-section">
+        <h3>परीक्षा पोर्टल में आपका स्वागत है</h3>
+        <div class="input-group">
+            <input type="text" id="studentName" placeholder="विद्यार्थी का नाम (Name)" required>
+        </div>
+        <div class="input-group">
+            <select id="studentClass">
+                <option value="12th Arts">कक्षा 12वीं (Arts)</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <input type="number" id="rollNumber" placeholder="रोल नंबर (Roll No.)" required>
+        </div>
+        <button class="btn" onclick="startPaper()">पेपर शुरू करें (Start Paper)</button>
+    </div>
+
+    <div id="paper-content">
+        <div style="display: flex; justify-content: space-between; background: #e8eaf6; padding: 10px 20px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; color: var(--primary-color);">
+            <span id="display-name"></span>
+            <span id="display-roll"></span>
+        </div>
+
+        <div class="section-title">खण्ड-अ (Section-A)</div>
+        
+        <div class="question-card">
+            <p class="q-text">प्रश्न 1. बहुविकल्पीय प्रश्न (सभी 18 प्रश्न):</p>
+            <small style="color: #777;">(उत्तर देखने के लिए 'उत्तर देखें' बटन पर क्लिक करें)</small>
+            <hr>
+
+            <div class="sub-q">i) पाटलिपुत्र को मगध की राजधानी कब बनाया गया? <button class="toggle-btn" onclick="toggle('a1-1')">उत्तर देखें</button><div id="a1-1" class="answer-box">उत्तर: (स) चौथी शताब्दी ई.पू.</div></div><hr>
+            <div class="sub-q">ii) अशोक ने 'धम्म महामात्र' की नियुक्ति किस उद्देश्य से की? <button class="toggle-btn" onclick="toggle('a1-2')">उत्तर देखें</button><div id="a1-2" class="answer-box">उत्तर: (ब) धम्म के प्रचार हेतु</div></div><hr>
+            <div class="sub-q">iii) सुदर्शन सरोवर का जीर्णोद्धार किस शासक ने करवाया? <button class="toggle-btn" onclick="toggle('a1-3')">उत्तर देखें</button><div id="a1-3" class="answer-box">उत्तर: (द) रूद्रदामन</div></div><hr>
+            <div class="sub-q">iv) एक ही जीविका वाली जातियों को क्या कहा जाता था? <button class="toggle-btn" onclick="toggle('a1-4')">उत्तर देखें</button><div id="a1-4" class="answer-box">उत्तर: (अ) श्रेणी</div></div><hr>
+            <div class="sub-q">v) 'साँची' की खोज किस वर्ष हुई? <button class="toggle-btn" onclick="toggle('a1-5')">उत्तर देखें</button><div id="a1-5" class="answer-box">उत्तर: (स) 1818</div></div><hr>
+            <div class="sub-q">vi) नारियल तथा पान का वर्णन किस यात्री ने किया? <button class="toggle-btn" onclick="toggle('a1-6')">उत्तर देखें</button><div id="a1-6" class="answer-box">उत्तर: (अ) इब्न बतूता</div></div><hr>
+            <div class="sub-q">vii) अल-बिरूनी ने लेखन में किस भाषा का प्रयोग किया? <button class="toggle-btn" onclick="toggle('a1-7')">उत्तर देखें</button><div id="a1-7" class="answer-box">उत्तर: (ब) अरबी</div></div><hr>
+            <div class="sub-q">viii) कबीर के गुरु कौन थे? <button class="toggle-btn" onclick="toggle('a1-8')">उत्तर देखें</button><div id="a1-8" class="answer-box">उत्तर: (स) रामानंद</div></div><hr>
+            <div class="sub-q">ix) 'पारसीक' नाम से किसे संबोधित किया जाता था? <button class="toggle-btn" onclick="toggle('a1-9')">उत्तर देखें</button><div id="a1-9" class="answer-box">उत्तर: (अ) फारस</div></div><hr>
+            <div class="sub-q">x) बृहदेश्वर मंदिर कहाँ स्थित है? <button class="toggle-btn" onclick="toggle('a1-10')">उत्तर देखें</button><div id="a1-10" class="answer-box">उत्तर: (स) तंजावुर</div></div><hr>
+            <div class="sub-q">xi) विजयनगर में 'कुदिरई चेट्टी' का अर्थ है? <button class="toggle-btn" onclick="toggle('a1-11')">उत्तर देखें</button><div id="a1-11" class="answer-box">उत्तर: (अ) घोड़ों के व्यापारी</div></div><hr>
+            <div class="sub-q">xii) 'मुजरियान' शब्द किसके लिए इस्तेमाल होता था? <button class="toggle-btn" onclick="toggle('a1-12')">उत्तर देखें</button><div id="a1-12" class="answer-box">उत्तर: (स) किसान</div></div><hr>
+            <div class="sub-q">xiii) जोवान्नी कारेरी भारत कब आया? <button class="toggle-btn" onclick="toggle('a1-13')">उत्तर देखें</button><div id="a1-13" class="answer-box">उत्तर: (स) 17वीं शताब्दी</div></div><hr>
+            <div class="sub-q">xiv) रैयतवाड़ी क्या थी? <button class="toggle-btn" onclick="toggle('a1-14')">उत्तर देखें</button><div id="a1-14" class="answer-box">उत्तर: (स) भू-राजस्व प्रणाली</div></div><hr>
+            <div class="sub-q">xv) औपनिवेशिक शासन सर्वप्रथम कहाँ स्थापित हुआ? <button class="toggle-btn" onclick="toggle('a1-15')">उत्तर देखें</button><div id="a1-15" class="answer-box">उत्तर: (ब) बंगाल</div></div><hr>
+            <div class="sub-q">xvi) 'रिलीफ ऑफ लखनऊ' चित्र किसने बनाया? <button class="toggle-btn" onclick="toggle('a1-16')">उत्तर देखें</button><div id="a1-16" class="answer-box">उत्तर: (ब) टॉमस जोन्स बार्कर</div></div><hr>
+            <div class="sub-q">xvii) लखनऊ को मुक्त किसने कराया? <button class="toggle-btn" onclick="toggle('a1-17')">उत्तर देखें</button><div id="a1-17" class="answer-box">उत्तर: (द) कॉलिन कैम्पबेल</div></div><hr>
+            <div class="sub-q">xviii) "सम्राज्य के टुकड़े न होने देने" वाला कथन किसका है? <button class="toggle-btn" onclick="toggle('a1-18')">उत्तर देखें</button><div id="a1-18" class="answer-box">उत्तर: (अ) विंस्टल चर्चिल</div></div>
+        </div>
+
+        <div class="question-card">
+            <p class="q-text">प्रश्न 2. रिक्त स्थानों की पूर्ति कीजिए:</p>
+            <div class="sub-q">i) खेतड़ी में मिले साक्ष्यों को ______ संस्कृति नाम दिया गया। <button class="toggle-btn" onclick="toggle('a2-1')">उत्तर</button><div id="a2-1" class="answer-box">गणेश्वर-जोधपुरा</div></div>
+            <div class="sub-q">ii) विवाह उपहारों पर स्त्रियों का स्वामित्व ______ कहलाता था। <button class="toggle-btn" onclick="toggle('a2-2')">उत्तर</button><div id="a2-2" class="answer-box">स्त्रीधन</div></div>
+            <div class="sub-q">iii) 1333 में ______ सिंध पहुँचा। <button class="toggle-btn" onclick="toggle('a2-3')">उत्तर</button><div id="a2-3" class="answer-box">इब्न बतूता</div></div>
+            <div class="sub-q">iv) 1976 में ______ को राष्ट्रीय महत्व का स्थल माना गया। <button class="toggle-btn" onclick="toggle('a2-4')">उत्तर</button><div id="a2-4" class="answer-box">हम्पी (विजयनगर)</div></div>
+            <div class="sub-q">v) बुकानन ने ______ पहाड़ियों का दौरा किया। <button class="toggle-btn" onclick="toggle('a2-5')">उत्तर</button><div id="a2-5" class="answer-box">राजमहल</div></div>
+            <div class="sub-q">vi) रानी ______ को फौजी पोशाक में दिखाया जाता है। <button class="toggle-btn" onclick="toggle('a2-6')">उत्तर</button><div id="a2-6" class="answer-box">लक्ष्मीबाई (झाँसी)</div></div>
+        </div>
+
+        <div class="question-card">
+            <p class="q-text">प्रश्न 3. अतिलघुत्तरात्मक प्रश्न:</p>
+            <div class="sub-q">i) जातक कथाओं की भाषा? <button class="toggle-btn" onclick="toggle('a3-1')">उत्तर</button><div id="a3-1" class="answer-box">पाली</div></div>
+            <div class="sub-q">ii) पितृवंशिकता की विशेषता? <button class="toggle-btn" onclick="toggle('a3-2')">उत्तर</button><div id="a3-2" class="answer-box">पिता के बाद पुत्र, फिर पौत्र को संपत्ति/सत्ता का मिलना।</div></div>
+            <div class="sub-q">iii) बुद्ध की उपमाता (पहली भिक्खुनी)? <button class="toggle-btn" onclick="toggle('a3-3')">उत्तर</button><div id="a3-3" class="answer-box">महाप्रजापति गौतमी</div></div>
+            <div class="sub-q">iv) जिम्मी किसे कहते हैं? <button class="toggle-btn" onclick="toggle('a3-4')">उत्तर</button><div id="a3-4" class="answer-box">संरक्षित गैर-मुस्लिम प्रजा जो जजिया कर देती थी।</div></div>
+            <div class="sub-q">v) 6ठी सदी में सोने के सिक्के कम क्यों हुए? <button class="toggle-btn" onclick="toggle('a3-5')">उत्तर</button><div id="a3-5" class="answer-box">आर्थिक संकट और दूरवर्ती व्यापार में गिरावट के कारण।</div></div>
+            <div class="sub-q">vi) बर्नियर ने मुगल साम्राज्य को क्या कहा? <button class="toggle-btn" onclick="toggle('a3-6')">उत्तर</button><div id="a3-6" class="answer-box">'भिखारियों और बर्बर लोगों का राजा'।</div></div>
+            <div class="sub-q">vii) 'यवन राज्य स्थापनाचार्य' की उपाधि? <button class="toggle-btn" onclick="toggle('a3-7')">उत्तर</button><div id="a3-7" class="answer-box">कृष्णदेव राय</div></div>
+            <div class="sub-q">viii) 'जिन्स-ए-कामिल' क्या है? <button class="toggle-btn" onclick="toggle('a3-8')">उत्तर</button><div id="a3-8" class="answer-box">सर्वोत्तम (नगदी) फसलें (जैसे कपास, गन्ना)।</div></div>
+            <div class="sub-q">ix) हवलदार/गाँटीदार कौन थे? <button class="toggle-btn" onclick="toggle('a3-9')">उत्तर</button><div id="a3-9" class="answer-box">बंगाल के धनी किसान जो गाँव के मुखिया भी होते थे।</div></div>
+            <div class="sub-q">x) 'इन मेमोरियम' किसने बनाया? <button class="toggle-btn" onclick="toggle('a3-10')">उत्तर</button><div id="a3-10" class="answer-box">जोजेफ नोएल पेटन</div></div>
+            <div class="sub-q">xi) पहला गोलमेज सम्मेलन निरर्थक क्यों रहा? <button class="toggle-btn" onclick="toggle('a3-11')">उत्तर</button><div id="a3-11" class="answer-box">कांग्रेस और गांधीजी की अनुपस्थिति के कारण।</div></div>
+            <div class="sub-q">xii) अंग्रेजी का प्रयोग कितने वर्ष जारी रहना था? <button class="toggle-btn" onclick="toggle('a3-12')">उत्तर</button><div id="a3-12" class="answer-box">15 वर्ष</div></div>
+        </div>
+
+        <div class="section-title">खण्ड-ब (Section-B) - लघूत्तरात्मक</div>
+        <div class="question-card">
+            <p class="q-text">4) सिन्धु सभ्यता से प्राप्त मुहरों पर बनी आकृतियों का विश्लेषण कीजिए।</p>
+            <button class="toggle-btn" onclick="toggle('ans4')">उत्तर देखें</button>
+            <div id="ans4" class="answer-box">मुहरों पर एकशृंगी जानवर, कूबड़दार बैल, हाथी और बाघ जैसे जानवरों की आकृतियाँ हैं। कुछ मुहरों पर 'आद्य-शिव' (योग मुद्रा) और पेड़-पौधों का चित्रण है। साथ ही चित्रात्मक लिपि भी अंकित है।</div>
+        </div>
+        <div class="question-card">
+            <p class="q-text">5) छठी शताब्दी ई.पू. के नगरों और आधुनिक नगरों की भौगोलिक स्थिति में दो समानताएँ बताइये।</p>
+            <button class="toggle-btn" onclick="toggle('ans5')">उत्तर देखें</button>
+            <div id="ans5" class="answer-box">1. <strong>जलाशय/नदी के निकट:</strong> दोनों कालों में नगर प्रायः नदियों के किनारे या जल स्रोतों के पास बसे होते थे।<br>2. <strong>परिवहन मार्ग:</strong> दोनों ही प्रमुख व्यापारिक मार्गों, सड़कों या बंदरगाहों के पास स्थित होते थे।</div>
+        </div>
+        <div class="question-card">
+            <p class="q-text">6) आप किस आधार पर कह सकते हैं कि प्राचीन भारत में माताएँ महत्वपूर्ण थीं?</p>
+            <button class="toggle-btn" onclick="toggle('ans6')">उत्तर देखें</button>
+            <div id="ans6" class="answer-box">सातवाहन शासक (जैसे गौतमीपुत्र शातकर्णी) अपने नाम के आगे माता का नाम लगाते थे। यह 'मातृनाम' की प्रथा समाज में माताओं की उच्च प्रतिष्ठा और महत्व को दर्शाती है।</div>
+        </div>
+        <div class="question-card">
+            <p class="q-text">7) ई.पू. प्रथम सहस्त्राब्दि के दो महान चिंतकों और उनके देशों के नाम बताइये।</p>
+            <button class="toggle-btn" onclick="toggle('ans7')">उत्तर देखें</button>
+            <div id="ans7" class="answer-box">1. <strong>जरथुस्त्र:</strong> ईरान (Persia)<br>2. <strong>सुकरात/प्लेटो:</strong> यूनान (Greece) (या भारत से महावीर/बुद्ध)।</div>
+        </div>
+        <div class="question-card">
+            <p class="q-text">8) अल-बिरूनी की जाति व्यवस्था का विवरण वर्तमान जाति व्यवस्था से कैसे भिन्न है?</p>
+            <button class="toggle-btn" onclick="toggle('ans8')">उत्तर देखें</button>
+            <div id="ans8" class="answer-box">अल-बिरूनी ने जाति व्यवस्था की तुलना प्राचीन फारस के चार वर्गों से की थी और इसे 'पवित्रता-अपवित्रता' के नियमों से मुक्त माना था (उसने कहा हर वस्तु पुनः पवित्र हो जाती है)। आज संवैधानिक भारत में जातिगत भेदभाव अपराध है।</div>
+        </div>
+        <div class="question-card">
+            <p class="q-text">9) विजयनगर सम्राज्य के सन्दर्भ में राय तथा नायक के कार्यों की तुलना कीजिए।</p>
+            <button class="toggle-btn" onclick="toggle('ans9')">उत्तर देखें</button>
+            <div id="ans9" class="answer-box"><strong>राय (Raya):</strong> ये विजयनगर के राजा (नरेश) थे, जो राज्य के स्वामी और सर्वोच्च सत्ता थे।<br><strong>नायक (Nayaka):</strong> ये सेना प्रमुख थे, जो किलों पर नियंत्रण रखते थे और राजा को युद्ध में सैनिक सहायता देते थे।</div>
+        </div>
+        <div class="question-card">
+            <p class="q-text">10) इस्तमरारी बंदोबस्त के बाद जमींदार राजस्व भुगतान में क्यों चूक करते थे?</p>
+            <button class="toggle-btn" onclick="toggle('ans10')">उत्तर देखें</button>
+            <div id="ans10" class="answer-box">1. राजस्व की मांग बहुत ऊँची थी।<br>2. 'सूर्यास्त कानून' की कठोरता (निश्चित तारीख को भुगतान न करने पर नीलामी)।<br>3. फसल खराब होने पर भी राजस्व राशि कम नहीं होती थी।</div>
+        </div>
+        <div class="question-card">
+            <p class="q-text">11) 'बीसवीं सदी में राष्ट्रवादी आंदोलन को 1857 के घटनाक्रम से प्रेरणा मिली', स्पष्ट कीजिए।</p>
+            <button class="toggle-btn" onclick="toggle('ans11')">उत्तर देखें</button>
+            <div id="ans11" class="answer-box">20वीं सदी के नेताओं (जैसे सावरकर) ने 1857 को 'प्रथम स्वतंत्रता संग्राम' कहा। रानी लक्ष्मीबाई और विद्रोहियों के बलिदान की कहानियों ने जनता में अंग्रेजों के खिलाफ लड़ने का जोश और राष्ट्रवाद भरा।</div>
+        </div>
+        <div class="question-card">
+            <p class="q-text">12) 'अतीत की जानकारी में आत्मकथाओं का भी योगदान होता है'। व्याख्या कीजिए।</p>
+            <button class="toggle-btn" onclick="toggle('ans12')">उत्तर देखें</button>
+            <div id="ans12" class="answer-box">आत्मकथाएँ लेखक के निजी अनुभवों, भावनाओं और संघर्षों का सजीव चित्रण करती हैं। ये सरकारी रिकॉर्ड्स की तरह नीरस नहीं होतीं, बल्कि उस समय के समाज और मानवीय पहलू को समझने में मदद करती हैं।</div>
+        </div>
+        <div class="question-card">
+            <p class="q-text">13) "पृथक निर्वाचिका एक ऐसा विष है जो हमारे देश की पूरी राजनीति में समा चुका है"। सरदार पटेल के कथन का विश्लेषण कीजिए।</p>
+            <button class="toggle-btn" onclick="toggle('ans13')">उत्तर देखें</button>
+            <div id="ans13" class="answer-box">सरदार पटेल का मानना था कि पृथक निर्वाचिका अंग्रेजों की 'फूट डालो' नीति थी। इससे समुदाय एक-दूसरे से अलग हो जाएंगे, देश में दंगे होंगे और राष्ट्रीय एकता खंडित हो जाएगी, इसलिए इसे हटाना जरूरी था।</div>
+        </div>
+
+        <div class="section-title">खण्ड-स (Section-C) - दीर्घ उत्तरीय (विस्तार से)</div>
+
+        <div class="question-card">
+            <p class="q-text">प्रश्न 14. (भाग 1) जैन धर्म का अहिंसा का सिद्धान्त आज विश्व राजनीति और समाज में किस प्रकार प्रासंगिक है?</p>
+            <button class="toggle-btn" onclick="toggle('ans14a')">विस्तृत उत्तर देखें</button>
+            <div id="ans14a" class="answer-box detailed-answer">
+                <strong>विस्तृत उत्तर:</strong><br>
+                जैन धर्म का अहिंसा का सिद्धांत वर्तमान समय में अत्यंत प्रासंगिक है:
+                <ul>
+                    <li><strong>वैश्विक शांति:</strong> जैन धर्म मानता है कि 'संपूर्ण विश्व प्राणवान है'। आज जब दुनिया परमाणु हथियारों और आतंकवाद से जूझ रही है, तब 'जियो और जीने दो' का यह सिद्धांत विश्व शांति का आधार बन सकता है।</li>
+                    <li><strong>पर्यावरण संरक्षण:</strong> आज 'ग्लोबल वार्मिंग' सबसे बड़ा संकट है। जैन धर्म का यह विचार कि हमें पेड़-पौधों, जल और वायु की रक्षा करनी चाहिए और न्यूनतम उपभोग करना चाहिए, पर्यावरण बचाने का सबसे प्रभावी मार्ग है।</li>
+                    <li><strong>सहिष्णुता (अनेकांतवाद):</strong> यह सिद्धांत सिखाता है कि सत्य के कई पहलू होते हैं। लोकतंत्र में दूसरों के विचारों का सम्मान करना और कट्टरता को त्यागना इसी सिद्धांत से संभव है।</li>
+                </ul>
+            </div>
+
+            <div class="or-divider"><span>अथवा / OR</span></div>
+
+            <p class="q-text">प्रश्न 14. (भाग 2) बुद्ध की शिक्षाएँ वर्तमान समाज में किस प्रकार उपयोगी हैं?</p>
+            <button class="toggle-btn" onclick="toggle('ans14b')">विस्तृत उत्तर देखें</button>
+            <div id="ans14b" class="answer-box detailed-answer">
+                <strong>विस्तृत उत्तर:</strong><br>
+                महात्मा बुद्ध की शिक्षाएँ आज के समाज के लिए संजीवनी समान हैं:
+                <ul>
+                    <li><strong>मध्यम मार्ग:</strong> बुद्ध ने अत्यधिक भोग और कठोर तपस्या दोनों को त्यागकर 'मध्यम मार्ग' अपनाने की सलाह दी। आज की तनावपूर्ण जीवनशैली में संतुलन बनाने के लिए यह अत्यंत उपयोगी है।</li>
+                    <li><strong>सामाजिक समता:</strong> बुद्ध ने जन्म आधारित वर्ण व्यवस्था और ऊँच-नीच का खंडन किया। आज के लोकतांत्रिक युग में, जहाँ हम मानवाधिकारों और समानता की बात करते हैं, बुद्ध के विचार प्रेरणास्रोत हैं।</li>
+                    <li><strong>मानसिक शांति:</strong> बुद्ध ने कहा 'तृष्णा (इच्छा) ही दुख का कारण है'। उपभोक्तावादी संस्कृति में मानसिक शांति पाने के लिए इच्छाओं पर नियंत्रण आवश्यक है।</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="question-card">
+            <p class="q-text">प्रश्न 15. (भाग 1) 'सत्रहवीं सदी में दुनिया के अलग-अलग हिस्सों से कई नयी फसलें भारतीय उपमहाद्वीप पहुंची'। व्याख्या कीजिए।</p>
+            <button class="toggle-btn" onclick="toggle('ans15a')">विस्तृत उत्तर देखें</button>
+            <div id="ans15a" class="answer-box detailed-answer">
+                <strong>विस्तृत उत्तर:</strong><br>
+                17वीं शताब्दी (मुगल काल) में वैश्विक व्यापार के बढ़ने से भारत में कृषि क्रांति हुई:
+                <ul>
+                    <li><strong>मक्का:</strong> यह मूल रूप से अमेरिका की फसल थी जो अफ्रीका और स्पेन के रास्ते भारत पहुँची। 17वीं सदी तक यह पश्चिमी भारत की प्रमुख फसल बन गई।</li>
+                    <li><strong>सब्जियाँ:</strong> टमाटर, आलू और मिर्च जैसी सब्जियाँ, जो आज भारतीय भोजन का अभिन्न अंग हैं, इसी समय 'नई दुनिया' (अमेरिका) से भारत लाई गईं।</li>
+                    <li><strong>फल:</strong> अनानास और पपीता जैसे फल भी इसी दौरान भारत आए।</li>
+                    <li>ये फसलें दर्शाती हैं कि मध्यकाल में भारत दुनिया से अलग-थलग नहीं था, बल्कि निरंतर सांस्कृतिक और कृषि आदान-प्रदान हो रहा था।</li>
+                </ul>
+            </div>
+
+            <div class="or-divider"><span>अथवा / OR</span></div>
+
+            <p class="q-text">प्रश्न 15. (भाग 2) "मुगल भारत में कृषि संबंधों की दास्तान उस वर्ग के बिना अधूरी है जो खेती से कमाई तो करता था लेकिन उत्पादन में हिस्सा नहीं लेता था।" व्याख्या करें।</p>
+            <button class="toggle-btn" onclick="toggle('ans15b')">विस्तृत उत्तर देखें</button>
+            <div id="ans15b" class="answer-box detailed-answer">
+                <strong>विस्तृत उत्तर:</strong><br>
+                यह कथन <strong>'जमींदार वर्ग'</strong> की ओर संकेत करता है:
+                <ul>
+                    <li><strong>परिचय:</strong> जमींदार जमीन के मालिक थे, लेकिन वे स्वयं हल नहीं चलाते थे। वे कृषि उत्पादन में सीधे श्रम नहीं करते थे।</li>
+                    <li><strong>शक्ति का स्रोत:</strong> उनकी कमाई राज्य को दी जाने वाली सेवाओं (कर वसूली, सैनिक मदद) से होती थी। वे किसानों से राजस्व का एक हिस्सा अपने पास रखते थे।</li>
+                    <li><strong>सामाजिक स्थिति:</strong> ये अक्सर उच्च जातियों (ब्राह्मण/राजपूत) से होते थे। इनके पास अपने किले और हथियारबंद सैनिक होते थे, जिससे ग्रामीण समाज में इनका दबदबा था। वे किसानों का शोषण भी करते थे और राज्य व प्रजा के बीच की कड़ी भी थे।</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="question-card">
+            <p class="q-text">प्रश्न 16. (भाग 1) राष्ट्रीय आन्दोलन में गांधी जी के योगदान को समझने के लिए सार्वजनिक स्वर एवं निजी लेखन का क्या महत्व है?</p>
+            <button class="toggle-btn" onclick="toggle('ans16a')">विस्तृत उत्तर देखें</button>
+            <div id="ans16a" class="answer-box detailed-answer">
+                <strong>विस्तृत उत्तर:</strong><br>
+                इतिहासकारों के लिए गांधीजी को समझने के दो प्रमुख स्रोत हैं:
+                <ul>
+                    <li><strong>सार्वजनिक स्वर:</strong> इसमें गांधीजी के भाषण और अखबारों (जैसे 'हरिजन', 'यंग इंडिया') के लेख शामिल हैं। ये बताते हैं कि वे जनता को कैसे संबोधित करते थे, उनका राजनीतिक एजेंडा क्या था और वे जनमत कैसे तैयार करते थे।</li>
+                    <li><strong>निजी लेखन:</strong> इसमें वे पत्र हैं जो उन्होंने नेहरू, पटेल या सरोजिनी नायडू को लिखे। निजी पत्र उनकी <strong>आंतरिक मनोदशा, शंकाओं और कमजोरियों</strong> को उजागर करते हैं। सार्वजनिक मंच पर नेता संयमित होता है, लेकिन पत्रों में वह अपनी असली भावनाएँ (गुस्सा, हताशा) व्यक्त कर सकता है।</li>
+                </ul>
+            </div>
+
+            <div class="or-divider"><span>अथवा / OR</span></div>
+
+            <p class="q-text">प्रश्न 16. (भाग 2) गांधीजी के योगदान को समझने के लिए सरकारी रिकॉर्ड्स एवं समकालीन अखबारों का क्या महत्व है?</p>
+            <button class="toggle-btn" onclick="toggle('ans16b')">विस्तृत उत्तर देखें</button>
+            <div id="ans16b" class="answer-box detailed-answer">
+                <strong>विस्तृत उत्तर:</strong><br>
+                <ul>
+                    <li><strong>सरकारी रिकॉर्ड्स:</strong> औपनिवेशिक पुलिस और गृह विभाग की गुप्त रिपोर्ट्स (Fortnightly Reports) महत्वपूर्ण हैं। हालाँकि, ये निष्पक्ष नहीं थीं। अंग्रेज अधिकारी गांधीजी को शक की नजर से देखते थे और उन्हें 'शांति भंग करने वाला' मानते थे। ये रिकॉर्ड्स <strong>सत्ता पक्ष का डर</strong> दिखाते हैं।</li>
+                    <li><strong>समकालीन अखबार:</strong> उस समय के भारतीय और विदेशी अखबार (जैसे 'टाइम' मैगजीन) आंदोलन की हर खबर छापते थे। ये हमें बताते हैं कि दांडी यात्रा जैसी घटनाओं का <strong>आम जनता और विश्व जनमत</strong> पर क्या असर हो रहा था।</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="question-card">
+            <p class="q-text">प्रश्न 17. (भाग 1) संविधान सभा ने हिन्दी को राजभाषा घोषित किया, इसको लेकर क्या बहस हुई?</p>
+            <button class="toggle-btn" onclick="toggle('ans17a')">विस्तृत उत्तर देखें</button>
+            <div id="ans17a" class="answer-box detailed-answer">
+                <strong>विस्तृत उत्तर:</strong><br>
+                संविधान सभा में भाषा का मुद्दा सबसे विवादित था:
+                <ul>
+                    <li><strong>हिंदी समर्थक:</strong> आर.वी. धुलेकर ने उग्रता से कहा कि "संविधान हिंदी में बनना चाहिए" और जो हिंदी नहीं जानते वे यहाँ रहने योग्य नहीं हैं। वे इसे राष्ट्रभाषा बनाना चाहते थे।</li>
+                    <li><strong>विरोध:</strong> दक्षिण भारतीय सदस्यों (जैसे दुर्गाबाई, रामलिंगम चेट्टियार) ने कड़ा विरोध किया। उन्हें डर था कि हिंदी उन पर थोपी जा रही है जिससे उनकी संस्कृति दबेगी। उन्होंने अलगाव की चेतावनी दी।</li>
+                    <li><strong>समझौता:</strong> 'मुंशी-अयंग्गर फॉर्मूले' के तहत हिंदी को <strong>'राजभाषा' (Official Language)</strong> घोषित किया गया, राष्ट्रभाषा नहीं। देवनागरी लिपि अपनाई गई, लेकिन 15 वर्षों तक सरकारी कार्यों में अंग्रेजी का प्रयोग जारी रखने का निर्णय लिया गया।</li>
+                </ul>
+            </div>
+
+            <div class="or-divider"><span>अथवा / OR</span></div>
+
+            <p class="q-text">प्रश्न 17. (भाग 2) संविधान सभा ने केंद्र सरकार की शक्तियों को कैसे परिभाषित किया?</p>
+            <button class="toggle-btn" onclick="toggle('ans17b')">विस्तृत उत्तर देखें</button>
+            <div id="ans17b" class="answer-box detailed-answer">
+                <strong>विस्तृत उत्तर:</strong><br>
+                नेहरू, अम्बेडकर और पटेल एक <strong>'मजबूत केंद्र'</strong> चाहते थे। शक्तियों का विभाजन तीन सूचियों में हुआ:
+                <ul>
+                    <li><strong>संघ सूची:</strong> (रक्षा, विदेश, संचार) - इस पर केवल केंद्र कानून बना सकता है।</li>
+                    <li><strong>राज्य सूची:</strong> (कृषि, पुलिस, स्वास्थ्य) - राज्यों का अधिकार।</li>
+                    <li><strong>समवर्ती सूची:</strong> (शिक्षा, वन) - दोनों का अधिकार, पर विवाद में केंद्र मान्य।</li>
+                    <li><strong>अवशिष्ट शक्तियाँ:</strong> जो विषय सूचियों में नहीं थे, वे केंद्र को दिए गए। साथ ही अनुच्छेद 356 के तहत केंद्र को राज्य सरकारें बर्खास्त करने की शक्ति भी मिली।</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section-title">खण्ड-द (Section-D) - निबंधात्मक (विस्तार से)</div>
+
+        <div class="question-card">
+            <p class="q-text">प्रश्न 18. (भाग 1) सिन्धु घाटी सभ्यता के निर्वाह के तरीकों से आप सिन्धुवासियों की किन गतिविधियों का अनुमान लगा सकते हैं?</p>
+            <button class="toggle-btn" onclick="toggle('ans18a')">निबंधात्मक उत्तर देखें</button>
+            <div id="ans18a" class="answer-box detailed-answer">
+                <strong>निबंधात्मक उत्तर:</strong><br>
+                सिन्धु सभ्यता के अवशेषों से उनके जीवन निर्वाह के तरीकों का विस्तृत पता चलता है:
+                <ol>
+                    <li><strong>कृषि गतिविधियाँ:</strong> हड़प्पा स्थलों से गेहूँ, जौ, दाल, सफेद चना और तिल के दाने मिले हैं। लोथल से चावल और गुजरात से बाजरा मिला है। बनावली में 'मिट्टी के हल' और कालीबंगा में 'जुते हुए खेत' (दो फसलें एक साथ) के साक्ष्य मिले हैं। यह एक उन्नत कृषि समाज था।</li>
+                    <li><strong>पशुपालन:</strong> भेड़, बकरी, भैंस और सूअर की हड्डियाँ बताती हैं कि ये जानवर पालतू थे। इनका उपयोग दूध, मांस और ऊन के लिए होता था। बैलों का प्रयोग खेती और गाड़ी खींचने में होता था।</li>
+                    <li><strong>शिकार:</strong> जंगली प्रजातियों (वराह, हिरण, घड़ियाल) की हड्डियाँ मिली हैं, जो बताती हैं कि वे शिकार करते थे या आखेटक समुदायों से मांस का व्यापार करते थे।</li>
+                    <li><strong>मत्स्य पालन:</strong> नदी किनारे बसे होने के कारण मछली भोजन का मुख्य स्रोत थी।</li>
+                </ol>
+            </div>
+
+            <div class="or-divider"><span>अथवा / OR</span></div>
+
+            <p class="q-text">प्रश्न 18. (भाग 2) यदि सिन्धु सभ्यता की लिपि पढ़ ली जाए, तो भारतीय इतिहास लेखन पर इसका क्या प्रभाव पड़ेगा?</p>
+            <button class="toggle-btn" onclick="toggle('ans18b')">निबंधात्मक उत्तर देखें</button>
+            <div id="ans18b" class="answer-box detailed-answer">
+                <strong>निबंधात्मक उत्तर:</strong><br>
+                सिन्धु लिपि अभी तक एक पहेली है। यदि इसे पढ़ लिया जाए, तो इतिहास में क्रांतिकारी बदलाव आएंगे:
+                <ol>
+                    <li><strong>अंधकार युग की समाप्ति:</strong> अभी यह 'आद्य-ऐतिहासिक' काल है। लिपि पढ़ने से यह पूर्णतः 'ऐतिहासिक काल' बन जाएगा और 1500 ई.पू. से पहले का इतिहास साफ हो जाएगा।</li>
+                    <li><strong>मूल निवासी व भाषा:</strong> पता चलेगा कि सिन्धुवासी कौन थे—द्रविड़ या आर्य? उनकी भाषा क्या थी? इससे 'आर्य आक्रमण सिद्धांत' की पुष्टि या खंडन हो सकेगा।</li>
+                    <li><strong>राजनीतिक ढांचा:</strong> मुहरों पर लिखे लेखों से शासकों के नाम, पद और प्रशासन प्रणाली (राजा था या पुरोहित?) का पता चलेगा।</li>
+                    <li><strong>धार्मिक रहस्य:</strong> पशुपति शिव, मातृदेवी आदि आकृतियों के सही नाम और वैदिक धर्म से उनके संबंधों का खुलासा होगा।</li>
+                    <li><strong>व्यापार व साहित्य:</strong> मेसोपोटामिया के साथ पत्राचार और उनके साहित्य का ज्ञान होगा।</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="question-card">
+            <p class="q-text">प्रश्न 19. (भाग 1) प्रारम्भिक भक्ति आन्दोलन में अलवारों और नयनारों के योगदान का विश्लेषण कीजिए।</p>
+            <button class="toggle-btn" onclick="toggle('ans19a')">निबंधात्मक उत्तर देखें</button>
+            <div id="ans19a" class="answer-box detailed-answer">
+                <strong>निबंधात्मक उत्तर:</strong><br>
+                छठी शताब्दी में तमिलनाडु में अलवारों (विष्णु भक्त) और नयनारों (शिव भक्त) ने भक्ति आंदोलन की नींव रखी:
+                <ol>
+                    <li><strong>सरल मार्ग:</strong> इन्होंने जटिल यज्ञों के बजाय 'प्रेम और भक्ति' को मोक्ष का मार्ग बताया। वे घूमते-घूमते सुंदर भजन गाते थे।</li>
+                    <li><strong>जाति विरोध:</strong> इन्होंने ब्राह्मणवादी वर्चस्व और जाति प्रथा को चुनौती दी। इनके भक्त किसान, शिल्पी और 'अस्पृश्य' जातियों से भी थे। यह एक सामाजिक क्रांति थी।</li>
+                    <li><strong>लोकभाषा:</strong> इन्होंने संस्कृत को छोड़कर आम जनता की भाषा 'तमिल' में रचनाएँ कीं। अलवारों के 'नलायिरादिव्यप्रबंधम्' को 'तमिल वेद' कहा गया।</li>
+                    <li><strong>महिला सशक्तिकरण:</strong> अंडाल (अलवार) और करइक्काल अम्मैयार (नयनार) जैसी महिलाओं ने सामाजिक बंधनों को तोड़कर ईश्वर प्रेम का मार्ग चुना।</li>
+                    <li><strong>मंदिर संस्कृति:</strong> चोल और पल्लव राजाओं ने इन्हें संरक्षण दिया और भव्य मंदिर बनवाए।</li>
+                </ol>
+            </div>
+
+            <div class="or-divider"><span>अथवा / OR</span></div>
+
+            <p class="q-text">प्रश्न 19. (भाग 2) भक्ति आन्दोलन में कर्नाटक की वीरशैव परम्परा के योगदान का विश्लेषण कीजिए।</p>
+            <button class="toggle-btn" onclick="toggle('ans19b')">निबंधात्मक उत्तर देखें</button>
+            <div id="ans19b" class="answer-box detailed-answer">
+                <strong>निबंधात्मक उत्तर:</strong><br>
+                12वीं शताब्दी में कर्नाटक में बासवन्ना ने वीरशैव (लिंगायत) आंदोलन चलाया:
+                <ol>
+                    <li><strong>समानता:</strong> इन्होंने जाति व्यवस्था और 'पवित्रता-अपवित्रता' के नियमों का कड़ा विरोध किया। शिव की नजर में सब बराबर हैं।</li>
+                    <li><strong>लिंग पूजा:</strong> ये शिव को 'लिंग' रूप में पूजते हैं और चांदी के पिटारे में लघु लिंग धारण करते हैं।</li>
+                    <li><strong>धार्मिक सुधार:</strong> इन्होंने पुनर्जन्म को नहीं माना। मृतकों को दफनाने की प्रथा चलाई (दाह संस्कार के बजाय)। श्राद्ध आदि कर्मकांडों का खंडन किया।</li>
+                    <li><strong>सामाजिक सुधार:</strong> बाल विवाह का विरोध किया और विधवा विवाह को मान्यता दी।</li>
+                    <li><strong>वचन साहित्य:</strong> अपनी शिक्षाएँ कन्नड़ भाषा में 'वचन' (कविताओं) के माध्यम से दीं, जो आम जनता के लिए सुलभ थीं।</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="question-card">
+            <p class="q-text">प्रश्न 20. मानचित्र कार्य</p>
+            <p>(अ) मांडा, मास्की, नासिक, अंबाला <strong>या</strong> (ब) मिताथल, कलिंग, अमरावती, सहारनपुर</p>
+            <button class="toggle-btn" onclick="toggle('ans20')">दोनों मानचित्रों के स्थान देखें</button>
+            <div id="ans20" class="answer-box">
+                <strong>सेट (अ) के स्थान:</strong>
+                <ul>
+                    <li><strong>मांडा:</strong> जम्मू और कश्मीर (चिनाब नदी)।</li>
+                    <li><strong>मास्की:</strong> कर्नाटक (रायचूर, अशोक का शिलालेख)।</li>
+                    <li><strong>नासिक:</strong> महाराष्ट्र (गोदावरी तट)।</li>
+                    <li><strong>अंबाला:</strong> हरियाणा (पंजाब सीमा)।</li>
+                </ul>
+                <hr>
+                <strong>सेट (ब) के स्थान:</strong>
+                <ul>
+                    <li><strong>मिताथल:</strong> हरियाणा (भिवानी)।</li>
+                    <li><strong>कलिंग:</strong> ओडिशा (तटीय क्षेत्र)।</li>
+                    <li><strong>अमरावती:</strong> आंध्र प्रदेश (कृष्णा नदी, स्तूप)।</li>
+                    <li><strong>सहारनपुर:</strong> उत्तर प्रदेश।</li>
+                </ul>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 50px;">
+            <button class="btn" onclick="showQuiz()" style="background-color: #8e44ad;">क्विज शुरू करें (Start Quiz)</button>
+        </div>
+    </div>
+
+    <div id="quiz-section">
+        <div class="quiz-intro-box">
+            <h2>इतिहास मेगा क्विज (50 प्रश्न)</h2>
+            <p>इस क्विज में मॉडल पेपर के सभी प्रश्न और इतिहास के अन्य महत्वपूर्ण प्रश्न शामिल हैं।</p>
+            <button class="btn" onclick="startQuiz()">अभी शुरू करें</button>
+        </div>
+        
+        <div id="quiz-container" style="display:none; margin-top: 30px;">
+            </div>
+        
+        <div id="submit-btn-div" style="display:none; text-align: center; margin-top: 20px;">
+            <button class="btn" onclick="submitQuiz()" style="background-color: var(--success-color);">क्विज सबमिट करें</button>
+        </div>
+    </div>
+
+    <div id="result-section">
+        <h2>परिणाम (Result)</h2>
+        <div class="score-card" id="score-display"></div>
+        <table id="result-table">
+            <thead>
+                <tr>
+                    <th>प्रश्न</th>
+                    <th>आपका उत्तर</th>
+                    <th>सही उत्तर</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <br>
+        <button class="btn" onclick="location.reload()">पुनः प्रयास करें</button>
+    </div>
+
+</div>
+
+<script>
+    // Quiz Data (50 Questions)
+    const quizData = [
+        // From Paper
+        { q: "पाटलिपुत्र को मगध की राजधानी कब बनाया गया?", o: ["प्रथम श. ई.पू.", "द्वितीय श. ई.पू.", "चौथी श. ई.पू.", "छठी श. ई.पू."], a: 2 },
+        { q: "अशोक ने 'धम्म महामात्र' की नियुक्ति क्यों की?", o: ["युद्ध प्रचार", "धम्म प्रचार", "स्वयं प्रचार", "पेड़ लगाने"], a: 1 },
+        { q: "सुदर्शन सरोवर का जीर्णोद्धार किसने करवाया?", o: ["समुद्रगुप्त", "बिन्दुसार", "अजातशत्रु", "रूद्रदामन"], a: 3 },
+        { q: "एक ही जीविका वाली जातियों को क्या कहते थे?", o: ["श्रेणी", "अग्रहार", "हलवाहा", "उत्वर"], a: 0 },
+        { q: "साँची की खोज किस वर्ष हुई?", o: ["1800", "1805", "1818", "1820"], a: 2 },
+        { q: "नारियल व पान का वर्णन किसने किया?", o: ["इब्न बतूता", "अल-बिरूनी", "बर्नियर", "तैवर्नियर"], a: 0 },
+        { q: "अल-बिरूनी ने किस भाषा का प्रयोग किया?", o: ["हिंदी", "अरबी", "फ्रेंच", "उर्दू"], a: 1 },
+        { q: "कबीर के गुरु कौन थे?", o: ["रैदास", "सूरदास", "रामानंद", "दादू"], a: 2 },
+        { q: "किस स्थान के लोग 'पारसीक' कहलाते थे?", o: ["फारस", "तजाकिस्तान", "तुर्की", "ग्रीक"], a: 0 },
+        { q: "बृहदेश्वर मंदिर कहाँ स्थित है?", o: ["पणजी", "हैदराबाद", "तंजावुर", "अमरावती"], a: 2 },
+        { q: "विजयनगर में 'कुदिरई चेट्टी' कौन थे?", o: ["घोड़ों के व्यापारी", "सोने के व्यापारी", "रत्नों के व्यापारी", "कालीमिर्च के व्यापारी"], a: 0 },
+        { q: "मुगल काल में 'मुजरियान' का अर्थ था?", o: ["जमींदार", "जाति", "किसान", "मुखिया"], a: 2 },
+        { q: "जोवान्नी कारेरी भारत कब आया?", o: ["15वीं सदी", "16वीं सदी", "17वीं सदी", "18वीं सदी"], a: 2 },
+        { q: "रैयतवाड़ी क्या थी?", o: ["सिंचाई", "फसल", "भू-राजस्व प्रणाली", "फसल प्रकार"], a: 2 },
+        { q: "औपनिवेशिक शासन सबसे पहले कहाँ लगा?", o: ["महाराष्ट्र", "बंगाल", "यूपी", "दिल्ली"], a: 1 },
+        { q: "1859 में 'रिलीफ ऑफ लखनऊ' किसने बनाया?", o: ["नोल पेटन", "टॉमस जोन्स बार्कर", "फेलिस", "ग्रांट"], a: 1 },
+        { q: "किस कमांडर ने लखनऊ को मुक्त कराया?", o: ["हेनरी लारेंस", "जेम्स ऑट्रम", "हेनरी हेवलॉक", "कॉलिन कैम्पबेल"], a: 3 },
+        { q: "विंस्टल चर्चिल का कथन किससे संबंधित था?", o: ["साम्राज्य न टूटने देने", "भारत छोड़ने", "युद्ध रोकने", "संविधान बनाने"], a: 0 },
+        { q: "खेतड़ी में मिली संस्कृति को क्या नाम दिया गया?", o: ["हड़प्पा", "गणेश्वर-जोधपुरा", "रंगपुर", "कालीबंगा"], a: 1 },
+        { q: "विवाह उपहारों पर स्त्री के स्वामित्व को क्या कहते थे?", o: ["दहेज", "स्त्रीधन", "वधुमूल्य", "उपहार"], a: 1 },
+        { q: "1333 में सिंध पहुँचने वाला यात्री कौन था?", o: ["बर्नियर", "मनुची", "इब्न बतूता", "मार्को पोलो"], a: 2 },
+        { q: "1976 में राष्ट्रीय महत्व का स्थल किसे घोषित किया गया?", o: ["साँची", "हम्पी", "लोथल", "अजंता"], a: 1 },
+        { q: "बुकानन ने किन पहाड़ियों का दौरा किया?", o: ["अरावली", "नीलगिरी", "राजमहल", "विंध्याचल"], a: 2 },
+        { q: "जातक कथाएँ किस भाषा में हैं?", o: ["संस्कृत", "पाली", "प्राकृत", "तमिल"], a: 1 },
+        { q: "बुद्ध की उपमाता (पहली भिक्खुनी) कौन थीं?", o: ["यशोधरा", "माया", "महाप्रजापति गौतमी", "आम्रपाली"], a: 2 },
+        { q: "जजिया देने वाले संरक्षित गैर-मुस्लिम क्या कहलाते थे?", o: ["उलेमा", "जिम्मी", "शरिया", "मलेच्छ"], a: 1 },
+        { q: "कृष्णदेव राय ने कौनसी उपाधि धारण की?", o: ["आंध्र भोज", "यवन राज्य स्थापनाचार्य", "गजबेटकर", "महाराजाधिराज"], a: 1 },
+        { q: "'जिन्स-ए-कामिल' का अर्थ क्या है?", o: ["खराब फसल", "सर्वोत्तम (नगदी) फसल", "सिंचाई कर", "जमीन का प्रकार"], a: 1 },
+        { q: "बंगाल के धनी किसान क्या कहलाते थे?", o: ["जोतदार/हवलदार", "जमींदार", "तलूकदार", "रैयत"], a: 0 },
+        { q: "संविधान सभा ने सरकारी कार्यों के लिए अंग्रेजी को कितने वर्ष की छूट दी?", o: ["10 वर्ष", "15 वर्ष", "20 वर्ष", "स्थायी"], a: 1 },
+        // Extra Questions
+        { q: "हड़प्पा सभ्यता का सबसे प्रसिद्ध पुरास्थल कौन सा है?", o: ["हड़प्पा", "मोहनजोदड़ो", "लोथल", "राखीगढ़ी"], a: 1 },
+        { q: "मिट्टी से बने हल के प्रतिरूप कहाँ मिले हैं?", o: ["बनावली", "हड़प्पा", "कालीबंगा", "धोलावीरा"], a: 0 },
+        { q: "महाभारत का समालोचनात्मक संस्करण किसने तैयार किया?", o: ["वी.एस. सुखथांकर", "बी.बी. लाल", "कनिंघम", "मार्शल"], a: 0 },
+        { q: "मनुस्मृति का संकलन कब हुआ?", o: ["200 ई.पू.-200 ई.", "500 ई.पू.", "1000 ई.", "इनमें से कोई नहीं"], a: 0 },
+        { q: "साँची का स्तूप किस राज्य में है?", o: ["यूपी", "बिहार", "मध्य प्रदेश", "महाराष्ट्र"], a: 2 },
+        { q: "खालसा पंथ की स्थापना किसने की?", o: ["गुरु नानक", "गुरु गोविंद सिंह", "गुरु अर्जुन देव", "गुरु तेग बहादुर"], a: 1 },
+        { q: "विजयनगर साम्राज्य की स्थापना कब हुई?", o: ["1336", "1347", "1565", "1206"], a: 0 },
+        { q: "विजयनगर का सबसे प्रतापी शासक कौन था?", o: ["हरिहर", "बुक्का", "कृष्णदेव राय", "रामराय"], a: 2 },
+        { q: "आइने-अकबरी का लेखक कौन था?", o: ["अकबर", "अबुल फजल", "बदायूँनी", "टोडरमल"], a: 1 },
+        { q: "संथाल विद्रोह कब हुआ?", o: ["1831", "1855-56", "1875", "1900"], a: 1 },
+        { q: "1857 की क्रांति कहाँ से शुरू हुई?", o: ["दिल्ली", "कानपुर", "मेरठ", "झाँसी"], a: 2 },
+        { q: "गांधीजी दक्षिण अफ्रीका से भारत कब लौटे?", o: ["1910", "1915", "1919", "1920"], a: 1 },
+        { q: "जलियांवाला बाग हत्याकांड कब हुआ?", o: ["1919", "1920", "1922", "1929"], a: 0 },
+        { q: "नमक कानून तोड़ने के लिए कौन सी यात्रा की गई?", o: ["असहयोग", "दांडी यात्रा", "भारत छोड़ो", "चंपारण"], a: 1 },
+        { q: "संविधान सभा के अध्यक्ष कौन थे?", o: ["अम्बेडकर", "नेहरू", "राजेन्द्र प्रसाद", "पटेल"], a: 2 },
+        { q: "प्रारूप समिति के अध्यक्ष कौन थे?", o: ["अम्बेडकर", "गांधी", "नेहरू", "राजगोपालाचारी"], a: 0 },
+        { q: "भारतीय संविधान कब लागू हुआ?", o: ["1947", "1949", "1950", "1930"], a: 2 },
+        { q: "महात्मा गांधी के राजनीतिक गुरु कौन थे?", o: ["तिलक", "गोखले", "लाजपत राय", "बिपन चंद्र"], a: 1 },
+        { q: "जैन धर्म के 24वें तीर्थंकर कौन थे?", o: ["ऋषभदेव", "पार्श्वनाथ", "महावीर", "बुद्ध"], a: 2 },
+        { q: "बंगाल में 'इस्तमरारी बंदोबस्त' कब लागू हुआ?", o: ["1793", "1800", "1757", "1850"], a: 0 }
+    ];
+
+    function startPaper() {
+        const name = document.getElementById('studentName').value;
+        const roll = document.getElementById('rollNumber').value;
+        if(name && roll) {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('paper-content').style.display = 'block';
+            document.getElementById('display-name').innerText = "विद्यार्थी: " + name;
+            document.getElementById('display-roll').innerText = "रोल नं: " + roll;
+            window.scrollTo(0,0);
+        } else {
+            alert("कृपया नाम और रोल नंबर भरें।");
+        }
+    }
+
+    function toggle(id) {
+        var x = document.getElementById(id);
+        if (x.style.display === "block") {
+            x.style.display = "none";
+        } else {
+            x.style.display = "block";
+        }
+    }
+
+    function showQuiz() {
+        document.getElementById('paper-content').style.display = 'none';
+        document.getElementById('quiz-section').style.display = 'block';
+        window.scrollTo(0,0);
+    }
+
+    function startQuiz() {
+        document.querySelector('.quiz-intro-box').style.display = 'none';
+        const container = document.getElementById('quiz-container');
+        container.style.display = 'block';
+        document.getElementById('submit-btn-div').style.display = 'block';
+
+        let html = '';
+        quizData.forEach((item, index) => {
+            html += `<div class="quiz-question">
+                <p><strong>प्रश्न ${index + 1}:</strong> ${item.q}</p>
+                <div class="quiz-options">`;
+            item.o.forEach((opt, i) => {
+                html += `<label><input type="radio" name="q${index}" value="${i}"> ${opt}</label>`;
+            });
+            html += `</div></div>`;
+        });
+        container.innerHTML = html;
+        window.scrollTo(0,0);
+    }
+
+    function submitQuiz() {
+        let score = 0;
+        let html = '';
+        
+        quizData.forEach((item, index) => {
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            const val = selected ? parseInt(selected.value) : -1;
+            const isCorrect = val === item.a;
+            
+            if(isCorrect) score++;
+
+            html += `<tr>
+                <td>${item.q}</td>
+                <td class="${isCorrect ? 'correct' : 'incorrect'}">${val !== -1 ? item.o[val] : 'छोड़ा गया'}</td>
+                <td class="correct">${item.o[item.a]}</td>
+            </tr>`;
+        });
+
+        document.getElementById('quiz-section').style.display = 'none';
+        document.getElementById('result-section').style.display = 'block';
+
+        const percentage = (score / quizData.length) * 100;
+        const resultText = percentage >= 33 ? 'उत्तीर्ण (Pass)' : 'असफल (Fail)';
+        
+        document.getElementById('score-display').innerHTML = `
+            <h2>स्कोर: ${score} / ${quizData.length}</h2>
+            <h3>${percentage.toFixed(1)}% - ${resultText}</h3>
+        `;
+        document.querySelector('#result-table tbody').innerHTML = html;
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>

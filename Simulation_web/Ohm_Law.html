@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ohm's Law Simulation (Units Updated)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #2c3e50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            user-select: none;
+        }
+
+        h2 {
+            color: #f1c40f;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            margin-bottom: 5px;
+        }
+
+        .lab-container {
+            position: relative;
+            width: 850px; /* थोड़ा चौड़ा किया ताकि टेक्स्ट फिट हो */
+            background: #34495e;
+            border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            padding: 20px;
+            border: 2px solid #7f8c8d;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            background: #2c3e50;
+            border-radius: 10px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            border: 1px solid #bdc3c7;
+        }
+
+        .controls {
+            width: 100%;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between; /* स्पेसिंग ठीक की */
+            align-items: center;
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 250px;
+            height: 10px;
+            background: #7f8c8d;
+            border-radius: 5px;
+            outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 25px;
+            height: 25px;
+            background: #f1c40f;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 5px black;
+        }
+
+        .readings {
+            display: flex;
+            flex-direction: column; /* एक के नीचे एक दिखाएं ताकि साफ़ दिखे */
+            gap: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            min-width: 300px;
+        }
+
+        .reading-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 5px;
+        }
+
+        .unit-label {
+            color: #bdc3c7;
+            font-size: 16px;
+        }
+
+        .val-box {
+            color: #f1c40f;
+            font-size: 20px;
+        }
+
+        .definition-box {
+            margin-top: 20px;
+            width: 850px;
+            background: #ecf0f1;
+            color: #2c3e50;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 8px solid #27ae60;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .footer-info {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #95a5a6;
+        }
+        .cc-badge { background: #e74c3c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; margin-right: 5px;}
+
+    </style>
+</head>
+<body>
+
+    <h2>ओम का नियम (Ohm's Law: V = IR)</h2>
+
+    <div class="lab-container">
+        <canvas id="circuitCanvas" width="750" height="350"></canvas>
+
+        <div class="controls">
+            <div style="text-align: center;">
+                <label style="font-size: 18px; display: block; margin-bottom: 10px; color:#f1c40f;">वोल्टेज नियंत्रक (Voltage Control)</label>
+                <input type="range" id="voltageSlider" min="0" max="9" step="0.1" value="0">
+                <div style="margin-top:5px; font-size:14px; color:#bdc3c7;">Slide to change Voltage</div>
+            </div>
+
+            <div class="readings">
+                <div class="reading-item">
+                    <span>V <span class="unit-label">(वोल्ट)</span></span>
+                    <span id="vVal" class="val-box">0.0 V</span>
+                </div>
+                <div class="reading-item">
+                    <span>I <span class="unit-label">(एम्पीयर)</span></span>
+                    <span id="iVal" class="val-box">0.00 A</span>
+                </div>
+                <div class="reading-item" style="border:none;">
+                    <span>R <span class="unit-label">(ओम)</span></span>
+                    <span class="val-box" style="color:#2ecc71;">10 Ω</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="definition-box">
+        <h3 style="margin-top:0; color:#c0392b;">परिभाषा (Definition):</h3>
+        <p style="margin: 0; font-size: 16px; line-height: 1.6;">
+            "यदि किसी चालक की भौतिक अवस्थाएँ (जैसे ताप) स्थिर रहें, तो चालक के सिरों के बीच का <strong>विभवांतर [V]</strong> (वोल्ट में), उसमें प्रवाहित <strong>धारा [I]</strong> (एम्पीयर में) के समानुपाती होता है।"
+            <br><br>
+            <strong>सूत्र:</strong> <span style="background:#dfe6e9; padding:2px 8px; border-radius:4px; font-weight:bold;">V = I × R</span>
+        </p>
+    </div>
+
+    <div class="footer-info">
+        <span class="cc-badge">CC</span> <span style="color:#0be881; font-weight:bold;">@Rohitash Bharia</span>
+    </div>
+
+<script>
+    const canvas = document.getElementById('circuitCanvas');
+    const ctx = canvas.getContext('2d');
+    const slider = document.getElementById('voltageSlider');
+    const vVal = document.getElementById('vVal');
+    const iVal = document.getElementById('iVal');
+
+    // पैरामीटर्स
+    let voltage = 0;
+    const resistance = 10; 
+    let current = 0;
+    let electronOffset = 0;
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // गणना
+        voltage = parseFloat(slider.value);
+        current = voltage / resistance; 
+
+        // टेक्स्ट अपडेट
+        vVal.innerText = voltage.toFixed(1) + " V";
+        iVal.innerText = current.toFixed(2) + " A";
+
+        // ड्राइंग
+        drawWires();
+        drawBattery(voltage);
+        drawResistorLabel();
+        drawAmmeter(current);
+        drawBulb(current);
+        drawElectrons(current);
+
+        requestAnimationFrame(animate);
+    }
+
+    function drawWires() {
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = "#7f8c8d";
+        ctx.lineJoin = "round";
+        ctx.beginPath();
+        ctx.moveTo(100, 50); 
+        ctx.lineTo(650, 50);
+        ctx.lineTo(650, 300);
+        ctx.lineTo(100, 300);
+        ctx.lineTo(100, 50);
+        ctx.stroke();
+    }
+
+    function drawBattery(volts) {
+        const x = 100; const y = 175;
+        ctx.clearRect(x - 10, y - 40, 20, 80);
+        
+        ctx.lineWidth = 4; ctx.strokeStyle = "#ecf0f1";
+        ctx.beginPath(); ctx.moveTo(x - 20, y - 10); ctx.lineTo(x + 20, y - 10); ctx.stroke(); // +
+        ctx.lineWidth = 6;
+        ctx.beginPath(); ctx.moveTo(x - 10, y + 10); ctx.lineTo(x + 10, y + 10); ctx.stroke(); // -
+
+        ctx.fillStyle = "#f1c40f"; ctx.font = "bold 20px Arial";
+        ctx.fillText(volts > 0 ? volts + "V" : "OFF", x - 60, y + 5);
+        
+        ctx.fillStyle = "#e74c3c"; ctx.font = "bold 24px Arial"; ctx.fillText("+", x - 35, y - 15);
+        ctx.fillStyle = "#3498db"; ctx.fillText("-", x - 35, y + 30);
+    }
+
+    function drawResistorLabel() {
+        const x = 375; const y = 300;
+        ctx.fillStyle = "#95a5a6"; ctx.fillRect(x - 50, y - 15, 100, 30);
+        ctx.strokeStyle = "white"; ctx.lineWidth = 2; ctx.strokeRect(x - 50, y - 15, 100, 30);
+        ctx.fillStyle = "black"; ctx.font = "14px Arial";
+        ctx.fillText("Resistor (R)", x - 40, y + 5);
+    }
+
+    function drawAmmeter(amp) {
+        const x = 375; const y = 50;
+        ctx.beginPath(); ctx.arc(x, y, 40, 0, Math.PI * 2);
+        ctx.fillStyle = "#ecf0f1"; ctx.fill();
+        ctx.lineWidth = 3; ctx.strokeStyle = "#2c3e50"; ctx.stroke();
+        
+        ctx.fillStyle = "#7f8c8d"; ctx.font = "bold 16px Arial"; ctx.fillText("A", x - 6, y - 15);
+        
+        let needleAngle = Math.PI + (amp * 1.5); 
+        let tx = x + Math.cos(needleAngle) * 30;
+        let ty = y + Math.sin(needleAngle) * 30;
+
+        ctx.beginPath(); ctx.moveTo(x, y + 10); ctx.lineTo(tx, ty);
+        ctx.strokeStyle = "#e74c3c"; ctx.lineWidth = 3; ctx.stroke();
+        
+        ctx.fillStyle = "black"; ctx.font = "12px monospace";
+        ctx.fillText(amp.toFixed(2) + "A", x - 18, y + 25);
+    }
+
+    function drawBulb(current) {
+        const x = 650; const y = 175;
+        if (current > 0.05) {
+            const glowRadius = 30 + (current * 100);
+            const grd = ctx.createRadialGradient(x, y, 10, x, y, glowRadius);
+            grd.addColorStop(0, `rgba(255, 255, 0, 1)`); 
+            grd.addColorStop(1, "rgba(255, 255, 0, 0)");
+            ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(x, y, glowRadius, 0, Math.PI*2); ctx.fill();
+        }
+        ctx.beginPath(); ctx.arc(x, y, 30, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${0.3 + current * 0.5})`; ctx.fill();
+        ctx.strokeStyle = "#bdc3c7"; ctx.lineWidth = 2; ctx.stroke();
+
+        ctx.beginPath(); ctx.moveTo(x - 10, y + 30); ctx.lineTo(x - 10, y + 10);
+        ctx.lineTo(x - 5, y - 5); ctx.lineTo(x + 5, y + 5); ctx.lineTo(x + 10, y - 5);
+        ctx.lineTo(x + 10, y + 30);
+        ctx.strokeStyle = (current > 0.1) ? "#fff" : "#7f8c8d";
+        ctx.lineWidth = (current > 0.5) ? 3 : 1; ctx.stroke();
+    }
+
+    function drawElectrons(current) {
+        if (current <= 0) return;
+        const speed = current * 3; 
+        electronOffset += speed;
+        if (electronOffset > 20) electronOffset = 0;
+        ctx.fillStyle = "#e67e22"; 
+        const spacing = 40;
+        
+        for(let i = 100; i < 650; i += spacing) {
+            let px = i + electronOffset; if(px < 650) { ctx.beginPath(); ctx.arc(px, 50, 3, 0, Math.PI*2); ctx.fill(); }
+        }
+        for(let i = 50; i < 300; i += spacing) {
+            let py = i + electronOffset; if(py < 300) { ctx.beginPath(); ctx.arc(650, py, 3, 0, Math.PI*2); ctx.fill(); }
+        }
+        for(let i = 650; i > 100; i -= spacing) {
+            let px = i - electronOffset; if(px > 100) { ctx.beginPath(); ctx.arc(px, 300, 3, 0, Math.PI*2); ctx.fill(); }
+        }
+        for(let i = 300; i > 50; i -= spacing) {
+            let py = i - electronOffset; if(py > 50) { ctx.beginPath(); ctx.arc(100, py, 3, 0, Math.PI*2); ctx.fill(); }
+        }
+    }
+
+    animate();
+</script>
+</body>
+</html>

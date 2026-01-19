@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iron Filings with Direction - Smart Manch</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #222;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            height: 100vh;
+        }
+        
+        h2 { color: #f1c40f; margin-top: 15px; text-align: center; }
+        
+        .container {
+            position: relative;
+            margin-top: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            border: 2px solid #444;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        canvas { display: block; cursor: grab; }
+        canvas:active { cursor: grabbing; }
+
+        .instruction {
+            position: absolute;
+            top: 10px; left: 50%; transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 15px; border-radius: 20px;
+            pointer-events: none; font-size: 14px; color: #ddd;
+            border: 1px solid #555; width: max-content;
+        }
+
+        /* CC Footer */
+        .footer {
+            margin-top: auto; width: 100%;
+            background-color: #2c3e50;
+            border-top: 4px solid #f1c40f;
+            padding: 15px; text-align: center;
+            font-size: 14px; color: #bdc3c7;
+        }
+        .footer img { height: 24px; vertical-align: middle; margin-right: 5px; }
+    </style>
+</head>
+<body>
+
+    <h2>चुंबकीय बल रेखाएं: बुरादा और दिशा</h2>
+
+    <div class="container">
+        <div id="canvas-container"></div>
+        <div class="instruction">
+            चुंबक को पकड़कर (Drag) घुमाएं | पीला तीर = दिशा (N &rarr; S)
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div>
+            <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="CC">
+            <img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="BY">
+            <span style="margin-left:5px;">Licensed under <strong>CC BY Rohitash Bharia</strong></span>
+        </div>
+        <div style="margin-top:5px; font-size:12px;">
+            Developed for Smart Manch Project
+        </div>
+    </footer>
+
+    <script>
+        let magnet;
+        let filings = []; // छोटे कण (Texture)
+        let arrows = [];  // दिशा बताने वाले तीर
+        let dragging = false;
+        let dragOffset;
+
+        function setup() {
+            let canvas = createCanvas(800, 450);
+            canvas.parent('canvas-container');
+            
+            magnet = new Magnet(width / 2, height / 2);
+            dragOffset = createVector(0, 0);
+
+            // 1. लोहे का बुरादा (Dense Grid)
+            // ये सिर्फ लाइनें होंगी
+            let cols = 50; let rows = 30;
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    // थोड़ी रैंडम पोजीशन ताकि नेचुरल लगे
+                    let x = (i * width/cols) + random(-5, 5);
+                    let y = (j * height/rows) + random(-5, 5);
+                    filings.push(new IronFiling(x, y, false));
+                }
+            }
+
+            // 2. दिशा वाले तीर (Sparse Grid)
+            // ये कम होंगे ताकि भीड़ न हो, लेकिन दिशा साफ़ दिखाएं
+            let arrowCols = 12; let arrowRows = 8;
+            for (let i = 1; i < arrowCols; i++) {
+                for (let j = 1; j < arrowRows; j++) {
+                    let x = (i * width/arrowCols);
+                    let y = (j * height/arrowRows);
+                    arrows.push(new IronFiling(x, y, true)); // true = isArrow
+                }
+            }
+        }
+
+        function draw() {
+            background(30);
+
+            // चुंबक की पोजीशन अपडेट
+            if (dragging) {
+                magnet.pos.x = mouseX + dragOffset.x;
+                magnet.pos.y = mouseY + dragOffset.y;
+            }
+
+            // 1. बुरादा ड्रा करें (Faint lines)
+            for (let f of filings) {
+                f.calculate(magnet);
+                f.show();
+            }
+
+            // 2. तीर ड्रा करें (Bright Arrows)
+            for (let a of arrows) {
+                a.calculate(magnet);
+                a.show();
+            }
+
+            // 3. चुंबक
+            magnet.show();
+        }
+
+        function mousePressed() {
+            if (magnet.isMouseOver()) {
+                dragging = true;
+                dragOffset.x = magnet.pos.x - mouseX;
+                dragOffset.y = magnet.pos.y - mouseY;
+            }
+        }
+        function mouseReleased() { dragging = false; }
+
+
+        // --- CLASSES ---
+
+        class Magnet {
+            constructor(x, y) {
+                this.pos = createVector(x, y);
+                this.w = 180; this.h = 50;
+            }
+            getNorth() { return createVector(this.pos.x + this.w/2 - 10, this.pos.y); }
+            getSouth() { return createVector(this.pos.x - this.w/2 + 10, this.pos.y); }
+            isMouseOver() {
+                return (mouseX > this.pos.x - this.w/2 && mouseX < this.pos.x + this.w/2 &&
+                        mouseY > this.pos.y - this.h/2 && mouseY < this.pos.y + this.h/2);
+            }
+            show() {
+                push(); translate(this.pos.x, this.pos.y); noStroke();
+                drawingContext.shadowBlur = 15; drawingContext.shadowColor = 'black';
+                
+                // South (Blue)
+                fill(52, 152, 219); rect(-this.w/2, -this.h/2, this.w/2, this.h, 5, 0, 0, 5);
+                fill(255); textSize(24); textStyle(BOLD); textAlign(CENTER, CENTER); text("S", -this.w/4, 0);
+
+                // North (Red)
+                fill(231, 76, 60); rect(0, -this.h/2, this.w/2, this.h, 0, 5, 5, 0);
+                fill(255); text("N", this.w/4, 0);
+                
+                drawingContext.shadowBlur = 0; pop();
+            }
+        }
+
+        class IronFiling {
+            constructor(x, y, isArrow) {
+                this.origPos = createVector(x, y); // Original grid position
+                this.pos = createVector(x, y);
+                this.angle = 0;
+                this.isArrow = isArrow; // अगर true है, तो तीर बनेगा, नहीं तो लाइन
+            }
+
+            calculate(m) {
+                // चुंबक के ज्यादा पास जाने पर कण छिप जाएं (Magnet body hiding)
+                if(this.pos.x > m.pos.x - m.w/2 && this.pos.x < m.pos.x + m.w/2 &&
+                   this.pos.y > m.pos.y - m.h/2 && this.pos.y < m.pos.y + m.h/2) {
+                    this.hidden = true; return;
+                } else { this.hidden = false; }
+
+                let N = m.getNorth();
+                let S = m.getSouth();
+
+                // Physics: Vector Field Calculation
+                // B = (r_N / d_N^3) - (r_S / d_S^3) ... simplified visual approximation
+                
+                // Repel from North
+                let fN = p5.Vector.sub(this.pos, N);
+                let dN = fN.mag();
+                // Avoid divide by zero visual glitch
+                dN = max(dN, 20); 
+                fN.normalize(); 
+                // Inverse square law for visual scale
+                fN.mult(10000 / (dN * dN));
+
+                // Attract to South
+                let fS = p5.Vector.sub(S, this.pos);
+                let dS = fS.mag();
+                dS = max(dS, 20);
+                fS.normalize();
+                fS.mult(10000 / (dS * dS));
+
+                let net = p5.Vector.add(fN, fS);
+                this.angle = net.heading();
+            }
+
+            show() {
+                if(this.hidden) return;
+
+                push();
+                translate(this.pos.x, this.pos.y);
+                rotate(this.angle);
+
+                if (this.isArrow) {
+                    // --- ARROW STYLE (Yellow, Sharp) ---
+                    noStroke(); fill(255, 255, 0);
+                    // Arrowhead shape
+                    beginShape();
+                    vertex(6, 0);
+                    vertex(-4, -4);
+                    vertex(-4, 4);
+                    endShape(CLOSE);
+                } else {
+                    // --- FILING STYLE (White/Grey Line) ---
+                    stroke(200, 200, 200, 100); // Semi-transparent
+                    strokeWeight(1.5);
+                    line(-6, 0, 6, 0);
+                }
+                pop();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Smart Manch - Color Master</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Hind:wght@500;700&display=swap');
+
+        body {
+            font-family: 'Hind', 'Segoe UI', sans-serif;
+            background-color: #E0F7FA;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none;
+            touch-action: none; /* Prevents scrolling while dragging */
+        }
+
+        /* --- HEADER & FOOTER --- */
+        header {
+            background: #0097A7;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+        h1 { margin: 0; font-size: 2.2rem; font-family: 'Fredoka One', cursive; }
+        .sub-text { font-size: 0.9rem; opacity: 0.9; }
+
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 10px;
+            background: white;
+            font-size: 12px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        /* --- GENERAL GAME AREA --- */
+        .game-container {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .level-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            transition: opacity 0.5s;
+        }
+        .active-level { display: flex; }
+
+        /* --- BUTTONS --- */
+        .nav-btn {
+            background: #FF6F00;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #bf360c;
+            margin-top: 15px;
+            font-weight: bold;
+            display: none; /* Hidden until task complete */
+        }
+        .nav-btn:active { transform: translateY(4px); box-shadow: none; }
+
+
+        /* ================= LEVEL 1 STYLES ================= */
+        .color-display-box {
+            width: 200px;
+            height: 200px;
+            background-color: #fff;
+            border: 5px solid #ccc;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: #333;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: background-color 0.3s;
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .color-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+        }
+        .color-btn:active { transform: scale(0.95); }
+
+
+        /* ================= LEVEL 2 STYLES (Drag Drop) ================= */
+        .drop-zone-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            width: 95%;
+            margin-bottom: 30px;
+        }
+
+        .drop-box {
+            width: 80px;
+            height: 60px;
+            border: 2px dashed #555;
+            background: rgba(255,255,255,0.7);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1.1;
+            color: #333;
+        }
+        .drop-box.correct { border-style: solid; border-color: #4CAF50; color: white; }
+
+        .draggable-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            width: 95%;
+            background: rgba(255,255,255,0.5);
+            padding: 15px;
+            border-radius: 15px;
+        }
+
+        .drag-item {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            cursor: grab;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            touch-action: none; /* Critical for touch drag */
+            position: relative; /* Needed for transform movement */
+            z-index: 10;
+        }
+        .drag-item:active { cursor: grabbing; z-index: 100; transform: scale(1.1); }
+        .drag-item.matched { opacity: 0; pointer-events: none; } /* Hide when matched */
+
+
+        /* ================= LEVEL 3 STYLES (Lab) ================= */
+        /* Reusing your preferred Lab Styles */
+        .bottles-rack { display: flex; gap: 20px; align-items: flex-end; z-index: 10; padding-bottom: 5px; }
+        .bottle-wrapper { width: 60px; height: 90px; display: flex; flex-direction: column; align-items: center; }
+        .bottle { width: 60px; height: 80px; border-radius: 10px; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; cursor: pointer; border: 2px solid rgba(255,255,255,0.6); font-size: 0.9rem; text-align: center; }
+        .pipe { width: 10px; height: 10px; background: #555; margin-top: -2px; border-radius: 0 0 5px 5px; }
+        .stream { position: absolute; width: 6px; background: transparent; transition: height 0.2s linear; z-index: 5; top: 90px; left: 50%; transform: translateX(-50%); }
+        .beaker { width: 220px; height: 140px; border: 6px solid #90A4AE; border-top: none; border-radius: 0 0 30px 30px; background: rgba(255,255,255,0.4); position: relative; overflow: hidden; margin-top: -5px; }
+        .beaker-liquid { position: absolute; bottom: 0; width: 100%; height: 0%; transition: 1s; }
+        .reset-lab-btn { background: #607D8B; color: white; border: none; padding: 10px 30px; border-radius: 30px; margin-top: 15px; }
+
+        /* Gradients */
+        .bg-red { background: linear-gradient(135deg, #ef5350, #c62828); }
+        .bg-yellow { background: linear-gradient(135deg, #ffee58, #f9a825); color: #333 !important; }
+        .bg-blue { background: linear-gradient(135deg, #42a5f5, #1565c0); }
+        .bg-green { background: linear-gradient(135deg, #66bb6a, #2e7d32); }
+        .bg-orange { background: linear-gradient(135deg, #ffa726, #ef6c00); }
+        .bg-purple { background: linear-gradient(135deg, #ab47bc, #7b1fa2); }
+        .bg-pink { background: linear-gradient(135deg, #ec407a, #c2185b); }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 id="header-title">Level 1</h1>
+        <div class="sub-text" id="header-desc">रंगों को पहचानो (Learn Colors)</div>
+    </header>
+
+    <div class="game-container">
+
+        <div id="level1" class="level-screen active-level">
+            <div id="display-box" class="color-display-box">
+                कलर बॉक्स<br>(Select a Color)
+            </div>
+
+            <div class="btn-grid">
+                <button class="color-btn bg-red" onclick="showColor('red', '#ef5350', 'लाल (Red)')">लाल</button>
+                <button class="color-btn bg-blue" onclick="showColor('blue', '#42a5f5', 'नीला (Blue)')">नीला</button>
+                <button class="color-btn bg-green" onclick="showColor('green', '#66bb6a', 'हरा (Green)')">हरा</button>
+                <button class="color-btn bg-yellow" onclick="showColor('yellow', '#ffee58', 'पीला (Yellow)')">पीला</button>
+                <button class="color-btn bg-orange" onclick="showColor('orange', '#ffa726', 'नारंगी (Orange)')">नारंगी</button>
+                <button class="color-btn bg-purple" onclick="showColor('purple', '#ab47bc', 'बैंगनी (Purple)')">बैंगनी</button>
+            </div>
+
+            <button id="btn-lvl1-next" class="nav-btn" onclick="goToLevel(2)">Level 2 खेले &rarr;</button>
+        </div>
+
+
+        <div id="level2" class="level-screen">
+            <p style="margin: 0 0 20px 0; color: #555;">रंग को सही नाम पर ले जाओ (Drag color to name)</p>
+            
+            <div class="drop-zone-container">
+                <div class="drop-box" data-color="red" id="target-red">लाल<br>Red</div>
+                <div class="drop-box" data-color="blue" id="target-blue">नीला<br>Blue</div>
+                <div class="drop-box" data-color="green" id="target-green">हरा<br>Green</div>
+                <div class="drop-box" data-color="yellow" id="target-yellow">पीला<br>Yellow</div>
+                <div class="drop-box" data-color="orange" id="target-orange">नारंगी<br>Orange</div>
+                <div class="drop-box" data-color="purple" id="target-purple">बैंगनी<br>Purple</div>
+                <div class="drop-box" data-color="pink" id="target-pink">गुलाबी<br>Pink</div>
+            </div>
+
+            <div class="draggable-container" id="drag-container">
+                </div>
+
+            <h2 id="lvl2-msg" style="color: #2e7d32; display:none;">शाबाश! (Well Done!)</h2>
+            <button id="btn-lvl2-next" class="nav-btn" onclick="goToLevel(3)">Level 3 खेले &rarr;</button>
+        </div>
+
+
+        <div id="level3" class="level-screen">
+            <div class="bottles-rack">
+                <div class="bottle-wrapper">
+                    <div class="bottle bg-red" onclick="pour('red')">लाल</div>
+                    <div class="pipe"></div>
+                    <div class="stream" id="stream-red" style="background-color: #ef5350; height: 0;"></div>
+                </div>
+                <div class="bottle-wrapper">
+                    <div class="bottle bg-yellow" onclick="pour('yellow')">पीला</div>
+                    <div class="pipe"></div>
+                    <div class="stream" id="stream-yellow" style="background-color: #ffee58; height: 0;"></div>
+                </div>
+                <div class="bottle-wrapper">
+                    <div class="bottle bg-blue" onclick="pour('blue')">नीला</div>
+                    <div class="pipe"></div>
+                    <div class="stream" id="stream-blue" style="background-color: #42a5f5; height: 0;"></div>
+                </div>
+            </div>
+
+            <div id="lab-result" style="height: 30px; font-weight: bold; margin-top: 10px;">मिक्स करें (Mix Colors)</div>
+
+            <div class="beaker">
+                <div class="beaker-liquid" id="main-liquid"></div>
+            </div>
+
+            <button class="reset-lab-btn" onclick="resetLab()">सफाई करें (Wash)</button>
+        </div>
+
+    </div>
+
+    <footer>
+        CC BY Rohitash Bharia
+    </footer>
+
+    <script>
+        // --- LEVEL MANAGEMENT ---
+        function goToLevel(lvl) {
+            // Hide all levels
+            document.querySelectorAll('.level-screen').forEach(el => el.classList.remove('active-level'));
+            
+            // Show requested level
+            document.getElementById('level' + lvl).classList.add('active-level');
+
+            // Update Header
+            const title = document.getElementById('header-title');
+            const desc = document.getElementById('header-desc');
+            
+            if(lvl === 2) {
+                title.innerText = "Level 2";
+                desc.innerText = "मिलान करें (Matching)";
+                initLevel2(); // Start game logic
+            } else if(lvl === 3) {
+                title.innerText = "Level 3";
+                desc.innerText = "कलर लैब (Magic Lab)";
+            }
+        }
+
+        // --- LEVEL 1 LOGIC ---
+        let lvl1Clicks = 0;
+        function showColor(colorName, hexCode, displayText) {
+            const box = document.getElementById('display-box');
+            box.style.backgroundColor = hexCode;
+            box.innerText = displayText;
+            
+            // Text color adjustment for readability
+            if(colorName === 'yellow') box.style.color = '#333';
+            else box.style.color = 'white';
+
+            // Show next button after 3 clicks
+            lvl1Clicks++;
+            if(lvl1Clicks >= 3) {
+                document.getElementById('btn-lvl1-next').style.display = 'inline-block';
+            }
+        }
+
+
+        // --- LEVEL 2 LOGIC (Advanced Drag & Drop) ---
+        function initLevel2() {
+            const colors = [
+                { id: 'd-red', color: 'red', cls: 'bg-red' },
+                { id: 'd-blue', color: 'blue', cls: 'bg-blue' },
+                { id: 'd-green', color: 'green', cls: 'bg-green' },
+                { id: 'd-yellow', color: 'yellow', cls: 'bg-yellow' },
+                { id: 'd-orange', color: 'orange', cls: 'bg-orange' },
+                { id: 'd-purple', color: 'purple', cls: 'bg-purple' },
+                { id: 'd-pink', color: 'pink', cls: 'bg-pink' }
+            ];
+
+            // Shuffle
+            colors.sort(() => Math.random() - 0.5);
+
+            const container = document.getElementById('drag-container');
+            container.innerHTML = ''; // Clear
+
+            colors.forEach(c => {
+                const div = document.createElement('div');
+                div.className = `drag-item ${c.cls}`;
+                div.setAttribute('data-color', c.color);
+                div.id = c.id;
+                // Add Pointer Events for dragging
+                div.onpointerdown = handleDragStart;
+                container.appendChild(div);
+            });
+        }
+
+        let matches = 0;
+        
+        // Custom Drag Logic to handle "Revert if wrong"
+        function handleDragStart(e) {
+            e.preventDefault();
+            const el = e.target;
+            const startX = e.clientX || e.touches[0].clientX;
+            const startY = e.clientY || e.touches[0].clientY;
+            
+            // Get initial position
+            const rect = el.getBoundingClientRect();
+            const offsetX = startX - rect.left;
+            const offsetY = startY - rect.top;
+
+            el.style.position = 'fixed';
+            el.style.zIndex = 1000;
+            
+            // Move function
+            function moveAt(pageX, pageY) {
+                el.style.left = pageX - offsetX + 'px';
+                el.style.top = pageY - offsetY + 'px';
+            }
+
+            // Initial placement
+            moveAt(startX, startY);
+
+            function onPointerMove(event) {
+                const clientX = event.clientX || (event.touches ? event.touches[0].clientX : 0);
+                const clientY = event.clientY || (event.touches ? event.touches[0].clientY : 0);
+                moveAt(clientX, clientY);
+            }
+
+            // Drop Function
+            function onPointerUp(event) {
+                document.removeEventListener('pointermove', onPointerMove);
+                document.removeEventListener('pointerup', onPointerUp);
+                el.onpointerup = null;
+
+                // Check collision
+                el.style.display = 'none'; // Hide briefly to check element below
+                const clientX = event.clientX || (event.changedTouches ? event.changedTouches[0].clientX : 0);
+                const clientY = event.clientY || (event.changedTouches ? event.changedTouches[0].clientY : 0);
+                let elemBelow = document.elementFromPoint(clientX, clientY);
+                el.style.display = 'block'; // Show again
+
+                // Find closest drop box
+                let dropZone = elemBelow ? elemBelow.closest('.drop-box') : null;
+
+                if (dropZone && dropZone.getAttribute('data-color') === el.getAttribute('data-color')) {
+                    // --- CORRECT MATCH ---
+                    dropZone.style.backgroundColor = getComputedStyle(el).background; // Visual feedback
+                    dropZone.classList.add('correct'); // Add border
+                    dropZone.innerHTML = "✅"; // Show checkmark
+                    el.classList.add('matched'); // Hide dragged item
+                    
+                    matches++;
+                    if(matches === 7) {
+                        document.getElementById('lvl2-msg').style.display = 'block';
+                        document.getElementById('btn-lvl2-next').style.display = 'inline-block';
+                    }
+                } else {
+                    // --- WRONG: REVERT (Bounce back) ---
+                    // Simple revert: Remove inline styles to let it go back to flex flow
+                    el.style.transition = "transform 0.3s";
+                    el.style.transform = "scale(0.1)"; // Shrink effect
+                    setTimeout(() => {
+                        el.style.position = '';
+                        el.style.left = '';
+                        el.style.top = '';
+                        el.style.zIndex = '';
+                        el.style.transform = "scale(1)";
+                        el.style.transition = "";
+                    }, 300);
+                }
+            }
+
+            document.addEventListener('pointermove', onPointerMove);
+            document.addEventListener('pointerup', onPointerUp);
+        }
+
+
+        // --- LEVEL 3 LOGIC (Lab) ---
+        let l3First = null;
+        let l3Mixed = false;
+        let l3Pouring = false;
+        const l3Liquid = document.getElementById('main-liquid');
+        const l3Res = document.getElementById('lab-result');
+
+        const labColors = { 'red': '#ef5350', 'yellow': '#ffee58', 'blue': '#42a5f5' };
+        const labMix = {
+            'red-yellow': { h: '#ff9800', n: 'नारंगी (Orange)' }, 'yellow-red': { h: '#ff9800', n: 'नारंगी (Orange)' },
+            'blue-yellow': { h: '#66bb6a', n: 'हरा (Green)' }, 'yellow-blue': { h: '#66bb6a', n: 'हरा (Green)' },
+            'red-blue': { h: '#ab47bc', n: 'बैंगनी (Purple)' }, 'blue-red': { h: '#ab47bc', n: 'बैंगनी (Purple)' }
+        };
+
+        function pour(c) {
+            if(l3Mixed || l3Pouring) return;
+            if(l3First === c) return;
+
+            l3Pouring = true;
+            const strm = document.getElementById('stream-'+c);
+            strm.style.height = "140px"; // Stream down
+
+            setTimeout(() => {
+                if(!l3First) {
+                    l3First = c;
+                    l3Liquid.style.backgroundColor = labColors[c];
+                    l3Liquid.style.height = "40%";
+                    l3Res.innerText = "दूसरा रंग डालें...";
+                } else {
+                    const k = l3First + '-' + c;
+                    const r = labMix[k];
+                    l3Liquid.style.backgroundColor = r.h;
+                    l3Liquid.style.height = "80%";
+                    l3Res.innerText = "✨ " + r.n + " ✨";
+                    l3Mixed = true;
+                }
+                setTimeout(() => { strm.style.height = "0"; l3Pouring = false; }, 400);
+            }, 300);
+        }
+
+        function resetLab() {
+            l3First = null; l3Mixed = false;
+            l3Liquid.style.height = "0%";
+            l3Res.innerText = "मिक्स करें";
+            setTimeout(()=> l3Liquid.style.backgroundColor="transparent", 1000);
+        }
+
+    </script>
+</body>
+</html>

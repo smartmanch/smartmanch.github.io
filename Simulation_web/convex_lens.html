@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convex Lens Simulation - Smart Manch</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh; /* फुटर को नीचे रखने के लिए */
+        }
+        h2 { color: #2c3e50; margin-bottom: 10px; }
+        .controls {
+            margin-bottom: 15px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+        }
+        canvas {
+            border: 2px solid #333;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            background-color: #fff;
+        }
+        .info-text { font-size: 14px; color: #555; margin-top: 5px; }
+        input[type=range] { width: 100%; cursor: pointer; }
+        
+        /* कॉपीराइट स्टाइल */
+        .footer {
+            margin-top: auto; /* पेज के अंत में धकेलने के लिए */
+            padding-top: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+            text-align: center;
+            width: 100%;
+        }
+        .footer strong {
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>उत्तल लेंस (Convex Lens) सिमुलेशन</h2>
+
+    <div class="controls">
+        <label><strong>वस्तु की दूरी (u): </strong><span id="uVal"></span></label>
+        <br>
+        <input type="range" id="sliderU" min="-350" max="-20" value="-200" step="1">
+        <div class="info-text">स्लाइडर को हिलाकर वस्तु (लाल तीर) को आगे-पीछे करें।</div>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div class="footer">
+        <p>Developed for Smart Manch</p>
+        <p>&copy; 2026 <strong>Rohitash Bharia</strong>. All Rights Reserved.</p>
+    </div>
+
+    <script>
+        let f = 100; // फोकस दूरी (Focal Length) - पिक्सेल में
+        let u = -200; // वस्तु की दूरी (शुरुआती)
+        let h_o = 60; // वस्तु की ऊँचाई
+        let slider;
+
+        function setup() {
+            // कैनवस बनाना
+            let canvas = createCanvas(800, 400);
+            canvas.parent('canvas-container');
+            
+            // स्लाइडर को HTML एलिमेंट से जोड़ना
+            slider = select('#sliderU');
+        }
+
+        function draw() {
+            background(255); // सफेद बैकग्राउंड
+            
+            // 1. इनपुट लेना
+            u = parseInt(slider.value());
+            document.getElementById('uVal').innerText = u + " px";
+
+            // 2. गणना (Lens Formula: 1/v - 1/u = 1/f => 1/v = 1/f + 1/u)
+            let v;
+            if (u + f === 0) {
+                v = Infinity; // अगर फोकस पर है तो अनंत
+            } else {
+                v = (f * u) / (u + f);
+            }
+
+            // आवर्धन (Magnification): m = v/u = h_i / h_o
+            let m = v / u;
+            let h_i = m * h_o;
+
+            // 3. ओरिजिन (Origin) को स्क्रीन के बीच में सेट करना
+            translate(width / 2, height / 2);
+
+            // --- ड्राइंग शुरू ---
+
+            // मुख्य अक्ष (Principal Axis)
+            stroke(0);
+            strokeWeight(1);
+            line(-width / 2, 0, width / 2, 0);
+
+            // लेंस बनाना (Convex Lens)
+            fill(220, 240, 255, 150);
+            stroke(0, 100, 200);
+            strokeWeight(2);
+            ellipse(0, 0, 30, 250); // पतला लेंस
+            
+            // फोकस बिंदु (F1, F2, 2F1, 2F2)
+            fill(0);
+            noStroke();
+            text("O", 5, 20); // ऑप्टिकल सेंटर
+            
+            ellipse(-f, 0, 5, 5); text("F1", -f-10, 20);
+            ellipse(f, 0, 5, 5); text("F2", f-10, 20);
+            ellipse(-2*f, 0, 5, 5); text("2F1", -2*f-15, 20);
+            ellipse(2*f, 0, 5, 5); text("2F2", 2*f-15, 20);
+
+            // --- वस्तु (Object) - लाल तीर ---
+            stroke(255, 0, 0);
+            strokeWeight(3);
+            line(u, 0, u, -h_o); // डंडी
+            // तीर का निशान
+            line(u, -h_o, u - 5, -h_o + 10);
+            line(u, -h_o, u + 5, -h_o + 10);
+            
+            noStroke(); fill(255, 0, 0);
+            text("वस्तु (Object)", u - 20, -h_o - 10);
+
+            // --- किरण आरेख (Ray Diagram) ---
+            stroke(100, 100, 100, 100); // हल्का ग्रे रंग
+            strokeWeight(1);
+
+            // किरण 1: मुख्य अक्ष के समानांतर -> फोकस (F2) से गुजरेगी
+            line(u, -h_o, 0, -h_o); // लेंस तक
+            if (v !== Infinity) {
+                 // अगर इमेज अनंत पर नहीं है, तो इमेज तक लाइन खींचो
+                 let slope1 = ((-h_i) - (-h_o)) / (v - 0); 
+                 line(0, -h_o, v, -h_i); // लेंस से इमेज तक
+            } else {
+                 line(0, -h_o, width, -h_o + (h_o/f)*width); // समानांतर किरण
+            }
+
+            // किरण 2: ऑप्टिकल सेंटर (O) से सीधी निकलेगी
+            line(u, -h_o, v, -h_i); 
+
+            // --- प्रतिबिम्ब (Image) - नीला तीर ---
+            if (Math.abs(v) < 2000) { // अगर बहुत दूर नहीं है
+                stroke(0, 0, 255);
+                strokeWeight(3);
+                
+                // आभासी (Virtual) इमेज के लिए डैश लाइन
+                if (v < 0) { drawingContext.setLineDash([5, 5]); } 
+                else { drawingContext.setLineDash([]); }
+
+                line(v, 0, v, -h_i);
+                
+                // तीर का निशान
+                if(h_i > 0) { // सीधा
+                    line(v, -h_i, v - 5, -h_i + 10);
+                    line(v, -h_i, v + 5, -h_i + 10);
+                } else { // उल्टा
+                    line(v, -h_i, v - 5, -h_i - 10);
+                    line(v, -h_i, v + 5, -h_i - 10);
+                }
+                drawingContext.setLineDash([]); // रीसेट
+
+                noStroke(); fill(0, 0, 255);
+                let nature = v > 0 ? "वास्तविक (Real)" : "आभासी (Virtual)";
+                text("प्रतिबिम्ब (" + nature + ")", v - 30, -h_i + (h_i>0 ? -15 : 15));
+            }
+
+            // --- स्थिति टेक्स्ट डिस्प्ले ---
+            resetMatrix(); // निर्देशांक वापस सामान्य करें टेक्स्ट के लिए
+            fill(50);
+            noStroke();
+            textSize(16);
+            let posText = "";
+            
+            // स्थिति की पहचान
+            if (u < -2*f) posText = "स्थिति: 2F1 से परे (Beyond 2F1)";
+            else if (u == -2*f) posText = "स्थिति: 2F1 पर (At 2F1)";
+            else if (u < -f) posText = "स्थिति: F1 और 2F1 के बीच";
+            else if (u == -f) posText = "स्थिति: फोकस F1 पर (At Focus)";
+            else posText = "स्थिति: F1 और O के बीच (Between F1 & O)";
+
+            text(posText, 20, 30);
+            text("v = " + (v === Infinity ? "Infinity" : v.toFixed(1)), 20, 55);
+            
+            // लेंस का सूत्र दिखाना
+            text("1/f = 1/v - 1/u", width - 120, 30);
+        }
+    </script>
+</body>
+</html>

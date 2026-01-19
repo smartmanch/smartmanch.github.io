@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School EVM System</title>
+    <style>
+        /* CSS: EVM और डिजाइन */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eef2f3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            user-select: none; /* टेक्स्ट सिलेक्शन बंद */
+        }
+
+        .container {
+            background-color: #f8f9fa; /* EVM जैसा ऑफ-व्हाइट रंग */
+            border: 15px solid #2c3e50; /* मशीन का बाहरी फ्रेम */
+            border-radius: 10px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            width: 95%;
+            max-width: 750px;
+            position: relative;
+            overflow: hidden;
+            min-height: 400px; /* मिनिमम हाइट ताकि बटन सही दिखें */
+        }
+
+        /* हेडर सेक्शन */
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* एडमिन/सेटअप पैनल स्टाइल */
+        #setupPanel, #resultPanel, #closedPanel {
+            padding: 30px;
+            text-align: center;
+        }
+
+        input, select {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        button.admin-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        /* --- EVM वोटिंग स्क्रीन डिजाइन --- */
+        .evm-row {
+            display: flex;
+            align-items: center; 
+            border-bottom: 2px solid #bdc3c7;
+            background-color: #fff;
+            padding: 10px 15px;
+            height: 90px;
+        }
+
+        .evm-row:last-child {
+            border-bottom: none;
+        }
+
+        .serial-no {
+            width: 40px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            border-right: 2px solid #bdc3c7;
+            margin-right: 15px;
+        }
+
+        .candidate-details {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-right: 20px;
+        }
+
+        .cand-name {
+            font-size: 22px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #000;
+        }
+
+        .cand-symbol {
+            font-size: 45px;
+            margin-right: 10px;
+        }
+
+        /* --- बटन और लाइट का नया लेआउट --- */
+        .vote-control {
+            display: flex;          
+            align-items: center;    
+            justify-content: flex-end;
+            gap: 20px;              
+            background-color: #eee;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        /* LED लाइट */
+        .led-light {
+            width: 20px;
+            height: 20px;
+            background-color: #555; /* बुझी हुई लाइट */
+            border-radius: 50%;
+            border: 3px solid #333;
+        }
+
+        .led-light.on {
+            background-color: #ff0000; /* जलती हुई लाल लाइट */
+            box-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
+            border-color: #800000;
+        }
+
+        /* नीला बटन */
+        .blue-button {
+            width: 90px;
+            height: 45px;
+            background: linear-gradient(to bottom, #3498db, #2980b9);
+            border: 2px solid #1c5980;
+            border-radius: 25px; /* EVM जैसा अंडाकार */
+            cursor: pointer;
+            box-shadow: 0 5px #1a5276;
+        }
+
+        .blue-button:active {
+            box-shadow: 0 2px #1a5276;
+            transform: translateY(3px);
+        }
+
+        /* स्टेटस मैसेज (वोट रिकॉर्डेड) */
+        #statusMessage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #0f0;
+            padding: 30px 50px;
+            font-size: 28px;
+            border-radius: 10px;
+            display: none;
+            z-index: 100;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        /* वोटिंग बंद करने का बटन */
+        .footer-controls {
+            background-color: #2c3e50;
+            padding: 10px;
+            text-align: right;
+        }
+        
+        .close-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* Results Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; }
+        th { background: #2c3e50; color: white; }
+        .winner { background-color: #d4edda; font-weight: bold; color: green; }
+        
+        .hidden { display: none; }
+
+        /* वोटिंग क्लोज होने के बाद वाली स्क्रीन का स्टाइल */
+        #closedPanel h1 { font-size: 40px; color: #e74c3c; margin-bottom: 10px; }
+        #closedPanel p { font-size: 18px; color: #555; margin-bottom: 30px; }
+        .result-trigger-btn {
+            background: #f39c12;
+            color: white;
+            font-size: 24px;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 5px #d35400;
+            font-weight: bold;
+        }
+        .result-trigger-btn:hover { background: #e67e22; }
+        .result-trigger-btn:active { transform: translateY(2px); box-shadow: 0 2px #d35400; }
+
+    </style>
+</head>
+<body>
+
+<audio id="beepSound" src="beep-04.mp3" preload="auto"></audio>
+
+<div class="container">
+    
+    <div id="setupPanel">
+        <h2 style="color:#2c3e50;">⚙️ EVM Control Unit (Setup)</h2>
+        
+        <select id="postSelect">
+            <option value="Class Monitor">Class Monitor</option>
+            <option value="School President">School President</option>
+            <option value="Prime Minister">Prime Minister</option>
+            <option value="Sports Minister">Sports Minister</option>
+            <option value="Discipline Minister">Discipline Minister</option>
+        </select>
+        <input type="password" id="adminPassword" placeholder="Set Admin Password" />
+
+        <div id="candidatesContainer"></div>
+
+        <button class="admin-btn" onclick="addCandidate()">+ Add Candidate</button>
+        <button class="admin-btn" style="background:#7f8c8d" onclick="removeCandidate()">- Remove</button>
+        <br><br>
+        <button class="admin-btn" style="background:#27ae60; width:80%; font-size:18px;" onclick="startEVM()">✅ POWER ON EVM (Start Voting)</button>
+    </div>
+
+    <div id="votingPanel" class="hidden">
+        <div class="header">
+            <span style="font-size:14px;">ELECTION COMMISSION</span>
+            <span id="displayPost" style="font-weight:bold; color:#f1c40f;">POST</span>
+            <span style="font-size:14px;">READY</span>
+        </div>
+
+        <div id="ballotUnit">
+            </div>
+
+        <div id="statusMessage">
+            ✅ VOTE RECORDED<br>
+            <span style="font-size:16px; color:#ddd; display:block; margin-top:10px;">Wait for Next Voter...</span>
+        </div>
+
+        <div class="footer-controls">
+            <button class="close-btn" onclick="stopVoting()">CLOSE POLL</button>
+        </div>
+    </div>
+
+    <div id="closedPanel" class="hidden">
+        <h1>🔒 Poll Closed</h1>
+        <p>Voting has been stopped securely.</p>
+        <p>Click the button below to reveal the count.</p>
+        <br>
+        <button class="result-trigger-btn" onclick="showResults()">📊 SHOW RESULT</button>
+    </div>
+
+    <div id="resultPanel" class="hidden">
+        <h2>📊 ELECTION RESULT</h2>
+        <h3 id="resultPostName"></h3>
+        <table id="resultTable">
+            <thead>
+                <tr>
+                    <th>Sym.</th>
+                    <th>Candidate</th>
+                    <th>Votes</th>
+                </tr>
+            </thead>
+            <tbody id="resultBody"></tbody>
+        </table>
+        <h1 id="winnerText"></h1>
+        <button class="admin-btn" onclick="location.reload()">Start New Election</button>
+    </div>
+
+</div>
+
+<script>
+    // --- वेरिएबल्स ---
+    let candidates = [];
+    let savedPassword = "";
+    let isMachineLocked = false; 
+    const symbols = ["📖", "🖊️", "⚽", "🌳", "💡", "🪁", "🧢", "🍎", "🏏", "🚲"];
+
+    window.onload = () => { addCandidate(); addCandidate(); };
+
+    function addCandidate() {
+        if(candidates.length >= 8) return alert("Max 8 candidates!");
+        const id = candidates.length + 1;
+        const div = document.createElement("div");
+        div.innerHTML = `
+            <input type="text" id="name-${id}" placeholder="Candidate ${id} Name" style="width:60%">
+            <select id="symbol-${id}" style="width:30%">
+                ${symbols.map(s => `<option value="${s}">${s}</option>`).join('')}
+            </select>
+        `;
+        document.getElementById("candidatesContainer").appendChild(div);
+        candidates.push({id: id});
+    }
+
+    function removeCandidate() {
+        if(candidates.length <= 2) return alert("Min 2 candidates needed!");
+        const container = document.getElementById("candidatesContainer");
+        container.removeChild(container.lastChild);
+        candidates.pop();
+    }
+
+    function startEVM() {
+        const pwd = document.getElementById("adminPassword").value;
+        if(!pwd) return alert("Set a password first!");
+        savedPassword = pwd;
+
+        let tempCandidates = [];
+        for(let i=0; i<candidates.length; i++) {
+            let name = document.getElementById(`name-${i+1}`).value;
+            let sym = document.getElementById(`symbol-${i+1}`).value;
+            if(!name) return alert("Enter all names!");
+            tempCandidates.push({ name: name, symbol: sym, votes: 0 });
+        }
+        candidates = tempCandidates;
+
+        document.getElementById("setupPanel").classList.add("hidden");
+        document.getElementById("votingPanel").classList.remove("hidden");
+        document.getElementById("displayPost").innerText = document.getElementById("postSelect").value;
+        
+        renderBallotUnit();
+    }
+
+    function renderBallotUnit() {
+        const container = document.getElementById("ballotUnit");
+        container.innerHTML = "";
+
+        candidates.forEach((cand, index) => {
+            const row = document.createElement("div");
+            row.className = "evm-row";
+            row.innerHTML = `
+                <div class="serial-no">${index + 1}</div>
+                <div class="candidate-details">
+                    <span class="cand-name">${cand.name}</span>
+                    <span class="cand-symbol">${cand.symbol}</span>
+                </div>
+                <div class="vote-control">
+                    <div class="led-light" id="led-${index}"></div>
+                    <button class="blue-button" onclick="castVote(${index})"></button>
+                </div>
+            `;
+            container.appendChild(row);
+        });
+    }
+
+    function castVote(index) {
+        if (isMachineLocked) return;
+
+        isMachineLocked = true; // लॉक लगा दिया
+
+        // 1. LED जलाएं
+        document.getElementById(`led-${index}`).classList.add("on");
+
+        // 2. बीप बजाएं
+        const beep = document.getElementById("beepSound");
+        if(beep) {
+            beep.currentTime = 0;
+            beep.play().catch(e => console.log("Audio play error: ", e));
+        }
+
+        // 3. वोट गिनें
+        candidates[index].votes++;
+
+        // 4. मेसेज दिखाएं (1.5 सेकंड बाद)
+        setTimeout(() => {
+            document.getElementById("statusMessage").style.display = "block";
+        }, 1500); 
+
+        // 5. सिस्टम रिसेट (7 सेकंड बाद)
+        setTimeout(() => {
+            document.getElementById(`led-${index}`).classList.remove("on");
+            document.getElementById("statusMessage").style.display = "none";
+            isMachineLocked = false; // लॉक खोला
+        }, 7000); 
+    }
+
+    // --- मुख्य बदलाव यहाँ किया गया है ---
+    function stopVoting() {
+        const input = prompt("Enter Admin Password to Close:");
+        if (input === savedPassword) {
+            // पासवर्ड सही होने पर वोटिंग स्क्रीन छुपाओ और 'रिजल्ट बटन' वाली स्क्रीन दिखाओ
+            document.getElementById("votingPanel").classList.add("hidden");
+            document.getElementById("closedPanel").classList.remove("hidden"); // नया इंटरमीडिएट पैनल
+        } else {
+            alert("Wrong Password!");
+        }
+    }
+
+    function showResults() {
+        // अब 'Result' बटन दबाने पर यह फंक्शन चलेगा
+        document.getElementById("closedPanel").classList.add("hidden"); // बटन वाली स्क्रीन छुपाओ
+        document.getElementById("resultPanel").classList.remove("hidden"); // असली रिजल्ट दिखाओ
+        
+        document.getElementById("resultPostName").innerText = document.getElementById("displayPost").innerText;
+
+        const tbody = document.getElementById("resultBody");
+        candidates.sort((a, b) => b.votes - a.votes); 
+
+        let maxVotes = candidates[0].votes;
+        let isTie = candidates.length > 1 && candidates[1].votes === maxVotes;
+
+        tbody.innerHTML = "";
+        candidates.forEach(c => {
+            let rowClass = (c.votes === maxVotes && maxVotes > 0) ? "winner" : "";
+            let row = `<tr class="${rowClass}">
+                <td style="font-size:20px;">${c.symbol}</td>
+                <td>${c.name}</td>
+                <td>${c.votes}</td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+
+        if (maxVotes === 0) {
+            document.getElementById("winnerText").innerText = "No Votes Cast!";
+        } else if (isTie) {
+            document.getElementById("winnerText").innerText = "It's a Tie! 🤝";
+        } else {
+            document.getElementById("winnerText").innerText = `🏆 Winner: ${candidates[0].name}`;
+        }
+    }
+</script>
+
+</body>
+</html>

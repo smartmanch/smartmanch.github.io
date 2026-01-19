@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scattering & Tyndall Effect - Smart Manch</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #1e272e;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 10px;
+        }
+        h2 { color: #f1c40f; margin-bottom: 10px; text-align: center; }
+        
+        .controls {
+            background: #2f3640;
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid #555;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            width: 95%;
+            max-width: 800px;
+        }
+
+        .menu-bar { display: flex; gap: 10px; }
+        
+        button {
+            padding: 8px 20px; border: none; border-radius: 20px;
+            cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s;
+        }
+        .btn-active { background-color: #f1c40f; color: #000; box-shadow: 0 0 10px #f1c40f; }
+        .btn-inactive { background-color: #444; color: #ccc; }
+
+        canvas {
+            border: 3px solid #555; border-radius: 10px;
+            background-color: #000; margin-top: 15px;
+        }
+
+        .info-panel {
+            background: #222; padding: 10px; border-radius: 8px;
+            text-align: center; font-size: 14px; color: #ccc;
+            margin-top: 10px; border-left: 4px solid #3498db;
+            width: 90%; max-width: 700px;
+        }
+
+        input[type=range] { width: 200px; cursor: pointer; accent-color: #3498db; }
+
+        /* Footer */
+        .cc-footer {
+            margin-top: 20px; padding: 10px; background-color: #2c3e50;
+            border-top: 3px solid #f1c40f; width: 100%; text-align: center;
+            border-radius: 10px 10px 0 0; font-size: 12px; color: #bdc3c7;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>प्रकाश का प्रकीर्णन (Scattering of Light)</h2>
+
+    <div class="controls">
+        <div class="menu-bar">
+            <button id="btn1" class="btn-active" onclick="setMode(1)">1. टिंडल प्रभाव (Tyndall Effect)</button>
+            <button id="btn2" class="btn-inactive" onclick="setMode(2)">2. नीला आकाश (Blue Sky)</button>
+        </div>
+        
+        <div style="display:flex; align-items:center; gap:10px;">
+            <label id="sliderLabel">कणों की मात्रा (Particles):</label>
+            <input type="range" id="mainSlider" min="0" max="100" value="0">
+        </div>
+    </div>
+
+    <div id="canvas-container"></div>
+    <div class="info-panel" id="infoText">निर्देश: स्लाइडर बढ़ाकर पानी में दूध/कण मिलाएं।</div>
+
+    <footer class="cc-footer">
+        <strong>CC BY Rohitash Bharia</strong> | Developed for Smart Manch
+    </footer>
+
+    <script>
+        let mode = 1;
+        let slider;
+        let particles = []; // For Tyndall
+        let skyParticles = []; // For Sky
+
+        function setup() {
+            let canvas = createCanvas(750, 450);
+            canvas.parent('canvas-container');
+            angleMode(DEGREES);
+            slider = select('#mainSlider');
+            
+            // Initialize particles
+            for(let i=0; i<200; i++) {
+                particles.push({
+                    x: random(200, 550), y: random(150, 350), 
+                    vx: random(-0.5, 0.5), vy: random(-0.5, 0.5), size: random(1,3)
+                });
+                skyParticles.push({
+                    x: random(0, 750), y: random(0, 300), 
+                    size: random(1, 2)
+                });
+            }
+            setMode(1);
+        }
+
+        function draw() {
+            let val = parseFloat(slider.value());
+            
+            if (mode === 1) {
+                drawTyndallEffect(val);
+            } else {
+                drawBlueSky(val);
+            }
+        }
+
+        // --- 1. TYNDALL EFFECT ---
+        function drawTyndallEffect(impurity) {
+            background(30);
+            
+            // 1. Torch
+            drawTorch(50, height/2);
+
+            // 2. Beaker
+            let bx = 200, by = 100, bw = 350, bh = 250;
+            
+            // Beaker Back
+            noStroke(); fill(50, 50, 70); rect(bx, by, bw, bh);
+            
+            // Solution Color logic
+            // 0 = Clear Water, 100 = Milky
+            let alpha = map(impurity, 0, 100, 20, 150);
+            fill(200, 230, 255, alpha); rect(bx, by, bw, bh);
+
+            // 3. Particles (Scatterers)
+            let activeParticles = map(impurity, 0, 100, 0, 200);
+            
+            fill(255); noStroke();
+            for(let i=0; i<activeParticles; i++) {
+                let p = particles[i];
+                // Move
+                p.x += p.vx; p.y += p.vy;
+                if(p.x < bx || p.x > bx+bw) p.vx *= -1;
+                if(p.y < by || p.y > by+bh) p.vy *= -1;
+                
+                // Draw Particle
+                ellipse(p.x, p.y, p.size);
+            }
+
+            // 4. Light Beam
+            // The beam is only visible if it hits particles
+            // Beam Visibility = impurity level
+            let beamAlpha = map(impurity, 0, 100, 5, 150);
+            
+            // Draw Beam Path inside beaker
+            noStroke();
+            // Core Beam
+            fill(255, 255, 200, beamAlpha);
+            rect(bx, height/2 - 15, bw, 30);
+            
+            // Glow / Scatter
+            drawingContext.shadowBlur = 20; 
+            drawingContext.shadowColor = `rgba(255, 255, 255, ${beamAlpha/255})`;
+            rect(bx, height/2 - 10, bw, 20);
+            drawingContext.shadowBlur = 0;
+
+            // Light entering visual
+            stroke(255, 255, 0, 150); strokeWeight(2);
+            line(110, height/2, bx, height/2);
+
+            // Light exiting (weaker if milky)
+            let exitStrength = map(impurity, 0, 100, 255, 50);
+            stroke(255, 255, 0, exitStrength);
+            line(bx+bw, height/2, width, height/2);
+
+            // Beaker Front Outline
+            stroke(200, 200, 255, 100); strokeWeight(4); noFill();
+            rect(bx, by, bw, bh);
+
+            // Labels
+            fill(255); noStroke(); textSize(14);
+            text("टॉर्च", 50, height/2 + 50);
+            
+            if(impurity < 10) {
+                text("शुद्ध पानी (True Solution)", width/2, by - 10);
+                fill(150); text("पथ अदृश्य है", width/2, height/2 + 40);
+            } else {
+                text("कोलाइडल विलयन (Colloidal Solution)", width/2, by - 10);
+                fill(255, 255, 0); text("प्रकाश का पथ दृश्यमान (Visible)", width/2, height/2 + 40);
+            }
+        }
+
+        // --- 2. BLUE SKY / RED SUNSET ---
+        function drawBlueSky(sunPosSlider) {
+            // Mapping slider 0-100 to Sun Angle (0 = Noon, 100 = Sunset)
+            // 0 deg is top, 90 deg is horizon
+            let sunAngle = map(sunPosSlider, 0, 100, -90, 0); 
+            
+            // Sky Color Interpolation
+            // Noon (Blue) -> Sunset (Orange/Red)
+            let cNoon = color(135, 206, 235); // Sky Blue
+            let cSunset = color(20, 20, 40);  // Darker as sun sets, but horizon glows
+            
+            // Calculate Background Color based on Sun Position
+            // This is the "scattered light" reaching our eyes from the sky generally
+            let t = map(sunPosSlider, 0, 100, 0, 1);
+            let skyCol = lerpColor(cNoon, color(253, 94, 83), t*0.5); // Blending to reddish
+            
+            if (t > 0.8) skyCol = lerpColor(skyCol, color(10, 10, 30), (t-0.8)*5); // Darken at very end
+
+            // Draw Sky Gradient
+            setGradient(0, 0, width, height, color(0,0,100), skyCol); // Simple fill for now
+            background(skyCol);
+
+            // Earth / Ground
+            noStroke(); fill(34, 139, 34);
+            rect(0, height - 80, width, 80);
+            
+            // Observer
+            drawObserver(width/2, height - 80);
+
+            // Sun Position Calculation
+            // Center of rotation is bottom-center
+            let cx = width/2; 
+            let cy = height + 100; 
+            let r = height + 50;
+            
+            let sunX = cx + r * cos(sunAngle - 90); // Adjust for coord system
+            let sunY = cy + r * sin(sunAngle - 90);
+            
+            // Actual visual sun pos (clamped for visual)
+            // Let's just move it linear for simplicity in this view
+            let sX = map(sunPosSlider, 0, 100, width/2, 50);
+            let sY = map(sunPosSlider, 0, 100, 50, height - 100);
+
+            // Sun Color Change (White/Yellow -> Red)
+            let sunColor = lerpColor(color(255, 255, 200), color(255, 50, 0), t);
+            
+            // Draw Sun
+            drawSun(sX, sY, sunColor);
+
+            // ATMOSPHERE PARTICLES & SCATTERING VISUALIZATION
+            // Show rays hitting particles
+            strokeWeight(1);
+            for(let i=0; i<50; i++) {
+                let p = skyParticles[i];
+                
+                // Only draw rays for some particles
+                if(dist(sX, sY, p.x, p.y) < 400) {
+                    // Ray from sun to particle
+                    let distFactor = dist(sX, sY, width/2, height-80); // Distance sun to eye
+                    
+                    // Logic:
+                    // If Sun is high (dist small): Blue scatters everywhere.
+                    // If Sun is low (dist large): Blue scatters away, Red passes through.
+                    
+                    // Draw incident ray (White)
+                    stroke(255, 255, 255, 50);
+                    line(sX, sY, p.x, p.y);
+                    
+                    // Scattering at particle
+                    if (sunPosSlider < 60) {
+                        // Day time: Blue Scattering
+                        fill(100, 200, 255); noStroke(); ellipse(p.x, p.y, 3);
+                        // Scatter rays
+                        stroke(100, 200, 255, 100);
+                        line(p.x, p.y, p.x+random(-10,10), p.y+random(-10,10));
+                    } else {
+                        // Sunset: Blue scattered away, only Reddish tint remains or nothing
+                        // Less blue scattering visible near observer
+                        if(random() > 0.8) {
+                           fill(255, 100, 100); noStroke(); ellipse(p.x, p.y, 2);
+                        }
+                    }
+                }
+            }
+
+            // Direct Light to Observer
+            // Noon: White/Yellow. Sunset: Red.
+            stroke(sunColor); strokeWeight(2); 
+            // Dashed line representing light path
+            drawingContext.setLineDash([5, 15]);
+            line(sX, sY, width/2, height-90);
+            drawingContext.setLineDash([]);
+
+            // Labels
+            fill(255); noStroke(); textSize(16);
+            if(sunPosSlider < 40) {
+                text("दोपहर: कम दूरी तय करती है।", 20, 50);
+                text("नीला रंग (Blue) सबसे ज्यादा बिखरता है।", 20, 70);
+            } else {
+                text("सूर्यास्त: प्रकाश लंबी दूरी तय करता है।", width/2, 50);
+                text("नीला रंग बिखर कर खत्म हो जाता है,", width/2, 70);
+                text("केवल लाल (Red) आँखों तक पहुँचता है।", width/2, 90);
+            }
+        }
+
+        // --- Helpers ---
+        function drawTorch(x, y) {
+            push(); translate(x, y);
+            fill(80); noStroke(); rect(-40, -10, 40, 20); // Handle
+            fill(100); quad(0, -10, 10, -15, 10, 15, 0, 10); // Head
+            fill(255, 255, 0); ellipse(10, 0, 5, 25); // Bulb
+            pop();
+        }
+
+        function drawSun(x, y, col) {
+            push(); translate(x, y);
+            noStroke();
+            // Glow
+            fill(col.levels[0], col.levels[1], col.levels[2], 50);
+            ellipse(0,0, 60, 60);
+            fill(col);
+            ellipse(0,0, 30, 30);
+            pop();
+        }
+
+        function drawObserver(x, y) {
+            push(); translate(x, y);
+            fill(0); ellipse(0, -10, 10, 10); // Head
+            rect(-5, -5, 10, 20); // Body
+            pop();
+        }
+
+        function setGradient(x, y, w, h, c1, c2) {
+            noFill();
+            // Just a solid rect for performance in p5 web editor usually, 
+            // but here we can rely on background draw logic.
+        }
+
+        function setMode(m) {
+            mode = m;
+            let b1 = document.getElementById('btn1');
+            let b2 = document.getElementById('btn2');
+            let label = document.getElementById('sliderLabel');
+            let sl = document.getElementById('mainSlider');
+            let info = document.getElementById('infoText');
+            
+            if(m===1) {
+                b1.className = 'btn-active'; b2.className = 'btn-inactive';
+                label.innerText = "अशुद्धि (Impurity):";
+                sl.value = 0;
+                info.innerHTML = "<strong>टिंडल प्रभाव:</strong> शुद्ध पानी में प्रकाश नहीं दिखता। स्लाइडर बढ़ाकर 'दूध' मिलाएं, प्रकाश का पथ चमकने लगेगा।";
+            } else {
+                b1.className = 'btn-inactive'; b2.className = 'btn-active';
+                label.innerText = "सूर्य की स्थिति:";
+                sl.value = 0;
+                info.innerHTML = "<strong>प्रकीर्णन (Scattering):</strong> दोपहर में कम दूरी के कारण नीला रंग बिखरता है (नीला आकाश)। शाम को लंबी दूरी के कारण नीला खत्म हो जाता है, लाल बचता है (सूर्यास्त)।";
+            }
+        }
+    </script>
+</body>
+</html>

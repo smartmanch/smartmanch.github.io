@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Magic Color Lab</title>
+    <style>
+        /* --- Layout Setup --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: #E0F7FA;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        h1 {
+            color: #00838F;
+            margin: 15px 0;
+            font-size: 1.6rem;
+            text-shadow: 1px 1px 0px white;
+        }
+
+        .lab-area {
+            position: relative;
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Start from top */
+            padding-top: 20px;
+        }
+
+        /* --- BOTTLES AREA --- */
+        .bottles-rack {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end; /* Align bottom of bottles */
+            gap: 20px; /* Space between bottles */
+            padding-bottom: 0px;
+            z-index: 10;
+        }
+
+        /* Wrapper for straight positioning */
+        .bottle-wrapper {
+            position: relative;
+            width: 80px;
+            height: 110px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* The Visual Bottle */
+        .bottle {
+            width: 75px;
+            height: 95px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+            border: 2px solid rgba(255,255,255,0.6);
+            transition: transform 0.1s;
+            text-align: center;
+            line-height: 1.2;
+            z-index: 12;
+        }
+        .bottle:active { transform: scale(0.95); }
+
+        /* Colors */
+        .red { background: linear-gradient(135deg, #ef5350, #c62828); }
+        .yellow { background: linear-gradient(135deg, #ffee58, #f9a825); color: #333; }
+        .blue { background: linear-gradient(135deg, #42a5f5, #1565c0); }
+
+        /* Pipes */
+        .pipe {
+            width: 12px;
+            height: 15px;
+            background-color: #455A64;
+            border-radius: 0 0 5px 5px;
+            margin-top: -2px; /* Connect to bottle */
+            z-index: 11;
+        }
+
+        /* --- STREAMS (Falling Liquid) --- */
+        .stream {
+            position: absolute;
+            top: 108px; /* Start exactly at end of pipe */
+            left: 50%;
+            transform: translateX(-50%); /* Center stream horizontally */
+            width: 8px;
+            height: 0; /* Starts hidden */
+            background-color: transparent;
+            transition: height 0.2s linear;
+            z-index: 5; /* Behind bottles but in front of beaker background */
+            pointer-events: none;
+            border-radius: 0 0 5px 5px;
+        }
+
+        /* --- BEAKER AREA --- */
+        #result-display {
+            height: 30px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            z-index: 20;
+        }
+
+        .beaker-zone {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            /* Pipes touch the rim of beaker visually */
+            margin-top: -5px; 
+        }
+
+        .beaker {
+            /* Width enough to cover all 3 bottles above */
+            /* 3 bottles (80*3) + 2 gaps (20*2) = 280px approx */
+            width: 290px; 
+            height: 160px;
+            border: 6px solid #90A4AE;
+            border-top: none;
+            border-radius: 0 0 30px 30px;
+            background: rgba(255, 255, 255, 0.4);
+            position: relative;
+            overflow: hidden; /* Ensures liquid stays inside */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        /* Glass Reflection */
+        .beaker::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 5px;
+            background: rgba(255,255,255,0.6);
+            z-index: 6;
+        }
+
+        .beaker-liquid {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            background-color: transparent;
+            transition: height 0.8s ease-out, background-color 0.8s;
+            z-index: 4; /* Liquid behind streams initially */
+        }
+        
+        /* Bubbles */
+        .beaker-liquid::after {
+            content: '';
+            position: absolute;
+            top: -5px; left: 0; width: 100%; height: 10px;
+            background-color: inherit;
+            border-radius: 50%;
+            filter: brightness(1.2);
+            opacity: 0.8;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            width: 100%;
+            text-align: center;
+            background: white;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
+        }
+
+        .reset-btn {
+            background: #FF7043;
+            color: white;
+            border: none;
+            padding: 12px 50px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #D84315;
+            font-weight: bold;
+        }
+        .reset-btn:active { transform: translateY(4px); box-shadow: none; }
+
+    </style>
+</head>
+<body>
+
+    <h1>🎨 कलर लैब (Color Lab)</h1>
+
+    <div class="lab-area">
+        
+        <div class="bottles-rack">
+            
+            <div class="bottle-wrapper">
+                <div class="bottle red" onclick="pour('red')">लाल<br>Red</div>
+                <div class="pipe"></div>
+                <div class="stream" id="stream-red" style="background-color: #ef5350;"></div>
+            </div>
+            
+            <div class="bottle-wrapper">
+                <div class="bottle yellow" onclick="pour('yellow')">पीला<br>Yellow</div>
+                <div class="pipe"></div>
+                <div class="stream" id="stream-yellow" style="background-color: #ffee58;"></div>
+            </div>
+
+            <div class="bottle-wrapper">
+                <div class="bottle blue" onclick="pour('blue')">नीला<br>Blue</div>
+                <div class="pipe"></div>
+                <div class="stream" id="stream-blue" style="background-color: #42a5f5;"></div>
+            </div>
+
+        </div>
+
+        <div id="result-display">मिक्स करें (Click Bottles)</div>
+
+        <div class="beaker-zone">
+            <div class="beaker">
+                <div class="beaker-liquid" id="main-liquid"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <button class="reset-btn" onclick="resetLab()">सफाई करें (Wash)</button>
+    </footer>
+
+    <script>
+        let firstColor = null;
+        let isMixed = false;
+        let isPouring = false;
+        const liquid = document.getElementById('main-liquid');
+        const resultDisplay = document.getElementById('result-display');
+
+        const colorData = {
+            'red': '#ef5350',
+            'yellow': '#ffee58',
+            'blue': '#42a5f5'
+        };
+
+        const mixData = {
+            'red-yellow': { hex: '#ff9800', name: 'नारंगी (Orange)' },
+            'yellow-red': { hex: '#ff9800', name: 'नारंगी (Orange)' },
+            'blue-yellow': { hex: '#66bb6a', name: 'हरा (Green)' },
+            'yellow-blue': { hex: '#66bb6a', name: 'हरा (Green)' },
+            'red-blue': { hex: '#ab47bc', name: 'बैंगनी (Purple)' },
+            'blue-red': { hex: '#ab47bc', name: 'बैंगनी (Purple)' }
+        };
+
+        function pour(color) {
+            if (isMixed || isPouring) return;
+            if (firstColor === color) {
+                resultDisplay.innerText = "कोई और रंग चुनें!";
+                return;
+            }
+
+            isPouring = true;
+            
+            // 1. Start Stream
+            const stream = document.getElementById('stream-' + color);
+            
+            // Height Calculation:
+            // Beaker Height is 160px.
+            // Stream starts right at the top of beaker (approx).
+            // So we set stream height to 155px so it stops just before hitting the glass bottom.
+            stream.style.height = "160px"; 
+
+            // 2. Fill Logic
+            setTimeout(() => {
+                if (!firstColor) {
+                    firstColor = color;
+                    liquid.style.backgroundColor = colorData[color];
+                    liquid.style.height = "40%";
+                    resultDisplay.innerText = "अब दूसरा रंग डालें...";
+                } else {
+                    const mixKey = firstColor + '-' + color;
+                    const result = mixData[mixKey];
+                    liquid.style.backgroundColor = result.hex;
+                    liquid.style.height = "80%";
+                    resultDisplay.innerText = "✨ " + result.name + " ✨";
+                    resultDisplay.style.color = result.hex;
+                    isMixed = true;
+                }
+                
+                // 3. Stop Stream
+                setTimeout(() => {
+                    stream.style.height = "0";
+                    isPouring = false;
+                }, 400);
+
+            }, 300);
+        }
+
+        function resetLab() {
+            firstColor = null;
+            isMixed = false;
+            isPouring = false;
+            liquid.style.height = "0%";
+            resultDisplay.innerText = "मिक्स करें (Click Bottles)";
+            resultDisplay.style.color = "#333";
+            setTimeout(() => {
+                liquid.style.backgroundColor = "transparent";
+            }, 800);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faraday Law - Zero Center Galvanometer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e272e;
+            color: #d2dae2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        h2 { margin-bottom: 10px; color: #0fbcf9; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+
+        .sim-container {
+            position: relative;
+            width: 800px;
+            height: 500px;
+            background: linear-gradient(180deg, #34495e 0%, #2c3e50 100%);
+            border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            border: 4px solid #485460;
+            overflow: hidden;
+        }
+
+        canvas { display: block; cursor: grab; }
+        canvas:active { cursor: grabbing; }
+
+        /* गैल्वेनोमीटर का डिजिटल रीडआउट */
+        #meter-readout {
+            position: absolute;
+            top: 160px; /* मीटर के ठीक नीचे */
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffd32a;
+            text-shadow: 1px 1px 2px black;
+            pointer-events: none;
+        }
+
+        /* फूटर और क्रेडिट */
+        .footer-info {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 16px;
+            color: #808e9b;
+        }
+
+        .cc-badge {
+            display: inline-block;
+            background-color: #ef5777;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-right: 8px;
+        }
+
+        .author-name {
+            color: #0be881;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>विद्युत चुंबकीय प्रेरण (फैराडे का नियम)</h2>
+    
+    <div class="sim-container">
+        <canvas id="simCanvas" width="800" height="500"></canvas>
+        <div id="meter-readout">Current: 0</div>
+    </div>
+
+    <div class="footer-info">
+        <span class="cc-badge">CC</span> 
+        <span class="author-name">@Rohitash Bharia</span>
+        <p style="font-size: 14px; margin-top: 5px;">निर्देश: चुंबक को पकड़कर कुंडली के अंदर-बाहर हिलाएं। सुई 0 से दाएं-बाएं हिलेगी।</p>
+    </div>
+
+<script>
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    const readout = document.getElementById('meter-readout');
+
+    // --- सेटिंग्स ---
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2 + 80; 
+
+    // कुंडली सेटिंग्स (Sarpilakar Kundali)
+    const coilConfig = {
+        x: centerX,
+        y: centerY,
+        radius: 65,
+        width: 280,
+        turns: 12,
+        wireWidth: 7
+    };
+
+    // चुंबक सेटिंग्स
+    let magnet = {
+        x: 100, // शुरू में साइड में
+        y: centerY,
+        w: 150,
+        h: 46,
+        dragging: false,
+        dragOffsetX: 0
+    };
+    
+    // भौतिकी और सुई की स्थिति
+    let lastMagX = 100;
+    let currentNeedleVal = 0; // सुई की वर्तमान स्थिति (स्मूथनेस के लिए)
+
+    // --- माउस/टच कंट्रोल ---
+    function startDrag(x, y) {
+        if (x > magnet.x - magnet.w/2 && x < magnet.x + magnet.w/2 &&
+            y > magnet.y - magnet.h/2 && y < magnet.y + magnet.h/2) {
+            magnet.dragging = true;
+            magnet.dragOffsetX = x - magnet.x;
+        }
+    }
+
+    function moveDrag(x) {
+        if (!magnet.dragging) return;
+        let newX = x - magnet.dragOffsetX;
+        
+        // बाउंड्री (स्क्रीन से बाहर न जाए)
+        const limit = 60; 
+        if (newX < limit) newX = limit;
+        if (newX > canvas.width - limit) newX = canvas.width - limit;
+        
+        magnet.x = newX;
+    }
+
+    // इवेंट लिसनर्स
+    canvas.addEventListener('mousedown', e => {
+        const rect = canvas.getBoundingClientRect();
+        startDrag(e.clientX - rect.left, e.clientY - rect.top);
+    });
+    window.addEventListener('mouseup', () => magnet.dragging = false);
+    canvas.addEventListener('mousemove', e => {
+        const rect = canvas.getBoundingClientRect();
+        moveDrag(e.clientX - rect.left);
+    });
+
+    canvas.addEventListener('touchstart', e => {
+        const rect = canvas.getBoundingClientRect();
+        startDrag(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
+    }, {passive: false});
+    window.addEventListener('touchend', () => magnet.dragging = false);
+    canvas.addEventListener('touchmove', e => {
+        e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        moveDrag(e.touches[0].clientX - rect.left);
+    }, {passive: false});
+
+
+    // --- ड्राइंग लॉजिक ---
+
+    // 1. सर्पिलाकार कुंडली (Spiral Coil)
+    function drawSpiralCoil(layer) {
+        const { x, y, radius, width, turns, wireWidth } = coilConfig;
+        const startX = x - width / 2;
+        const totalAngle = turns * 2 * Math.PI;
+        const step = 0.1;
+
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        // रंग सेट करना
+        if (layer === 'back') {
+            ctx.lineWidth = wireWidth;
+            ctx.strokeStyle = "#8d4004"; // गहरा रंग (पीछे)
+        } else {
+            ctx.lineWidth = wireWidth;
+            ctx.strokeStyle = "#e67e22"; // चमकदार रंग (आगे)
+        }
+
+        ctx.beginPath();
+        let firstPoint = true;
+
+        for (let t = 0; t <= totalAngle; t += step) {
+            let px = startX + (t / totalAngle) * width;
+            let py = y + radius * Math.sin(t);
+            let depth = Math.cos(t); // Z-axis
+
+            let isBack = depth < 0;
+            
+            // लेयरिंग चेक
+            if ((layer === 'back' && isBack) || (layer === 'front' && !isBack)) {
+                if (firstPoint) {
+                    ctx.moveTo(px, py);
+                    firstPoint = false;
+                } else {
+                    // टूटी हुई लाइनों को जोड़ने का लॉजिक
+                    let prevDepth = Math.cos(t - step);
+                    let prevIsBack = prevDepth < 0;
+                    if ((layer === 'back' && !prevIsBack) || (layer === 'front' && prevIsBack)) {
+                         ctx.moveTo(px, py);
+                    } else {
+                         ctx.lineTo(px, py);
+                    }
+                }
+            }
+        }
+        ctx.stroke();
+
+        // कनेक्शन तार (Meter Wires) - सिर्फ बैक लेयर पर बनाएं
+        if (layer === 'back') {
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#f1c40f";
+            ctx.beginPath();
+            ctx.moveTo(startX, y); 
+            ctx.lineTo(startX - 20, y - radius - 20);
+            ctx.lineTo(centerX - 40, 140); // मीटर तक
+            
+            ctx.moveTo(startX + width, y);
+            ctx.lineTo(startX + width + 20, y - radius - 20);
+            ctx.lineTo(centerX + 40, 140); // मीटर तक
+            ctx.stroke();
+        }
+    }
+
+    // 2. चुंबक (Magnet)
+    function drawMagnet() {
+        const { x, y, w, h } = magnet;
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#2d3436";
+
+        // North (Red)
+        ctx.fillStyle = "#e74c3c";
+        ctx.fillRect(x - w/2, y - h/2, w/2, h);
+        ctx.strokeRect(x - w/2, y - h/2, w/2, h);
+
+        // South (Blue)
+        ctx.fillStyle = "#3498db";
+        ctx.fillRect(x, y - h/2, w/2, h);
+        ctx.strokeRect(x, y - h/2, w/2, h);
+
+        ctx.fillStyle = "white";
+        ctx.font = "bold 20px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("N", x - w/4, y);
+        ctx.fillText("S", x + w/4, y);
+    }
+
+    // 3. गैल्वेनोमीटर (Zero Center)
+    function drawMeter(deflectionVal) {
+        const mx = centerX;
+        const my = 80; // स्क्रीन के ऊपर
+        const mr = 70; // त्रिज्या
+
+        // मीटर का ढांचा
+        ctx.beginPath();
+        ctx.arc(mx, my, mr, 0, Math.PI * 2);
+        ctx.fillStyle = "#ecf0f1";
+        ctx.fill();
+        ctx.strokeStyle = "#2c3e50";
+        ctx.lineWidth = 5;
+        ctx.stroke();
+
+        // पैमाना (Scale)
+        ctx.font = "12px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        
+        // -5 से +5 तक के निशान
+        for (let i = -5; i <= 5; i++) {
+            // कोण गणना: -90 डिग्री (ऊपर) सेंटर है
+            // हर स्टेप 15 डिग्री (0.26 रेडियन) का है
+            let angle = -Math.PI / 2 + (i * 0.26); 
+            
+            let startR = mr - 10;
+            let endR = mr - 5;
+            if (i === 0) startR = mr - 15; // 0 की लाइन बड़ी
+
+            let sx = mx + Math.cos(angle) * startR;
+            let sy = my + Math.sin(angle) * startR;
+            let ex = mx + Math.cos(angle) * endR;
+            let ey = my + Math.sin(angle) * endR;
+
+            ctx.beginPath();
+            ctx.moveTo(sx, sy);
+            ctx.lineTo(ex, ey);
+            ctx.strokeStyle = (i === 0) ? "black" : "#7f8c8d";
+            ctx.lineWidth = (i === 0) ? 3 : 2;
+            ctx.stroke();
+
+            // नंबर लिखें (0, +, -)
+            if (Math.abs(i) === 5 || i === 0) {
+                let tx = mx + Math.cos(angle) * (mr - 25);
+                let ty = my + Math.sin(angle) * (mr - 25);
+                let label = i === 0 ? "0" : (i > 0 ? "+" : "-");
+                ctx.fillStyle = "#333";
+                ctx.fillText(label, tx, ty);
+            }
+        }
+
+        // सुई (Needle)
+        // deflectionVal: पॉजिटिव = दाएं, नेगेटिव = बाएं
+        // कोण: -PI/2 (ऊपर) + deflection
+        let needleAngle = -Math.PI / 2 + (deflectionVal * 0.15);
+        
+        // सुई को स्केल के बाहर जाने से रोकें (Clamping)
+        const maxAngle = -Math.PI / 2 + 1.3; // ~75 degrees Right
+        const minAngle = -Math.PI / 2 - 1.3; // ~75 degrees Left
+        if (needleAngle > maxAngle) needleAngle = maxAngle;
+        if (needleAngle < minAngle) needleAngle = minAngle;
+
+        let nx = mx + Math.cos(needleAngle) * (mr - 12);
+        let ny = my + Math.sin(needleAngle) * (mr - 12);
+
+        ctx.beginPath();
+        ctx.moveTo(mx, my + 5); // पिवट से थोड़ा नीचे
+        ctx.lineTo(nx, ny);
+        ctx.strokeStyle = "#e74c3c"; // लाल सुई
+        ctx.lineWidth = 3;
+        ctx.lineCap = "round";
+        ctx.stroke();
+
+        // पिवट (Pivot)
+        ctx.beginPath();
+        ctx.arc(mx, my + 5, 5, 0, Math.PI*2);
+        ctx.fillStyle = "#333";
+        ctx.fill();
+
+        // G लेबल
+        ctx.fillStyle = "black";
+        ctx.font = "bold 14px Arial";
+        ctx.fillText("GALVANOMETER", mx, my + 40);
+    }
+
+    // --- मेन लूप ---
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // --- भौतिकी गणना ---
+        // वेग (Velocity): दिशा (+/-) तय करती है
+        let velocity = magnet.x - lastMagX;
+        
+        // दूरी (Distance): प्रभाव की ताकत तय करती है
+        let dist = Math.abs(magnet.x - centerX);
+        let influence = Math.max(0, 1 - (dist / 200)); 
+        
+        // लक्ष्य धारा (Target Current)
+        // Velocity (+) -> Needle Right
+        // Velocity (-) -> Needle Left
+        let targetVal = velocity * influence * 6; // *6 संवेदनशीलता बढ़ाने के लिए
+
+        // सुई को डैम्पिंग (Damping) के साथ हिलाना (ताकि झटके न लगें)
+        currentNeedleVal += (targetVal - currentNeedleVal) * 0.15;
+
+        // टेक्स्ट अपडेट
+        if (Math.abs(currentNeedleVal) > 0.1) {
+            let direction = currentNeedleVal > 0 ? "Right (+)" : "Left (-)";
+            readout.innerText = `Deflection: ${direction}`;
+            readout.style.color = currentNeedleVal > 0 ? "#2ecc71" : "#ff7675";
+        } else {
+            readout.innerText = "Current: 0";
+            readout.style.color = "#ffd32a";
+        }
+
+        // --- रेंडरिंग (3D सैंडविच तकनीक) ---
+        // 1. मीटर (सबसे पीछे)
+        drawMeter(currentNeedleVal);
+
+        // 2. कुंडली का पिछला हिस्सा
+        drawSpiralCoil('back');
+
+        // 3. चुंबक (बीच में)
+        drawMagnet();
+
+        // 4. कुंडली का अगला हिस्सा
+        drawSpiralCoil('front');
+
+        lastMagX = magnet.x;
+        requestAnimationFrame(animate);
+    }
+
+    // स्टार्ट
+    animate();
+</script>
+</body>
+</html>

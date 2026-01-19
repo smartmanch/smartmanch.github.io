@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Smart Manch - Hindi Varnamala</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Baloo 2', cursive, sans-serif;
+            background-color: #FFECB3; /* Wooden/School wall color */
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: #795548;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+        h1 { margin: 0; font-size: 1.5rem; }
+
+        /* --- MAIN STAGE (The Blackboard) --- */
+        .classroom {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .blackboard {
+            width: 90%;
+            max-width: 500px;
+            height: 300px;
+            background-color: #2c3e50; /* Chalkboard Green/Black */
+            border: 12px solid #8D6E63; /* Wood Frame */
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Chalk Dust Effect */
+        .blackboard::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz48L3N2Zz4=');
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* --- Animations on Board --- */
+        .big-letter {
+            font-size: 6rem;
+            color: #fff; /* Chalk White */
+            font-weight: bold;
+            text-shadow: 2px 2px 0px #ddd;
+            transform: scale(0);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .big-letter.show { transform: scale(1); }
+
+        .word-display {
+            font-size: 2rem;
+            color: #FFD54F; /* Chalk Yellow */
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .word-display.show { opacity: 1; }
+
+        .emoji-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 4rem;
+            opacity: 0;
+            transform: translateY(20px) rotate(-10deg);
+            transition: all 0.5s ease-out;
+        }
+        .emoji-display.show { opacity: 1; transform: translateY(0) rotate(0); }
+
+        /* --- KEYBOARD / SCROLL AREA --- */
+        .keyboard-area {
+            height: 35vh;
+            background-color: #fff;
+            border-top: 4px solid #795548;
+            overflow-y: auto; /* Scrollable */
+            padding: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .tab-btn {
+            background: #FFCC80;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Baloo 2';
+        }
+        .tab-btn.active { background: #E65100; color: white; }
+
+        .keys-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px;
+            padding-bottom: 20px;
+        }
+
+        .key {
+            aspect-ratio: 1;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #bbb;
+            transition: transform 0.1s;
+        }
+        .key:active { transform: translateY(4px); box-shadow: none; background: #E3F2FD; }
+        
+        /* Swar Color */
+        .key.swar { border-color: #FF7043; color: #D84315; }
+        /* Vyanjan Color */
+        .key.vyanjan { border-color: #42A5F5; color: #1565C0; }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            background: #fff;
+            padding: 5px;
+            font-size: 12px;
+            color: #888;
+            border-top: 1px solid #eee;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>जादुई वर्णमाला (Magic Slate)</h1>
+    </header>
+
+    <div class="classroom">
+        <div class="blackboard">
+            <div id="main-emoji" class="emoji-display">✨</div>
+            <div id="main-letter" class="big-letter">?</div>
+            <div id="main-word" class="word-display">अक्षर चुनें</div>
+        </div>
+    </div>
+
+    <div class="keyboard-area">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="filterKeys('all')">सभी (All)</button>
+            <button class="tab-btn" onclick="filterKeys('swar')">स्वर (Vowels)</button>
+            <button class="tab-btn" onclick="filterKeys('vyanjan')">व्यंजन (Consonants)</button>
+        </div>
+
+        <div id="keys-container" class="keys-grid">
+            </div>
+    </div>
+
+    <footer>
+        CC BY Rohitash Bharia
+    </footer>
+
+    <script>
+        // --- DATA: Varnamala Mapping ---
+        const varnamala = [
+            // Swar
+            { char: 'अ', word: 'अनार', img: '🍎', type: 'swar' },
+            { char: 'आ', word: 'आम', img: '🥭', type: 'swar' },
+            { char: 'इ', word: 'इमली', img: '🍋', type: 'swar' }, // Lemon used as visual proxy for sour/Imli
+            { char: 'ई', word: 'ईख', img: '🎋', type: 'swar' }, // Bamboo/Sugarcane
+            { char: 'उ', word: 'उल्लू', img: '🦉', type: 'swar' },
+            { char: 'ऊ', word: 'ऊन', img: '🧶', type: 'swar' },
+            { char: 'ऋ', word: 'ऋषि', img: '🧘', type: 'swar' },
+            { char: 'ए', word: 'एड़ी', img: '🦶', type: 'swar' },
+            { char: 'ऐ', word: 'ऐनक', img: '👓', type: 'swar' },
+            { char: 'ओ', word: 'ओखली', img: '🥣', type: 'swar' },
+            { char: 'औ', word: 'औरत', img: '👩', type: 'swar' },
+            { char: 'अं', word: 'अंगूर', img: '🍇', type: 'swar' },
+            
+            // Vyanjan (Selected popular ones for demo, easily expandable)
+            { char: 'क', word: 'कबूतर', img: '🕊️', type: 'vyanjan' },
+            { char: 'ख', word: 'खरगोश', img: '🐇', type: 'vyanjan' },
+            { char: 'ग', word: 'गमला', img: '🪴', type: 'vyanjan' },
+            { char: 'घ', word: 'घर', img: '🏠', type: 'vyanjan' },
+            { char: 'च', word: 'चम्मच', img: '🥄', type: 'vyanjan' },
+            { char: 'छ', word: 'छतरी', img: '☂️', type: 'vyanjan' },
+            { char: 'ज', word: 'जहाज', img: '🚢', type: 'vyanjan' },
+            { char: 'झ', word: 'झंडा', img: '🇮🇳', type: 'vyanjan' },
+            { char: 'ट', word: 'टमाटर', img: '🍅', type: 'vyanjan' },
+            { char: 'ठ', word: 'ठठेरा', img: '🔨', type: 'vyanjan' },
+            { char: 'ड', word: 'डमरू', img: '🥁', type: 'vyanjan' },
+            { char: 'त', word: 'तरबूज', img: '🍉', type: 'vyanjan' },
+            { char: 'थ', word: 'थर्मस', img: '🥤', type: 'vyanjan' },
+            { char: 'द', word: 'दवात', img: '✒️', type: 'vyanjan' },
+            { char: 'ध', word: 'धनुष', img: '🏹', type: 'vyanjan' },
+            { char: 'न', word: 'नल', img: '🚰', type: 'vyanjan' },
+            { char: 'प', word: 'पतंग', img: '🪁', type: 'vyanjan' },
+            { char: 'फ', word: 'फल', img: '🍎', type: 'vyanjan' },
+            { char: 'ब', word: 'बकरी', img: '🐐', type: 'vyanjan' },
+            { char: 'भ', word: 'भालू', img: '🐻', type: 'vyanjan' },
+            { char: 'म', word: 'मछली', img: '🐟', type: 'vyanjan' },
+            { char: 'य', word: 'यज्ञ', img: '🔥', type: 'vyanjan' },
+            { char: 'र', word: 'रथ', img: '🐎', type: 'vyanjan' },
+            { char: 'ल', word: 'लट्टू', img: '🌪️', type: 'vyanjan' },
+            { char: 'व', word: 'वन', img: '🌳', type: 'vyanjan' },
+            { char: 'श', word: 'शलजम', img: '🧅', type: 'vyanjan' },
+            { char: 'स', word: 'सपेरा', img: '🐍', type: 'vyanjan' },
+            { char: 'ह', word: 'हल', img: '🚜', type: 'vyanjan' },
+            { char: 'क्ष', word: 'क्षत्रिय', img: '⚔️', type: 'vyanjan' },
+            { char: 'त्र', word: 'त्रिशूल', img: '🔱', type: 'vyanjan' },
+            { char: 'ज्ञ', word: 'ज्ञानी', img: '🎓', type: 'vyanjan' }
+        ];
+
+        const container = document.getElementById('keys-container');
+        const mainLetter = document.getElementById('main-letter');
+        const mainWord = document.getElementById('main-word');
+        const mainEmoji = document.getElementById('main-emoji');
+
+        // --- Initialize Grid ---
+        function renderKeys(filter) {
+            container.innerHTML = '';
+            
+            varnamala.forEach(item => {
+                if (filter !== 'all' && item.type !== filter) return;
+
+                const btn = document.createElement('div');
+                btn.className = `key ${item.type}`;
+                btn.innerText = item.char;
+                btn.onclick = () => playLetter(item);
+                container.appendChild(btn);
+            });
+        }
+
+        function filterKeys(type) {
+            // Update tabs visually
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            renderKeys(type);
+        }
+
+        // --- PLAY ANIMATION & SOUND ---
+        function playLetter(item) {
+            // 1. Reset Animation
+            mainLetter.classList.remove('show');
+            mainWord.classList.remove('show');
+            mainEmoji.classList.remove('show');
+
+            setTimeout(() => {
+                // 2. Set Content
+                mainLetter.innerText = item.char;
+                mainWord.innerText = `${item.char} से ${item.word}`;
+                mainEmoji.innerText = item.img;
+
+                // 3. Trigger Animation
+                mainLetter.classList.add('show');
+                
+                setTimeout(() => {
+                    mainWord.classList.add('show');
+                    mainEmoji.classList.add('show');
+                    
+                    // 4. Speak (Text to Speech)
+                    speakText(`${item.char} से ${item.word}`);
+                }, 300);
+            }, 100);
+        }
+
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'hi-IN'; // Hindi India
+                utterance.rate = 0.9; // Slightly slower for kids
+                utterance.pitch = 1.1;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Initial Render
+        renderKeys('all');
+
+    </script>
+</body>
+</html>

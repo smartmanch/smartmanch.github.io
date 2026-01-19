@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Right-Hand Thumb Rule Simulation - Smart Manch</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+<style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #222;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0;
+        padding: 10px;
+    }
+    h2 { color: #f1c40f; margin-bottom: 15px; text-align: center; }
+    
+    .controls {
+        background: #2f3640;
+        padding: 15px;
+        border-radius: 15px;
+        border: 1px solid #555;
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    button {
+        padding: 10px 20px; border: none; border-radius: 20px;
+        cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s;
+        background-color: #3498db; color: white;
+    }
+    button:hover { transform: scale(1.05); }
+
+    canvas {
+        border: 3px solid #555; border-radius: 10px;
+        background-color: #000;
+    }
+
+    .explanation {
+        margin-top: 15px;
+        background: #222; padding: 15px; border-radius: 8px;
+        text-align: center; font-size: 15px; color: #ccc;
+        border-left: 4px solid #f1c40f;
+        max-width: 600px;
+    }
+
+    .cc-footer {
+        margin-top: 20px; padding: 15px; background-color: #2c3e50;
+        border-top: 3px solid #f1c40f; width: 100%; text-align: center;
+        border-radius: 10px 10px 0 0; color: #bdc3c7; font-size: 13px;
+    }
+</style>
+</head>
+<body>
+
+<h2>दक्षिण-हस्त अंगष्ठ नियम (Right-Hand Thumb Rule)</h2>
+
+<div class="controls">
+    <label>धारा की दिशा बदलें:</label>
+    <button onclick="toggleDirection()">Current: UP / DOWN</button>
+</div>
+
+<div id="canvas-container"></div>
+
+<div class="explanation" id="ruleText">
+    अंगूठा <strong>ऊपर</strong> है → चुंबकीय क्षेत्र <strong>वामावर्त (Anti-Clockwise)</strong> घूमेगा।
+</div>
+
+<footer class="cc-footer">
+    <div>
+        <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="CC" style="height:18px; vertical-align:middle;">
+        <img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="BY" style="height:18px; vertical-align:middle;">
+        <span style="margin-left:5px;"><strong>CC BY Rohitash Bharia</strong></span>
+    </div>
+    Developed for <strong>Smart Manch</strong>
+</footer>
+
+<script>
+    let currentUp = true;
+    let particles = [];
+    let handImg;
+
+    function preload() {
+        // यहां हाथ की इमेज लोड करें (आपको अपनी इमेज का पाथ देना होगा)
+        // handImg = loadImage('path/to/your/hand_image.png');
+        // फिलहाल, हम एक डमी इमेज बना रहे हैं
+        handImg = createImage(200, 300);
+        handImg.loadPixels();
+        for (let i = 0; i < handImg.width; i++) {
+            for (let j = 0; j < handImg.height; j++) {
+                handImg.set(i, j, color(224, 172, 105));
+            }
+        }
+        handImg.updatePixels();
+    }
+
+    function setup() {
+        let canvas = createCanvas(600, 450);
+        canvas.parent('canvas-container');
+        angleMode(DEGREES);
+        
+        // Initialize Field Particles
+        for(let i=0; i<30; i++) {
+            particles.push({
+                angle: random(360),
+                radius: random(60, 180),
+                speed: random(2, 4)
+            });
+        }
+    }
+
+    function draw() {
+        background(30);
+        
+        let cx = width/2;
+        let cy = height/2;
+
+        // 1. MAGNETIC FIELD (Circles)
+        noFill(); stroke(50, 150, 255, 100); strokeWeight(2);
+        ellipse(cx, cy, 120, 120);
+        ellipse(cx, cy, 240, 240);
+        ellipse(cx, cy, 360, 360);
+
+        // Animated Particles indicating direction
+        for(let p of particles) {
+            let x = cx + p.radius * cos(p.angle);
+            let y = cy + p.radius * sin(p.angle) * 0.3; // Flattened for 3D look
+            
+            // Draw Particle (Arrowhead)
+            push();
+            translate(x, y);
+            
+            if(currentUp) {
+                p.angle -= p.speed; // Anti-clockwise
+                fill(0, 255, 255); noStroke(); ellipse(0,0, 6, 6);
+            } else {
+                p.angle += p.speed; // Clockwise
+                fill(0, 255, 255); noStroke(); ellipse(0,0, 6, 6);
+            }
+            pop();
+            
+            // Keep angle in bounds
+            if(p.angle > 360) p.angle = 0;
+            if(p.angle < 0) p.angle = 360;
+        }
+
+        // 2. THE WIRE (Rod)
+        stroke(255, 200, 0); strokeWeight(12);
+        line(cx, 50, cx, height-50);
+        
+        // Current Arrow on Wire
+        push(); translate(cx, cy);
+        fill(255, 0, 0); noStroke();
+        if(currentUp) {
+            triangle(-10, -80, 10, -80, 0, -110); // Up Arrow
+            rect(-5, -80, 10, 40);
+            textSize(16); text("I (Current)", 15, -90);
+        } else {
+            triangle(-10, 80, 10, 80, 0, 110); // Down Arrow
+            rect(-5, 40, 10, 40);
+            textSize(16); text("I (Current)", 15, 100);
+        }
+        pop();
+
+        // 3. THE HAND (Right Hand Image)
+        drawRightHandImage(cx, cy, currentUp);
+        
+        // Labels
+        fill(255); noStroke(); textSize(14); textAlign(CENTER);
+        text("Wire (चालक तार)", cx, height-20);
+        fill(0, 255, 255);
+        text("Magnetic Field (चुंबकीय क्षेत्र)", cx + 150, cy);
+    }
+
+    function drawRightHandImage(x, y, isUp) {
+        push();
+        translate(x, y);
+        if (!isUp) {
+            rotate(180); // Rotate hand for downward current
+        }
+        // इमेज को केंद्र में और सही आकार में ड्रा करें
+        imageMode(CENTER);
+        image(handImg, 0, 0, 100, 150); // अपनी इमेज के अनुसार आकार बदलें
+        pop();
+    }
+
+    function toggleDirection() {
+        currentUp = !currentUp;
+        let txt = document.getElementById('ruleText');
+        if(currentUp) {
+            txt.innerHTML = "अंगूठा <strong>ऊपर</strong> है → चुंबकीय क्षेत्र <strong>वामावर्त (Anti-Clockwise)</strong> घूमेगा।";
+        } else {
+            txt.innerHTML = "अंगूठा <strong>नीचे</strong> है → चुंबकीय क्षेत्र <strong>दक्षिणावर्त (Clockwise)</strong> घूमेगा।";
+        }
+    }
+</script>
+</body>
+</html>

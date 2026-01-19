@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convex Mirror Simulation - Smart Manch</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        h2 { color: #2c3e50; margin-bottom: 10px; }
+        .controls {
+            margin-bottom: 15px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+        }
+        canvas {
+            border: 2px solid #333;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            background-color: #fff;
+        }
+        .info-text { font-size: 14px; color: #555; margin-top: 5px; }
+        input[type=range] { width: 100%; cursor: pointer; }
+        
+        .footer {
+            margin-top: auto;
+            padding-top: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+            text-align: center;
+            width: 100%;
+        }
+        .footer strong { color: #2c3e50; }
+    </style>
+</head>
+<body>
+
+    <h2>उत्तल दर्पण (Convex Mirror) सिमुलेशन</h2>
+
+    <div class="controls">
+        <label><strong>वस्तु की दूरी (u): </strong><span id="uVal"></span></label>
+        <br>
+        <input type="range" id="sliderU" min="-350" max="-20" value="-200" step="1">
+        <div class="info-text">स्लाइडर को हिलाकर वस्तु (लाल तीर) को दर्पण के पास/दूर करें।</div>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div class="footer">
+        <p>Developed for Smart Manch</p>
+        <p>&copy; 2026 <strong>Rohitash Bharia</strong>. All Rights Reserved.</p>
+    </div>
+
+    <script>
+        // उत्तल दर्पण के लिए फोकस दूरी धनात्मक (Positive) होती है क्योंकि फोकस दर्पण के पीछे होता है
+        let f = 100; 
+        let u = -200; 
+        let h_o = 60; 
+        let slider;
+
+        function setup() {
+            let canvas = createCanvas(800, 400);
+            canvas.parent('canvas-container');
+            slider = select('#sliderU');
+        }
+
+        function draw() {
+            background(255);
+            
+            // 1. इनपुट
+            u = parseInt(slider.value());
+            document.getElementById('uVal').innerText = u + " px";
+
+            // 2. गणना (Mirror Formula: 1/v + 1/u = 1/f => 1/v = 1/f - 1/u)
+            let v = (f * u) / (u - f);
+
+            // आवर्धन (Mirror Magnification: m = -v/u)
+            let m = -v / u;
+            let h_i = m * h_o;
+
+            translate(width / 2, height / 2);
+
+            // --- ड्राइंग ---
+
+            // मुख्य अक्ष
+            stroke(0); strokeWeight(1);
+            line(-width / 2, 0, width / 2, 0);
+
+            // --- उत्तल दर्पण (Convex Mirror) ---
+            // यह बाहर की ओर उभरा होता है (Bulging outwards towards left)
+            stroke(0); strokeWeight(3);
+            noFill();
+            // आर्क (Arc) बनाना
+            arc(-15, 0, 40, 260, -HALF_PI, HALF_PI);
+            
+            // पॉलिश की हुई सतह (अंदर की तरफ/Right side) दिखाने के लिए छोटी लाइनें
+            strokeWeight(1);
+            for(let y = -120; y <= 120; y += 10) {
+                // आर्क के पीछे की तरफ हैश मार्क्स
+                let x_curve = 5; // थोड़ा सा अंदाजा
+                line(x_curve, y, x_curve + 10, y + 5); 
+            }
+
+            // पॉइंट्स (P, F, C)
+            fill(0); noStroke();
+            text("P", 5, 20); // पोल
+            
+            // उत्तल दर्पण में F और C दर्पण के पीछे (Right side) होते हैं
+            ellipse(f, 0, 5, 5); text("F", f-5, 20);
+            ellipse(2*f, 0, 5, 5); text("C", 2*f-5, 20); // वक्रता केंद्र (Center of Curvature)
+
+            // --- वस्तु (Object) - लाल तीर ---
+            stroke(255, 0, 0); strokeWeight(3);
+            line(u, 0, u, -h_o);
+            line(u, -h_o, u - 5, -h_o + 10);
+            line(u, -h_o, u + 5, -h_o + 10);
+            
+            noStroke(); fill(255, 0, 0);
+            text("वस्तु", u - 15, -h_o - 10);
+
+            // --- किरण आरेख (Ray Diagram) ---
+            stroke(100, 100, 100, 100); strokeWeight(1);
+
+            // किरण 1: मुख्य अक्ष के समानांतर -> दर्पण से टकराकर ऐसे बिखरती है जैसे फोकस (F) से आ रही हो
+            line(u, -h_o, 0, -h_o); // वस्तु से दर्पण तक (Incidence)
+            
+            // परावर्तित किरण (Reflected Ray) - F से सीध में बाहर की तरफ
+            // आभासी हिस्सा (Virtual part inside mirror)
+            drawingContext.setLineDash([5, 5]);
+            line(0, -h_o, f, 0); 
+            
+            // वास्तविक परावर्तित हिस्सा (Real part outside)
+            drawingContext.setLineDash([]);
+            // F(f,0) और (0, -h_o) को जोड़ने वाली रेखा की ढलान
+            let slopeRef = (0 - (-h_o)) / (f - 0);
+            // बाईं तरफ (Left side) अनंत तक खींचो
+            let x_far = -width/2;
+            let y_far = -h_o + slopeRef * (x_far - 0); // y = y1 + m(x-x1)
+            line(0, -h_o, x_far, y_far);
+
+
+            // किरण 2: वक्रता केंद्र (C) की ओर जाती हुई -> उसी रास्ते वापस लौट आती है
+            // वस्तु से दर्पण तक
+            let slopeC = (0 - (-h_o)) / (2*f - u);
+            let y_at_mirror = -h_o + slopeC * (0 - u);
+            line(u, -h_o, 0, y_at_mirror); 
+
+            // दर्पण के अंदर (आभासी) - C तक
+            drawingContext.setLineDash([5, 5]);
+            line(0, y_at_mirror, 2*f, 0);
+            drawingContext.setLineDash([]);
+
+
+            // --- प्रतिबिम्ब (Image) - नीला तीर ---
+            // उत्तल दर्पण में हमेशा दर्पण के पीछे (Virtual) बनता है
+            stroke(0, 0, 255); strokeWeight(3);
+            drawingContext.setLineDash([5, 5]); // आभासी के लिए डैश
+            
+            line(v, 0, v, -h_i);
+            
+            // तीर का निशान (सीधा)
+            line(v, -h_i, v - 4, -h_i + 8);
+            line(v, -h_i, v + 4, -h_i + 8);
+            
+            drawingContext.setLineDash([]); // रीसेट
+
+            noStroke(); fill(0, 0, 255);
+            text("प्रतिबिम्ब", v - 20, -h_i - 10);
+
+            // --- टेक्स्ट डिस्प्ले ---
+            resetMatrix();
+            fill(50); noStroke(); textSize(16);
+            
+            text("प्रकृति: आभासी, सीधा और छोटा (Virtual, Erect, Diminished)", 20, 30);
+            text("v = " + v.toFixed(1) + " px (Mirror के पीछे)", 20, 55);
+            text("Magnification (m) = " + m.toFixed(2), 20, 80);
+            text("दर्पण सूत्र: 1/v + 1/u = 1/f", width - 200, 30);
+        }
+    </script>
+</body>
+</html>

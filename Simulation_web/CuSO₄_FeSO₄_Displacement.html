@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Displacement Reaction (Cu Coating)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2c3e50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        h2 {
+            color: #f1c40f;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #bdc3c7;
+            margin-bottom: 25px;
+        }
+
+        .lab-container {
+            position: relative;
+            width: 800px;
+            height: 480px;
+            background: #34495e;
+            border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            border-bottom: 10px solid #2c3e50;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            border: 2px solid #7f8c8d;
+        }
+
+        /* समीकरण */
+        .equation-box {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.5);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            border: 1px solid #95a5a6;
+            text-align: center;
+            z-index: 5;
+            min-width: 320px;
+        }
+        
+        .highlight { color: #2ecc71; font-weight: bold; }
+        .copper { color: #d35400; font-weight: bold; }
+        .fade { opacity: 0.5; }
+
+        /* बीकर */
+        .beaker {
+            position: relative;
+            width: 220px;
+            height: 300px;
+            border: 5px solid rgba(255, 255, 255, 0.4);
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+            background: linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            margin-bottom: 50px;
+            z-index: 2;
+        }
+
+        .liquid {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            width: 210px;
+            height: 220px;
+            background-color: #0984e3; /* शुरू में नीला */
+            border-radius: 0 0 15px 15px;
+            transition: background-color 3s ease; /* रंग बदलाव 3 सेकंड में */
+            opacity: 0.9;
+            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        /* कील */
+        .nail-container {
+            position: absolute;
+            top: 50px;
+            left: 100px;
+            width: 34px;
+            height: 140px;
+            cursor: grab;
+            z-index: 10;
+            transition: transform 0.2s;
+        }
+        .nail-container:active { cursor: grabbing; }
+
+        .thread {
+            width: 2px;
+            height: 100px;
+            background: #fff;
+            margin: 0 auto;
+            position: absolute;
+            top: -100px;
+            left: 16px;
+        }
+
+        .nail {
+            width: 34px;
+            height: 120px;
+            /* असली लोहे का रंग (सिल्वर/ग्रे) */
+            background: linear-gradient(90deg, #bdc3c7, #95a5a6, #bdc3c7);
+            clip-path: polygon(0 0, 100% 0, 85% 100%, 15% 100%);
+            position: relative;
+            border-radius: 2px;
+        }
+
+        /* तांबे की परत (शुरू में छिपी हुई) */
+        .copper-coating {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* तांबे का रंग (भूरा-लाल) */
+            background: linear-gradient(90deg, #b87333, #d35400, #b87333);
+            opacity: 0; /* अदृश्य */
+            transition: opacity 3s ease; /* धीरे-धीरे प्रकट होना */
+            z-index: 2;
+        }
+
+        /* --- आयन (Ions) --- */
+        .ion {
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            z-index: 5;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            transition: all 1.5s ease-in-out; 
+        }
+
+        .ion-fe {
+            background: #dfe6e9;
+            color: #2d3436;
+            border: 2px solid #636e72;
+        }
+
+        .ion-cu {
+            background: #e67e22;
+            color: white;
+            border: 2px solid #d35400;
+        }
+
+        /* कंट्रोल्स */
+        .controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 20px;
+            z-index: 20;
+            align-items: center;
+        }
+
+        button {
+            padding: 10px 25px;
+            font-size: 16px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button.reset { background-color: #e74c3c; }
+
+        .label {
+            position: absolute;
+            color: white;
+            background: rgba(0,0,0,0.6);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            pointer-events: none;
+            white-space: nowrap;
+            font-weight: bold;
+            transition: all 0.5s;
+        }
+
+        .footer-info {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 15px;
+            color: #95a5a6;
+            font-family: monospace;
+        }
+        .cc-badge { background: #e74c3c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; margin-right: 5px;}
+        .author-name { color: #0be881; font-weight: bold; letter-spacing: 1px;}
+
+    </style>
+</head>
+<body>
+
+    <h2>आयन विनिमय (Cu Coating Simulation)</h2>
+    <div class="subtitle">RBSE Class 10 - विस्थापन अभिक्रिया</div>
+
+    <div class="lab-container">
+        
+        <div class="equation-box" id="equation">
+            <span id="fe-text">Fe</span> + <span id="cuso4-text">CuSO₄</span> 
+            &nbsp;→&nbsp; 
+            <span id="feso4-text" class="fade">FeSO₄</span> + <span id="cu-text" class="fade">Cu</span>
+        </div>
+
+        <div id="nailObject" class="nail-container" style="top: 50px; left: 600px;">
+            <div class="thread"></div>
+            <div class="nail">
+                <div id="copperCoating" class="copper-coating"></div>
+            </div>
+            <div id="nailLabel" class="label" style="top: 30px; left: 50px;">Fe की कील</div>
+        </div>
+
+        <div class="beaker">
+            <div id="liquid" class="liquid">
+                <div id="ionContainer" style="width:100%; height:100%;"></div>
+            </div>
+            <div id="solutionLabel" class="label" style="bottom: 20px; left: 50%; transform: translateX(-50%);">CuSO₄ विलयन (Blue)</div>
+        </div>
+
+    </div>
+
+    <div class="controls">
+        <div style="color: #f1c40f; font-size: 18px;" id="statusText">निर्देश: कील को पकड़कर बीकर में डालें।</div>
+        <button class="reset" onclick="resetSim()">रीसेट (Reset)</button>
+    </div>
+
+    <div class="footer-info">
+        <span class="cc-badge">CC</span> <span class="author-name">@Rohitash Bharia</span>
+    </div>
+
+<script>
+    const nailObj = document.getElementById('nailObject');
+    const liquid = document.getElementById('liquid');
+    const copperCoating = document.getElementById('copperCoating');
+    const statusText = document.getElementById('statusText');
+    const ionContainer = document.getElementById('ionContainer');
+    const solutionLabel = document.getElementById('solutionLabel');
+    const nailLabel = document.getElementById('nailLabel');
+
+    const feText = document.getElementById('fe-text');
+    const cuso4Text = document.getElementById('cuso4-text');
+    const feso4Text = document.getElementById('feso4-text');
+    const cuText = document.getElementById('cu-text');
+
+    let isDragging = false;
+    let isReacting = false;
+    let startX, startY, initialLeft, initialTop;
+    let animationInterval;
+
+    // --- ड्रैग और ड्रॉप ---
+    nailObj.addEventListener('mousedown', startDrag);
+    nailObj.addEventListener('touchstart', startDrag, {passive: false});
+
+    function startDrag(e) {
+        if(isReacting) return;
+        isDragging = true;
+        const clientX = e.clientX || e.touches[0].clientX;
+        const clientY = e.clientY || e.touches[0].clientY;
+        startX = clientX;
+        startY = clientY;
+        initialLeft = nailObj.offsetLeft;
+        initialTop = nailObj.offsetTop;
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', endDrag);
+        document.addEventListener('touchmove', drag, {passive: false});
+        document.addEventListener('touchend', endDrag);
+    }
+
+    function drag(e) {
+        if (!isDragging) return;
+        e.preventDefault();
+        const clientX = e.clientX || e.touches[0].clientX;
+        const clientY = e.clientY || e.touches[0].clientY;
+        const dx = clientX - startX;
+        const dy = clientY - startY;
+        nailObj.style.left = `${initialLeft + dx}px`;
+        nailObj.style.top = `${initialTop + dy}px`;
+    }
+
+    function endDrag() {
+        if (!isDragging) return;
+        isDragging = false;
+        document.removeEventListener('mousemove', drag);
+        document.removeEventListener('mouseup', endDrag);
+        document.removeEventListener('touchmove', drag);
+        document.removeEventListener('touchend', endDrag);
+        checkDrop();
+    }
+
+    function checkDrop() {
+        const nailRect = nailObj.getBoundingClientRect();
+        const beakerCenterX = window.innerWidth / 2;
+        const nailCenterX = nailRect.left + nailRect.width / 2;
+        
+        if (Math.abs(nailCenterX - beakerCenterX) < 80 && nailRect.top > 100) {
+            // कील बीकर में सेट
+            nailObj.style.transition = "all 0.5s ease";
+            nailObj.style.left = "383px"; 
+            nailObj.style.top = "220px"; // पानी में डूबा हुआ
+            
+            startDelayedReaction();
+        } else {
+            nailObj.style.transition = "all 0.5s ease";
+            nailObj.style.left = "600px";
+            nailObj.style.top = "50px";
+            setTimeout(() => { nailObj.style.transition = "none"; }, 500);
+        }
+    }
+
+    // --- मुख्य लॉजिक (Cu परत बनना) ---
+
+    function startDelayedReaction() {
+        if(isReacting) return;
+        isReacting = true;
+        statusText.innerText = "प्रक्रिया जारी... (कृपया 5 सेकंड प्रतीक्षा करें)";
+
+        // 1. आयन एनिमेशन शुरू (यह 5 सेकंड तक चलेगा)
+        startIonAnimation();
+
+        // 2. 5 सेकंड बाद असली बदलाव होगा
+        setTimeout(() => {
+            
+            // A. विलयन हरा हो जाएगा
+            liquid.style.backgroundColor = "#7bed9f"; 
+            solutionLabel.innerText = "FeSO₄ विलयन (Green)";
+            solutionLabel.style.backgroundColor = "rgba(46, 204, 113, 0.8)";
+
+            // B. *** कील पर तांबे की परत चढ़ेगी ***
+            copperCoating.style.opacity = "1"; // भूरा रंग दिखाई देगा
+            
+            // C. कील का लेबल बदलें
+            nailLabel.innerText = "Cu परत चढ़ी कील";
+            nailLabel.style.backgroundColor = "#d35400"; // नारंगी बैकग्राउंड
+
+            // D. समीकरण अपडेट
+            updateEquation();
+            
+            statusText.innerText = "परिणाम: कील पर तांबे की भूरी परत चढ़ गई है।";
+            statusText.style.color = "#2ecc71";
+
+            // आयन बनाना बंद
+            clearInterval(animationInterval);
+
+        }, 5000); 
+    }
+
+    function startIonAnimation() {
+        // हर 400ms में आयन
+        animationInterval = setInterval(() => {
+            
+            // Fe आयन (कील से बाहर)
+            let feIon = document.createElement('div');
+            feIon.className = 'ion ion-fe';
+            feIon.innerHTML = 'Fe<sup>2+</sup>';
+            // कील के केंद्र में
+            feIon.style.left = '92px'; 
+            feIon.style.top = '60px';  
+            feIon.style.opacity = '1';
+            ionContainer.appendChild(feIon);
+
+            // Fe नीचे और बाहर जाएगा
+            setTimeout(() => {
+                let randX = (Math.random() - 0.5) * 180;
+                let randY = 100 + Math.random() * 50;
+                feIon.style.transform = `translate(${randX}px, ${randY}px)`;
+                feIon.style.opacity = '0';
+            }, 50);
+            setTimeout(() => feIon.remove(), 2000);
+
+            // Cu आयन (घोल से कील की ओर)
+            let cuIon = document.createElement('div');
+            cuIon.className = 'ion ion-cu';
+            cuIon.innerHTML = 'Cu<sup>2+</sup>';
+            // नीचे से शुरू
+            cuIon.style.left = Math.random() * 190 + 'px';
+            cuIon.style.top = 100 + Math.random() * 100 + 'px';
+            ionContainer.appendChild(cuIon);
+
+            // Cu कील में समा जाएगा
+            setTimeout(() => {
+                cuIon.style.left = '92px'; 
+                cuIon.style.top = '60px';  
+                cuIon.style.opacity = '0'; // कील में गायब
+            }, 50);
+            setTimeout(() => cuIon.remove(), 2000);
+
+        }, 400);
+    }
+
+    function updateEquation() {
+        feText.classList.add('fade');
+        cuso4Text.classList.add('fade');
+        feso4Text.classList.remove('fade');
+        feso4Text.classList.add('highlight');
+        cuText.classList.remove('fade');
+        cuText.classList.add('copper');
+    }
+
+    function resetSim() {
+        isReacting = false;
+        isDragging = false;
+        clearInterval(animationInterval);
+        ionContainer.innerHTML = '';
+        
+        // रंग रीसेट
+        liquid.style.backgroundColor = "#0984e3";
+        copperCoating.style.opacity = "0"; // परत हटाएं
+        
+        // लेबल रीसेट
+        solutionLabel.innerText = "CuSO₄ विलयन (Blue)";
+        solutionLabel.style.backgroundColor = "rgba(0,0,0,0.6)";
+        nailLabel.innerText = "Fe की कील";
+        nailLabel.style.backgroundColor = "rgba(0,0,0,0.6)";
+
+        // पोजीशन रीसेट
+        nailObj.style.transition = "all 0.5s ease";
+        nailObj.style.left = "600px";
+        nailObj.style.top = "50px";
+        
+        statusText.innerText = "निर्देश: कील को पकड़कर बीकर में डालें।";
+        statusText.style.color = "#f1c40f";
+        
+        feText.classList.remove('fade');
+        cuso4Text.classList.remove('fade');
+        feso4Text.classList.remove('highlight');
+        feso4Text.classList.add('fade');
+        cuText.classList.remove('copper');
+        cuText.classList.add('fade');
+
+        setTimeout(() => { nailObj.style.transition = "none"; }, 500);
+    }
+
+</script>
+</body>
+</html>

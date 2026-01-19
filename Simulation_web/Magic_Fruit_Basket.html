@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hungry Monkey - Class 1 Math</title>
+    <style>
+        /* No Scroll Setup */
+        body {
+            font-family: 'Comic Sans MS', sans-serif;
+            background: linear-gradient(to bottom, #87CEEB, #E0F7FA);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden; /* Scrolling band */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+        }
+
+        /* Header Area */
+        header {
+            background-color: #FF8C00;
+            color: white;
+            width: 100%;
+            padding: 10px 0;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        h1 { margin: 0; font-size: 1.5rem; }
+        .subtitle { font-size: 0.9rem; color: #FFF3E0; }
+
+        /* Game Area - Center */
+        .game-area {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            width: 100%;
+        }
+
+        .instruction-box {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 4px solid #6c5ce7;
+            font-size: 1.2rem;
+            color: #2d3436;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 0 #a29bfe;
+        }
+
+        .target-number {
+            font-size: 1.8rem;
+            color: #d63031;
+            font-weight: bold;
+        }
+
+        /* The Monkey and Plate */
+        .monkey-container {
+            font-size: 8rem;
+            position: relative;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        
+        .monkey-container:active { transform: scale(0.95); }
+
+        .plate {
+            width: 200px;
+            height: 60px;
+            background: #b2bec3;
+            border-radius: 50%;
+            border: 5px solid #636e72;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: -20px;
+            position: relative;
+        }
+
+        /* Flying Bananas */
+        .banana-on-plate {
+            font-size: 2rem;
+            position: absolute;
+            animation: land 0.5s ease-out;
+        }
+
+        @keyframes land {
+            0% { transform: translateY(-100px) scale(1.5); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        /* Controls Area */
+        .controls {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-shrink: 0;
+        }
+
+        .big-btn {
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.2);
+            transition: all 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-feed { background-color: #ffeaa7; color: #d35400; border: 2px solid #fdcb6e; }
+        .btn-reset { background-color: #fab1a0; color: #c0392b; border: 2px solid #e17055; }
+        
+        .big-btn:active { transform: translateY(4px); box-shadow: none; }
+
+        /* Footer Credit */
+        .footer {
+            width: 100%;
+            background: #2d3436;
+            color: #dfe6e9;
+            text-align: center;
+            padding: 5px 0;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        /* Confetti Effect */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            animation: fall linear forwards;
+        }
+        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🐵 भूखा बंदर (Hungry Monkey)</h1>
+    </header>
+
+    <div class="game-area">
+        <div class="instruction-box">
+            लक्ष्य (Target): <span id="targetVal" class="target-number">3</span> केले खिलाओ
+        </div>
+
+        <div class="monkey-container" id="monkey">
+            🐵
+        </div>
+        
+        <div class="plate" id="plate">
+            <span style="font-size: 1rem; color: #2d3436; position: absolute; bottom: -25px;">
+                अभी खाए: <span id="currentCount">0</span>
+            </span>
+        </div>
+        
+        <div id="feedback" style="height: 30px; margin-top: 10px; font-weight: bold; color: #0984e3;"></div>
+    </div>
+
+    <div class="controls">
+        <button class="big-btn btn-feed" onclick="feedMonkey()">
+            🍌 खिलाओ (Feed)
+        </button>
+        <button class="big-btn btn-reset" onclick="resetGame()">
+            🔄 फिर से (Reset)
+        </button>
+    </div>
+
+    <div class="footer">
+        CC BY Rohitash Bharia
+    </div>
+
+    <script>
+        let count = 0;
+        let target = 3;
+        const monkey = document.getElementById('monkey');
+        const plate = document.getElementById('plate');
+        const targetEl = document.getElementById('targetVal');
+        const currentEl = document.getElementById('currentCount');
+        const feedbackEl = document.getElementById('feedback');
+
+        // Init
+        resetGame();
+
+        function resetGame() {
+            count = 0;
+            target = Math.floor(Math.random() * 9) + 1; // 1 to 9
+            targetEl.textContent = target;
+            currentEl.textContent = "0";
+            feedbackEl.textContent = "";
+            monkey.textContent = "🐵"; // Normal face
+            
+            // Clear bananas from plate
+            const oldBananas = document.querySelectorAll('.banana-on-plate');
+            oldBananas.forEach(b => b.remove());
+        }
+
+        function feedMonkey() {
+            if(count < target + 2) { // Allow slight overfill to show error
+                count++;
+                currentEl.textContent = count;
+                
+                // Animation: Create a floating banana
+                const banana = document.createElement('div');
+                banana.classList.add('banana-on-plate');
+                banana.textContent = '🍌';
+                
+                // Randomize position on plate slightly
+                const randomLeft = Math.floor(Math.random() * 100) + 50; 
+                banana.style.left = randomLeft + 'px';
+                banana.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                plate.appendChild(banana);
+
+                // Check logic
+                checkGame();
+            }
+        }
+
+        function checkGame() {
+            if (count === target) {
+                feedbackEl.textContent = "🎉 शाबाश! पेट भर गया! (Well Done!)";
+                feedbackEl.style.color = "green";
+                monkey.textContent = "😋"; // Yummy face
+                celebrate();
+            } else if (count > target) {
+                feedbackEl.textContent = "❌ ओह! ज्यादा हो गए! (Too many)";
+                feedbackEl.style.color = "red";
+                monkey.textContent = "🤢"; // Sick face
+            } else {
+                feedbackEl.textContent = "";
+                monkey.textContent = "😲"; // Eating face
+                setTimeout(() => monkey.textContent = "🐵", 500);
+            }
+        }
+
+        function celebrate() {
+            for(let i=0; i<30; i++) {
+                createConfetti();
+            }
+        }
+
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.backgroundColor = ['#ff0', '#f00', '#0f0', '#00f'][Math.floor(Math.random() * 4)];
+            confetti.style.animationDuration = Math.random() * 2 + 1 + 's';
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => confetti.remove(), 3000);
+        }
+    </script>
+</body>
+</html>

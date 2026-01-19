@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Myopia 3-Stage Simulation - Smart Manch</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        h2 { color: #2c3e50; margin-bottom: 5px; }
+        
+        .controls {
+            margin-bottom: 15px;
+            background: white;
+            padding: 15px 30px;
+            border-radius: 50px; /* कैप्सूल शेप */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* रेडियो बटन को सुंदर बनाना */
+        .radio-group {
+            display: flex;
+            gap: 15px;
+        }
+        label {
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #555;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        input[type="radio"] {
+            margin-right: 5px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+        label:hover { background-color: #ecf0f1; }
+
+        canvas {
+            border: 2px solid #333;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            background-color: #fff;
+            margin-top: 10px;
+        }
+
+        .desc-box {
+            margin-top: 10px;
+            background-color: #e8f6f3;
+            padding: 10px 20px;
+            border-left: 5px solid #1abc9c;
+            border-radius: 4px;
+            width: 80%;
+            max-width: 700px;
+            text-align: center;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: auto;
+            padding-top: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+            text-align: center;
+            width: 100%;
+        }
+        .footer strong { color: #2c3e50; }
+    </style>
+</head>
+<body>
+
+    <h2>निकट दृष्टि दोष: तुलनात्मक अध्ययन</h2>
+
+    <div class="controls">
+        <div class="radio-group">
+            <label>
+                <input type="radio" name="mode" value="1" onclick="setMode(1)" checked> 
+                1. सामान्य आँख (Normal)
+            </label>
+            <label>
+                <input type="radio" name="mode" value="2" onclick="setMode(2)"> 
+                2. दोष (Defect)
+            </label>
+            <label>
+                <input type="radio" name="mode" value="3" onclick="setMode(3)"> 
+                3. निवारण (Correction)
+            </label>
+        </div>
+    </div>
+
+    <div id="descText" class="desc-box">
+        सामान्य दृष्टि: प्रतिबिम्ब सीधे रेटिना पर बनता है।
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div class="footer">
+        <p>Developed for Smart Manch</p>
+        <p>&copy; 2026 <strong>Rohitash Bharia</strong>. All Rights Reserved.</p>
+    </div>
+
+    <script>
+        let mode = 1; // 1: Normal, 2: Defect, 3: Correction
+        let eyeWidth = 180;
+        let eyeHeight = 160;
+        
+        function setup() {
+            let canvas = createCanvas(800, 400);
+            canvas.parent('canvas-container');
+        }
+
+        function draw() {
+            background(255);
+            translate(width / 2 + 100, height / 2); // आँख को स्क्रीन के दाईं ओर सेट करना
+
+            drawEye();
+
+            if (mode === 1) {
+                // सामान्य: सीधे रेटिना पर फोकस
+                drawRays(eyeWidth/2, false, false); 
+            } else if (mode === 2) {
+                // दोष: रेटिना से पहले फोकस (Short focal length)
+                drawRays(eyeWidth/2 - 50, true, false); 
+            } else if (mode === 3) {
+                // निवारण: अवतल लेंस के साथ रेटिना पर फोकस
+                drawCorrectiveLens();
+                drawRays(eyeWidth/2, false, true); 
+            }
+        }
+
+        function drawEye() {
+            // आँख का गोला
+            stroke(50); strokeWeight(2); noFill();
+            
+            beginShape();
+            vertex(-eyeWidth/2 + 20, -eyeHeight/2 + 10);
+            bezierVertex(0, -eyeHeight/2 - 15, eyeWidth/2, -eyeHeight/2, eyeWidth/2, 0); // ऊपर
+            bezierVertex(eyeWidth/2, eyeHeight/2, 0, eyeHeight/2 + 15, -eyeWidth/2 + 20, eyeHeight/2 - 10); // नीचे
+            endShape();
+
+            // कॉर्निया (Cornea)
+            arc(-eyeWidth/2 + 20, 0, 40, 90, -HALF_PI - 0.6, HALF_PI + 0.6);
+
+            // नेत्र लेंस (Eye Lens)
+            fill(200, 230, 255); stroke(0, 100, 200);
+            ellipse(-eyeWidth/2 + 35, 0, 15, 80);
+
+            // रेटिना लाइन (पीछे की दीवार)
+            stroke(200, 50, 50); strokeWeight(4);
+            line(eyeWidth/2, -50, eyeWidth/2, 50);
+            
+            noStroke(); fill(0); textSize(14);
+            text("रेटिना", eyeWidth/2 + 10, 0);
+        }
+
+        function drawCorrectiveLens() {
+            // अवतल लेंस (Concave)
+            let lx = -eyeWidth/2 - 90;
+            fill(220, 255, 220, 150); stroke(0, 150, 0); strokeWeight(2);
+            
+            beginShape();
+            vertex(lx - 5, -60);
+            bezierVertex(lx + 5, -20, lx + 5, 20, lx - 5, 60);
+            vertex(lx + 5, 60);
+            bezierVertex(lx + 15, 20, lx + 15, -20, lx + 5, -60);
+            endShape(CLOSE);
+            
+            noStroke(); fill(0, 120, 0); textSize(12);
+            text("अवतल लेंस", lx - 30, -75);
+        }
+
+        // focusX = कहाँ फोकस होना चाहिए
+        // isDefected = क्या दोष दिखाना है (धुंधलापन)
+        // hasLens = क्या चश्मा लगा है
+        function drawRays(focusX, isDefected, hasLens) {
+            let startX = -width/2 - 100;
+            let lensX = -eyeWidth/2 + 35;
+            let glassX = -eyeWidth/2 - 90;
+            let retinaX = eyeWidth/2;
+
+            strokeWeight(2);
+            
+            // रंग निर्धारण
+            if (isDefected) stroke(255, 0, 0); // लाल (खराब)
+            else stroke(0, 150, 0); // हरा (सही)
+
+            // 5 किरणें
+            for (let y = -40; y <= 40; y += 20) {
+                
+                if (hasLens) {
+                    // 1. सोर्स से चश्मे तक
+                    line(startX, y, glassX, y);
+                    
+                    // 2. चश्मे से आँख तक (Diverging - फैलते हुए)
+                    // अवतल लेंस किरणों को बाहर की तरफ मोड़ता है
+                    let spread = 1.25; 
+                    let y_eye = y * spread;
+                    line(glassX, y, lensX, y_eye);
+                    
+                    // 3. आँख से रेटिना तक (Converging)
+                    line(lensX, y_eye, focusX, 0);
+
+                } else {
+                    // 1. सोर्स से आँख तक (सीधा)
+                    line(startX, y, lensX, y);
+                    
+                    // 2. आँख से फोकस पॉइंट तक
+                    line(lensX, y, focusX, 0);
+                    
+                    // 3. अगर दोष है, तो फोकस के बाद किरणें फिर फैलेंगी (Blur)
+                    if (isDefected) {
+                        let slope = (0 - y) / (focusX - lensX);
+                        // y = mx + c (point slope form se calculate kiya)
+                        let y_retina = 0 + slope * (retinaX - focusX);
+                        
+                        stroke(255, 0, 0, 80); // हल्की लाइन
+                        line(focusX, 0, retinaX, y_retina);
+                        stroke(255, 0, 0); // वापस गहरा रंग
+                    }
+                }
+            }
+
+            // फोकस बिंदु बनाना
+            noStroke(); 
+            fill(isDefected ? "red" : "green");
+            ellipse(focusX, 0, 10, 10);
+            
+            // स्थिति बताना
+            if(isDefected) text("F (Focus)", focusX - 20, 25);
+        }
+
+        // HTML से JS कनेक्ट करने के लिए फंक्शन
+        function setMode(m) {
+            mode = m;
+            let desc = document.getElementById('descText');
+            if(m == 1) {
+                desc.innerHTML = "1. सामान्य आँख: किरणें सही ढंग से रेटिना पर केंद्रित हो रही हैं। साफ़ दिखाई देगा।";
+                desc.style.borderLeftColor = "#1abc9c"; // Greenish
+                desc.style.backgroundColor = "#e8f6f3";
+            } else if (m == 2) {
+                desc.innerHTML = "2. निकट दृष्टि दोष: लेंस की गोलाई बढ़ने से किरणें रेटिना से <b>पहले</b> ही मिल रही हैं। दूर की चीज़ें धुंधली दिखेंगी।";
+                desc.style.borderLeftColor = "#e74c3c"; // Red
+                desc.style.backgroundColor = "#fdedec";
+            } else if (m == 3) {
+                desc.innerHTML = "3. निवारण: <b>अवतल लेंस (Concave)</b> किरणों को पहले फैला देता है, जिससे वे दूर जाकर सही जगह (रेटिना) पर मिलती हैं।";
+                desc.style.borderLeftColor = "#3498db"; // Blue
+                desc.style.backgroundColor = "#ebf5fb";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realistic Heart Circulation Simulation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1d;
+            color: #ecf0f1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+        }
+
+        h2 {
+            color: #ff6b6b;
+            text-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .subtitle { color: #95a5a6; margin-bottom: 15px; font-size: 14px; }
+
+        .container {
+            position: relative;
+            background: #2f3640;
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            border: 3px solid #353b48;
+        }
+
+        canvas {
+            background: radial-gradient(circle at center, #353b48 0%, #2f3640 100%);
+            border-radius: 15px;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        /* कंट्रोल पैनल */
+        .controls {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        input[type=range] {
+            width: 150px;
+            cursor: pointer;
+        }
+
+        .legend {
+            font-size: 12px;
+            color: #dcdde1;
+        }
+        .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+
+        .footer-info {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        .cc-badge { background: #e74c3c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; margin-right: 5px;}
+
+    </style>
+</head>
+<body>
+
+    <h2>मानव परिसंचरण तंत्र (Human Circulatory System)</h2>
+    <div class="subtitle">फेफड़े ↔️ हृदय ↔️ शरीर</div>
+
+    <div class="container">
+        <canvas id="simCanvas" width="600" height="650"></canvas>
+        
+        <div class="controls">
+            <div>
+                <label>💓 धड़कन (Heart Rate): </label>
+                <input type="range" id="rateSlider" min="0.5" max="2.5" step="0.1" value="1">
+            </div>
+            <div class="legend">
+                <div><span class="dot" style="background:#3498db;"></span> अशुद्ध रक्त (CO₂)</div>
+                <div><span class="dot" style="background:#e74c3c;"></span> शुद्ध रक्त (O₂)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-info">
+        <span class="cc-badge">CC</span> <span style="color:#0be881; font-weight:bold;">@Rohitash Bharia</span>
+        <p>रक्त का दोहरा परिसंचरण (Double Circulation)</p>
+    </div>
+
+<script>
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    const slider = document.getElementById('rateSlider');
+
+    // केंद्र बिंदु
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+
+    // एनिमेशन वेरिएबल्स
+    let time = 0;
+    let pulse = 0; // धड़कन का प्रभाव (0 से 1)
+    
+    // कण (Blood Cells)
+    const particles = [];
+    const numParticles = 120;
+
+    // रास्ते (Paths) के लिए प्रमुख बिंदु
+    // Lungs (Top), Body (Bottom), Heart (Center)
+    const lungL = {x: cx - 100, y: 80}; 
+    const lungR = {x: cx + 100, y: 80};
+    const bodyArea = {x: cx, y: 580};
+    
+    // Heart Chambers Coordinates (Approx)
+    const RA = {x: cx - 50, y: cy - 40}; // Right Atrium
+    const RV = {x: cx - 40, y: cy + 50}; // Right Ventricle
+    const LA = {x: cx + 50, y: cy - 40}; // Left Atrium
+    const LV = {x: cx + 40, y: cy + 50}; // Left Ventricle
+
+    // --- कण (Particles) सेटअप ---
+    class BloodParticle {
+        constructor(circuit) {
+            this.circuit = circuit; // 'pulmonary' (Lungs) or 'systemic' (Body)
+            this.progress = Math.random();
+            this.speed = 0.002 + Math.random() * 0.002;
+            this.offset = (Math.random() - 0.5) * 15; // रास्ते में चौड़ाई के लिए
+        }
+
+        update(rate) {
+            // धड़कन के साथ गति में उछाल (Surge)
+            let surge = 1 + (pulse * 2); 
+            this.progress += this.speed * rate * surge;
+            
+            if(this.progress >= 1) {
+                this.progress = 0;
+                // जब साइकिल पूरी हो, तो सर्किट बदलें (Body -> Lungs -> Body)
+                this.circuit = (this.circuit === 'pulmonary') ? 'systemic' : 'pulmonary';
+            }
+        }
+
+        getPosition() {
+            // वेपॉइंट्स के बीच इंटरपोलेशन (Interpolation Logic)
+            let x, y, color;
+
+            if (this.circuit === 'systemic') {
+                // RED BLOOD: Lungs -> LA -> LV -> Body
+                // BLUE BLOOD: Body -> RA -> RV -> Lungs (Start of Pulmonary)
+                
+                // हम इसे दो हिस्सों में तोड़ते हैं विजुअल के लिए:
+                // Part 1: Oxygenated (Red) Lungs -> Body
+                // Part 2: Deoxygenated (Blue) Body -> Lungs (Next circuit)
+                
+                // यहाँ हम "Systemic Loop" (शुद्ध रक्त शरीर को) दिखा रहे हैं
+                // Path: Lungs(Top) -> LA -> LV -> Body(Bottom)
+                
+                if (this.progress < 0.2) { // Lungs to LA
+                     x = interp(lungL.x, RA.x + 100, this.progress/0.2); // Trick to cross to LA
+                     y = interp(lungL.y, LA.y, this.progress/0.2);
+                     color = '#e74c3c'; // Red
+                } else if (this.progress < 0.4) { // LA to LV
+                     x = interp(LA.x, LV.x, (this.progress-0.2)/0.2);
+                     y = interp(LA.y, LV.y, (this.progress-0.2)/0.2);
+                     color = '#e74c3c';
+                } else if (this.progress < 0.9) { // LV to Body
+                     x = interp(LV.x, bodyArea.x, (this.progress-0.4)/0.5);
+                     y = interp(LV.y, bodyArea.y, (this.progress-0.4)/0.5);
+                     color = '#e74c3c';
+                } else { // At Body (Turning Blue)
+                     x = bodyArea.x;
+                     y = bodyArea.y;
+                     color = '#9b59b6'; // Purple transition
+                }
+
+            } else {
+                // Pulmonary Loop (अशुद्ध रक्त फेफड़ों को)
+                // Path: Body(Bottom) -> RA -> RV -> Lungs(Top)
+                
+                if (this.progress < 0.3) { // Body to RA
+                     x = interp(bodyArea.x, RA.x, this.progress/0.3);
+                     y = interp(bodyArea.y, RA.y, this.progress/0.3);
+                     color = '#3498db'; // Blue
+                } else if (this.progress < 0.5) { // RA to RV
+                     x = interp(RA.x, RV.x, (this.progress-0.3)/0.2);
+                     y = interp(RA.y, RV.y, (this.progress-0.3)/0.2);
+                     color = '#3498db';
+                } else if (this.progress < 1.0) { // RV to Lungs
+                     x = interp(RV.x, lungR.x - 20, (this.progress-0.5)/0.5); // Cross to Lungs
+                     y = interp(RV.y, lungR.y, (this.progress-0.5)/0.5);
+                     color = '#3498db';
+                }
+            }
+
+            // Curve correction (थोड़ा वक्र बनाने के लिए)
+            // दिल के पास सकरे, बाहर चौड़े
+            let widthMod = 1;
+            if (y > cy - 50 && y < cy + 50) widthMod = 0.2; // दिल के अंदर सकरे
+            
+            return {
+                x: x + this.offset * widthMod, 
+                y: y, 
+                color: color || '#fff'
+            };
+        }
+    }
+
+    function interp(start, end, amt) {
+        return start + (end - start) * amt;
+    }
+
+    // कणों को इनिशियलाइज़ करें
+    for(let i=0; i<numParticles; i++) {
+        particles.push(new BloodParticle(i % 2 === 0 ? 'systemic' : 'pulmonary'));
+    }
+
+
+    // --- ड्राइंग फंक्शन्स ---
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        const rate = parseFloat(slider.value);
+        time += 0.05 * rate;
+        
+        // धड़कन का प्रभाव (Systole/Diastole)
+        pulse = Math.pow((Math.sin(time) + 1) / 2, 4); // Sharp beat
+        const scale = 1 + (pulse * 0.05); // 5% expansion
+
+        // 1. तार/नसों का जाल (Background Pipes)
+        drawVessels();
+
+        // 2. फेफड़े (Lungs) - Top
+        drawLungs();
+
+        // 3. शरीर (Body) - Bottom
+        drawBodyTissue();
+
+        // 4. दिल (Heart) - Center (Beating)
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(scale, scale);
+        ctx.translate(-cx, -cy);
+        drawRealisticHeart();
+        ctx.restore();
+
+        // 5. कण (Blood Cells)
+        particles.forEach(p => {
+            p.update(rate);
+            const pos = p.getPosition();
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, 4, 0, Math.PI*2);
+            ctx.fillStyle = pos.color;
+            ctx.fill();
+        });
+        
+        // 6. लेबल्स
+        drawLabels();
+
+        requestAnimationFrame(draw);
+    }
+
+    function drawLungs() {
+        // बायां और दायां फेफड़ा
+        ctx.fillStyle = "#ffcccc"; // Pinkish
+        ctx.strokeStyle = "#e0a8a8";
+        ctx.lineWidth = 2;
+
+        // Left Lung
+        ctx.beginPath();
+        ctx.ellipse(lungL.x, lungL.y, 60, 40, 0, 0, Math.PI*2);
+        ctx.fill(); ctx.stroke();
+        
+        // Right Lung
+        ctx.beginPath();
+        ctx.ellipse(lungR.x, lungR.y, 60, 40, 0, 0, Math.PI*2);
+        ctx.fill(); ctx.stroke();
+        
+        // Text
+        ctx.fillStyle = "#c0392b";
+        ctx.font = "bold 16px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("फेफड़े (Lungs)", cx, 85);
+    }
+
+    function drawBodyTissue() {
+        // शरीर के ऊतक (Capillaries network visualization)
+        ctx.fillStyle = "#e58e26";
+        ctx.strokeStyle = "#b33939";
+        
+        ctx.beginPath();
+        ctx.roundRect(cx - 100, 550, 200, 60, 10);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 16px Arial";
+        ctx.fillText("शरीर के अंग (Body Organs)", cx, 585);
+    }
+
+    function drawVessels() {
+        ctx.lineWidth = 15;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        
+        // Veins (Blue) - Body to Heart
+        ctx.strokeStyle = "rgba(52, 152, 219, 0.3)";
+        ctx.beginPath();
+        ctx.moveTo(cx, 550); // From Body
+        ctx.quadraticCurveTo(cx - 150, 400, RA.x, RA.y); // To RA
+        ctx.stroke();
+
+        // Pulmonary Artery (Blue) - Heart to Lungs
+        ctx.beginPath();
+        ctx.moveTo(RV.x, RV.y);
+        ctx.quadraticCurveTo(cx - 100, cy - 100, lungR.x, lungR.y + 20); // To Lungs
+        ctx.stroke();
+
+        // Pulmonary Vein (Red) - Lungs to Heart
+        ctx.strokeStyle = "rgba(231, 76, 60, 0.3)";
+        ctx.beginPath();
+        ctx.moveTo(lungL.x, lungL.y + 20);
+        ctx.quadraticCurveTo(cx + 100, cy - 100, LA.x, LA.y); // To LA
+        ctx.stroke();
+
+        // Aorta (Red) - Heart to Body
+        ctx.beginPath();
+        ctx.moveTo(LV.x, LV.y);
+        ctx.quadraticCurveTo(cx + 150, 400, cx, 550); // To Body
+        ctx.stroke();
+    }
+
+    function drawRealisticHeart() {
+        // दिल का आकार (Custom Shape)
+        ctx.strokeStyle = "#eec0c0";
+        ctx.lineWidth = 3;
+        ctx.fillStyle = "#c0392b"; // Muscle Color
+
+        // पूरा दिल (Outline)
+        ctx.beginPath();
+        // Top Left Curve
+        ctx.moveTo(cx, cy - 60);
+        ctx.bezierCurveTo(cx - 70, cy - 90, cx - 110, cy - 20, cx - 110, cy + 30);
+        // Bottom Point (Apex)
+        ctx.bezierCurveTo(cx - 100, cy + 110, cx - 20, cy + 130, cx, cy + 140);
+        // Right Side up
+        ctx.bezierCurveTo(cx + 20, cy + 130, cx + 100, cy + 110, cx + 110, cy + 30);
+        // Top Right Curve
+        ctx.bezierCurveTo(cx + 110, cy - 20, cx + 70, cy - 90, cx, cy - 60);
+        ctx.fill();
+        ctx.stroke();
+
+        // सेप्टम (Septum - बीच की दीवार)
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - 60);
+        ctx.lineTo(cx, cy + 110);
+        ctx.strokeStyle = "#a93226";
+        ctx.lineWidth = 5;
+        ctx.stroke();
+
+        // कक्षों को दिखाने के लिए हल्का रंग (Chambers)
+        ctx.fillStyle = "rgba(0,0,0,0.3)";
+        
+        // RA
+        ctx.beginPath(); ctx.arc(RA.x, RA.y, 25, 0, Math.PI*2); ctx.fill();
+        // LA
+        ctx.beginPath(); ctx.arc(LA.x, LA.y, 25, 0, Math.PI*2); ctx.fill();
+        
+        // Ventricles (थोड़े V आकार के)
+        // RV
+        ctx.beginPath(); 
+        ctx.moveTo(cx - 10, cy + 10); ctx.lineTo(cx - 80, cy + 20); ctx.lineTo(cx - 20, cy + 100); ctx.fill();
+        // LV (बड़ा)
+        ctx.beginPath(); 
+        ctx.moveTo(cx + 10, cy + 10); ctx.lineTo(cx + 80, cy + 20); ctx.lineTo(cx + 20, cy + 110); ctx.fill();
+
+        // वाल्व (Valves) - धड़कन के साथ खुलते/बंद होते हैं
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = 3;
+        const valveOpen = pulse * 10;
+        
+        // Right Valve (Tricuspid)
+        ctx.beginPath();
+        ctx.moveTo(RA.x - 15, RA.y + 25);
+        ctx.lineTo(RA.x + 15, RA.y + 25);
+        ctx.moveTo(cx - 50, cy); ctx.lineTo(cx - 50, cy + 15 + valveOpen); // Flap
+        ctx.stroke();
+
+        // Left Valve (Mitral)
+        ctx.beginPath();
+        ctx.moveTo(LA.x - 15, LA.y + 25);
+        ctx.lineTo(LA.x + 15, LA.y + 25);
+        ctx.moveTo(cx + 50, cy); ctx.lineTo(cx + 50, cy + 15 + valveOpen); // Flap
+        ctx.stroke();
+    }
+
+    function drawLabels() {
+        ctx.fillStyle = "white";
+        ctx.font = "bold 12px Arial";
+        ctx.textAlign = "center";
+        
+        // Chambers
+        ctx.fillText("RA", RA.x, RA.y + 5);
+        ctx.fillText("LA", LA.x, LA.y + 5);
+        ctx.fillText("RV", RV.x, RV.y + 40);
+        ctx.fillText("LV", LV.x, LV.y + 40);
+
+        // Titles
+        ctx.font = "bold 14px Arial";
+        ctx.fillStyle = "#3498db";
+        ctx.fillText("महाशिरा", cx - 130, cy);
+        ctx.fillStyle = "#e74c3c";
+        ctx.fillText("महाधमनी", cx + 130, cy);
+    }
+
+    draw();
+
+</script>
+</body>
+</html>

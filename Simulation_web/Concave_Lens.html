@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concave Lens Simulation - Smart Manch</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        h2 { color: #2c3e50; margin-bottom: 10px; }
+        .controls {
+            margin-bottom: 15px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+        }
+        canvas {
+            border: 2px solid #333;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            background-color: #fff;
+        }
+        .info-text { font-size: 14px; color: #555; margin-top: 5px; }
+        input[type=range] { width: 100%; cursor: pointer; }
+        
+        /* कॉपीराइट स्टाइल */
+        .footer {
+            margin-top: auto;
+            padding-top: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+            text-align: center;
+            width: 100%;
+        }
+        .footer strong {
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>अवतल लेंस (Concave Lens) सिमुलेशन</h2>
+
+    <div class="controls">
+        <label><strong>वस्तु की दूरी (u): </strong><span id="uVal"></span></label>
+        <br>
+        <input type="range" id="sliderU" min="-350" max="-20" value="-200" step="1">
+        <div class="info-text">स्लाइडर को हिलाकर वस्तु (लाल तीर) को आगे-पीछे करें।</div>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div class="footer">
+        <p>Developed for Smart Manch</p>
+        <p>&copy; 2026 <strong>Rohitash Bharia</strong>. All Rights Reserved.</p>
+    </div>
+
+    <script>
+        // अवतल लेंस के लिए फोकस दूरी ऋणात्मक (Negative) होती है
+        let f = -100; 
+        let u = -200; 
+        let h_o = 60; 
+        let slider;
+
+        function setup() {
+            let canvas = createCanvas(800, 400);
+            canvas.parent('canvas-container');
+            slider = select('#sliderU');
+        }
+
+        function draw() {
+            background(255);
+            
+            // 1. इनपुट लेना
+            u = parseInt(slider.value());
+            document.getElementById('uVal').innerText = u + " px";
+
+            // 2. गणना (Lens Formula: 1/v = 1/f + 1/u)
+            // अवतल लेंस में f ऋणात्मक है, u ऋणात्मक है, तो v भी ऋणात्मक आएगा (Virtual Image)
+            let v = (f * u) / (u + f);
+
+            // आवर्धन (Magnification)
+            let m = v / u;
+            let h_i = m * h_o;
+
+            translate(width / 2, height / 2);
+
+            // --- ड्राइंग ---
+
+            // मुख्य अक्ष
+            stroke(0); strokeWeight(1);
+            line(-width / 2, 0, width / 2, 0);
+
+            // --- अवतल लेंस बनाना (Concave Shape) ---
+            fill(230, 245, 255, 150);
+            stroke(0, 100, 200);
+            strokeWeight(2);
+            
+            // लेंस का आकार: ऊपर और नीचे चौड़ा, बीच में पतला
+            beginShape();
+            vertex(-15, -130); 
+            // बायीं ओर का कर्व (अंदर की तरफ)
+            bezierVertex(5, -50, 5, 50, -15, 130);
+            vertex(15, 130);
+            // दायीं ओर का कर्व (अंदर की तरफ)
+            bezierVertex(-5, 50, -5, -50, 15, -130);
+            endShape(CLOSE);
+            
+            // ऑप्टिकल सेंटर और फोकस पॉइंट्स
+            fill(0); noStroke();
+            text("O", 5, 20); 
+            
+            // फोकस (ध्यान दें: f यहाँ negative है, तो -f positive x-axis पर होगा)
+            // लेकिन लेबलिंग के लिए हम स्थान वही रखेंगे
+            ellipse(f, 0, 5, 5); text("F1", f-10, 20);      // -100 (Left)
+            ellipse(-f, 0, 5, 5); text("F2", -f-10, 20);    // +100 (Right)
+            ellipse(2*f, 0, 5, 5); text("2F1", 2*f-15, 20); // -200
+            ellipse(-2*f, 0, 5, 5); text("2F2", -2*f-15, 20);// +200
+
+            // --- वस्तु (Object) - लाल तीर ---
+            stroke(255, 0, 0); strokeWeight(3);
+            line(u, 0, u, -h_o); 
+            line(u, -h_o, u - 5, -h_o + 10);
+            line(u, -h_o, u + 5, -h_o + 10);
+            
+            noStroke(); fill(255, 0, 0);
+            text("वस्तु", u - 15, -h_o - 10);
+
+            // --- किरण आरेख (Ray Diagram) ---
+            stroke(100, 100, 100, 100); strokeWeight(1);
+
+            // किरण 1: समानांतर किरण -> लेंस से टकराकर बाहर (Diverge) जाएगी
+            // यह किरण पीछे की ओर F1 से आती हुई प्रतीत होती है
+            line(u, -h_o, 0, -h_o); // लेंस तक
+            
+            // डाइवर्जिंग किरण (F1 से सीध में)
+            // F1 है (f, 0) जहाँ f = -100
+            let slopeDiv = (-h_o - 0) / (0 - f); // (y2-y1)/(x2-x1)
+            
+            // पीछे की ओर डैश लाइन (F1 तक)
+            drawingContext.setLineDash([5, 5]);
+            line(f, 0, 0, -h_o);
+            
+            // आगे की ओर ठोस लाइन (Diverging Ray)
+            drawingContext.setLineDash([]);
+            // y = mx + c समीकरण का उपयोग करके स्क्रीन के अंत तक लाइन खींचना
+            let x_end = width/2;
+            let y_end = -h_o + slopeDiv * x_end;
+            line(0, -h_o, x_end, y_end);
+
+
+            // किरण 2: ऑप्टिकल सेंटर (O) से सीधी निकलेगी
+            line(u, -h_o, width/2, -h_o * (width/2)/u); 
+
+            // --- प्रतिबिम्ब (Image) - नीला तीर ---
+            // अवतल लेंस में इमेज हमेशा Virtual (आभासी) होती है
+            stroke(0, 0, 255); strokeWeight(3);
+            drawingContext.setLineDash([5, 5]); // आभासी के लिए डैश
+            
+            line(v, 0, v, -h_i);
+            
+            // तीर का निशान (सीधा)
+            line(v, -h_i, v - 4, -h_i + 8);
+            line(v, -h_i, v + 4, -h_i + 8);
+            
+            drawingContext.setLineDash([]); // रीसेट
+
+            noStroke(); fill(0, 0, 255);
+            text("प्रतिबिम्ब (आभासी)", v - 40, -h_i - 10);
+
+            // --- स्थिति टेक्स्ट ---
+            resetMatrix();
+            fill(50); noStroke(); textSize(16);
+            
+            text("प्रकृति: आभासी, सीधा और छोटा (Virtual, Erect, Diminished)", 20, 30);
+            text("v = " + v.toFixed(1) + " px", 20, 55);
+            text("m = " + m.toFixed(2), 20, 80);
+        }
+    </script>
+</body>
+</html>

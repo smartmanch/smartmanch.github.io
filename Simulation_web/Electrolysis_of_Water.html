@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electrolysis of Water Simulation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #222f3e;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            user-select: none;
+        }
+
+        h2 {
+            color: #48dbfb;
+            text-shadow: 0 0 10px rgba(72, 219, 251, 0.5);
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .subtitle { color: #c8d6e5; margin-bottom: 20px; font-size: 14px; }
+
+        .lab-container {
+            position: relative;
+            width: 800px;
+            height: 500px;
+            background: #2c3e50;
+            border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            border: 3px solid #576574;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 20px;
+        }
+
+        /* बीकर */
+        .beaker {
+            position: relative;
+            width: 400px;
+            height: 300px;
+            border: 5px solid rgba(255, 255, 255, 0.4);
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 80px; /* बैटरी के लिए जगह */
+        }
+
+        /* पानी */
+        .water {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 280px;
+            background: rgba(52, 152, 219, 0.4); /* हल्का नीला */
+            border-radius: 0 0 15px 15px;
+            z-index: 1;
+        }
+
+        /* इलेक्ट्रोड रॉड्स (ग्रेफाइट) */
+        .electrode {
+            position: absolute;
+            bottom: 0;
+            width: 15px;
+            height: 180px;
+            background: #2d3436;
+            border-radius: 5px 5px 0 0;
+            z-index: 2;
+        }
+        .anode { left: 100px; }
+        .cathode { right: 100px; }
+
+        /* उल्टी परखनलियां (Inverted Test Tubes) */
+        .test-tube {
+            position: absolute;
+            bottom: 20px; /* इलेक्ट्रोड के ऊपर */
+            width: 50px;
+            height: 240px;
+            border: 3px solid rgba(255, 255, 255, 0.6);
+            border-bottom: none;
+            border-radius: 25px 25px 0 0;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 3;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tube-left { left: 82.5px; } /* Anode के ऊपर */
+        .tube-right { right: 82.5px; } /* Cathode के ऊपर */
+
+        /* गैस जमा होने की जगह (Top part of tube) */
+        .gas-pocket {
+            width: 100%;
+            height: 0%; /* यह बढ़ेगा */
+            background: rgba(255, 255, 255, 0.1); /* खाली जगह */
+            transition: height 0.1s linear;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #feca57;
+        }
+
+        /* परखनली में पानी (नीचे का हिस्सा) */
+        .tube-water {
+            width: 100%;
+            flex-grow: 1;
+            background: rgba(52, 152, 219, 0.6);
+        }
+
+        /* बुलबुले (Canvas Layer) */
+        #bubbleCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        /* बैटरी और सर्किट */
+        .battery-setup {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .battery {
+            display: flex;
+            align-items: center;
+            background: #341f97;
+            padding: 5px 15px;
+            border-radius: 5px;
+            border: 2px solid #5f27cd;
+        }
+        
+        .wire {
+            position: absolute;
+            bottom: 80px; /* बीकर के नीचे */
+            width: 2px;
+            height: 50px;
+            background: #576574;
+            z-index: 0;
+        }
+        .wire-pos { left: 107.5px; background: #e74c3c; } /* लाल तार */
+        .wire-neg { right: 107.5px; background: #222f3e; } /* काला तार */
+
+        /* क्षैतिज तार */
+        .wire-h {
+            position: absolute;
+            bottom: 30px;
+            height: 2px;
+            background: #7f8c8d;
+        }
+
+        /* स्विच */
+        .switch-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        button#toggleBtn {
+            padding: 10px 30px;
+            font-size: 18px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #1e8449;
+        }
+        button#toggleBtn.stop { background-color: #e74c3c; box-shadow: 0 4px 0 #c0392b; }
+        button#toggleBtn:active { transform: translateY(4px); box-shadow: none; }
+
+        /* लेबल्स */
+        .label {
+            position: absolute;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            background: rgba(0,0,0,0.7);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .equation-box {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 18px;
+            border-left: 5px solid #48dbfb;
+        }
+
+        .footer-info {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            color: #95a5a6;
+        }
+        .cc-badge { background: #e74c3c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; margin-right: 5px;}
+        .author-name { color: #0be881; font-weight: bold; }
+
+    </style>
+</head>
+<body>
+
+    <h2>जल का विद्युत अपघटन (Electrolysis)</h2>
+    <div class="subtitle">Class 10 - अम्ल, क्षारक और लवण</div>
+
+    <div class="lab-container">
+        
+        <div class="equation-box">
+            2H₂O(l) → 2H₂(g) + O₂(g)
+        </div>
+
+        <div class="beaker">
+            <div class="water"></div>
+
+            <div class="electrode anode"></div>
+            <div class="test-tube tube-left">
+                <div id="gasO2" class="gas-pocket">O₂</div>
+                <div class="tube-water"></div>
+            </div>
+            
+            <div class="electrode cathode"></div>
+            <div class="test-tube tube-right">
+                <div id="gasH2" class="gas-pocket">H₂</div>
+                <div class="tube-water"></div>
+            </div>
+
+            <canvas id="bubbleCanvas" width="400" height="300"></canvas>
+
+            <div class="label" style="top: -30px; left: 85px;">Anode (+)</div>
+            <div class="label" style="top: -30px; right: 80px;">Cathode (-)</div>
+            <div class="label" style="bottom: 80px; left: 20px; background:none; text-shadow: 1px 1px 2px black;">ऑक्सीजन</div>
+            <div class="label" style="bottom: 80px; right: 20px; background:none; text-shadow: 1px 1px 2px black;">हाइड्रोजन</div>
+        </div>
+
+        <div class="wire wire-pos"></div>
+        <div class="wire wire-neg"></div>
+
+        <div class="battery-setup">
+            <div class="battery">
+                <span style="font-size:24px; font-weight:bold;">🔋 6V Battery</span>
+            </div>
+            <div class="switch-container">
+                <button id="toggleBtn" onclick="toggleSim()">स्विच ऑन (Start)</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer-info">
+        <span class="cc-badge">CC</span> <span class="author-name">@Rohitash Bharia</span>
+        <p>नोट: हाइड्रोजन गैस का आयतन ऑक्सीजन गैस से दोगुना होता है (2:1)।</p>
+    </div>
+
+<script>
+    const canvas = document.getElementById('bubbleCanvas');
+    const ctx = canvas.getContext('2d');
+    const gasO2 = document.getElementById('gasO2');
+    const gasH2 = document.getElementById('gasH2');
+    const toggleBtn = document.getElementById('toggleBtn');
+
+    let isOn = false;
+    let bubbles = [];
+    
+    // गैस आयतन (प्रतिशत में)
+    let volO2 = 0;
+    let volH2 = 0;
+
+    // बुलबुला क्लास
+    class Bubble {
+        constructor(type) {
+            this.type = type; // 'O2' or 'H2'
+            // स्थिति: एनोड (Left) या कैथोड (Right) के अनुसार
+            // Anode center ~ 107px, Cathode center ~ 292px within beaker
+            const xBase = (type === 'O2') ? 107.5 : 292.5;
+            
+            this.x = xBase + (Math.random() - 0.5) * 10;
+            this.y = 280; // इलेक्ट्रोड के नीचे से
+            this.speed = 1 + Math.random();
+            this.radius = 1 + Math.random() * 2;
+        }
+
+        update() {
+            this.y -= this.speed;
+        }
+
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+            ctx.fill();
+        }
+    }
+
+    function toggleSim() {
+        isOn = !isOn;
+        if (isOn) {
+            toggleBtn.innerText = "स्विच ऑफ (Stop)";
+            toggleBtn.className = "stop";
+            animate();
+        } else {
+            toggleBtn.innerText = "स्विच ऑन (Start)";
+            toggleBtn.className = "";
+        }
+    }
+
+    function animate() {
+        if (!isOn) return;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 1. बुलबुले पैदा करें
+        // हाइड्रोजन (H2) ऑक्सीजन (O2) से दोगुनी तेजी से निकलता है
+        if (Math.random() > 0.3) bubbles.push(new Bubble('H2')); // ज्यादा H2
+        if (Math.random() > 0.3) bubbles.push(new Bubble('H2')); 
+        if (Math.random() > 0.6) bubbles.push(new Bubble('O2')); // कम O2
+
+        // 2. बुलबुलों को अपडेट करें
+        for (let i = bubbles.length - 1; i >= 0; i--) {
+            let b = bubbles[i];
+            b.update();
+            b.draw();
+
+            // अगर बुलबुला पानी की सतह पर पहुँच जाए (जहाँ गैस जमा हो रही है)
+            // गैस पॉकेट की ऊंचाई के हिसाब से लिमिट बदलें
+            // Tube Top is at y=20 (relative to beaker bottom is 280? No relative coordinates)
+            // Canvas height 300. Tube starts at bottom and goes up.
+            
+            // Limit Y logic: Tube is 240px tall, starts 20px from bottom. Top is at y = 300 - (20+240) = 40.
+            // Gas pocket pushes water level down from y=40.
+            
+            // Calculate current water level inside tube
+            // H2 tube water level
+            let waterLevelH2 = 40 + (volH2 * 2.4); // 240px is 100%
+            let waterLevelO2 = 40 + (volO2 * 2.4);
+
+            let limit = (b.type === 'H2') ? waterLevelH2 : waterLevelO2;
+
+            if (b.y < limit) {
+                bubbles.splice(i, 1);
+            }
+        }
+
+        // 3. गैस का आयतन बढ़ाएं
+        // H2 speed = 2x O2 speed
+        if (volH2 < 100) {
+            volH2 += 0.05; 
+            volO2 += 0.025; 
+        } else {
+            // Full हो गया
+            isOn = false;
+            toggleBtn.innerText = "Reset";
+            toggleBtn.onclick = () => {
+                volH2 = 0; volO2 = 0; bubbles = [];
+                gasH2.style.height = '0%'; gasO2.style.height = '0%';
+                toggleBtn.innerText = "स्विच ऑन (Start)";
+                toggleBtn.className = "";
+                toggleBtn.onclick = toggleSim;
+            };
+        }
+
+        // 4. UI अपडेट करें
+        gasH2.style.height = volH2 + "%";
+        gasH2.innerText = volH2 > 10 ? "H₂" : "";
+        
+        gasO2.style.height = volO2 + "%";
+        gasO2.innerText = volO2 > 10 ? "O₂" : "";
+
+        requestAnimationFrame(animate);
+    }
+
+</script>
+</body>
+</html>

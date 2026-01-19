@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Refraction Suite - Smart Manch</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #1a1a1a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 10px;
+        }
+        h2 { color: #f1c40f; margin-bottom: 10px; text-align: center; }
+        
+        .controls {
+            background: #2f3640;
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid #555;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            width: 95%;
+            max-width: 800px;
+        }
+
+        .menu-bar { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        
+        button {
+            padding: 8px 15px; border: none; border-radius: 20px;
+            cursor: pointer; font-weight: bold; font-size: 13px; transition: 0.2s;
+        }
+        .btn-active { background-color: #f1c40f; color: #000; box-shadow: 0 0 10px #f1c40f; }
+        .btn-inactive { background-color: #444; color: #ccc; }
+
+        canvas {
+            border: 3px solid #555; border-radius: 10px;
+            background-color: #000; margin-top: 15px;
+        }
+
+        .info-panel {
+            background: #222; padding: 10px; border-radius: 8px;
+            text-align: center; font-size: 14px; color: #ccc;
+            margin-top: 10px; border-left: 4px solid #3498db;
+            width: 90%; max-width: 700px;
+        }
+
+        input[type=range] { width: 180px; cursor: pointer; accent-color: #3498db; }
+
+        /* CC Footer */
+        .cc-footer {
+            margin-top: 20px; padding: 15px; background-color: #2c3e50;
+            border-top: 3px solid #f1c40f; width: 100%; text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .cc-icons img { height: 22px; vertical-align: middle; }
+    </style>
+</head>
+<body>
+
+    <h2>दैनिक जीवन में अपवर्तन (Final Physics)</h2>
+
+    <div class="controls">
+        <div class="menu-bar">
+            <button id="btn1" class="btn-active" onclick="setMode(1)">1. सिक्का (Coin)</button>
+            <button id="btn2" class="btn-inactive" onclick="setMode(2)">2. पेंसिल (Pencil)</button>
+            <button id="btn3" class="btn-inactive" onclick="setMode(3)">3. तारे (Stars)</button>
+            <button id="btn4" class="btn-inactive" onclick="setMode(4)">4. सूर्यास्त (Sunset)</button>
+        </div>
+        
+        <div style="display:flex; align-items:center; gap:10px;">
+            <label id="sliderLabel">Control:</label>
+            <input type="range" id="mainSlider" min="0" max="100" value="0">
+        </div>
+    </div>
+
+    <div id="canvas-container"></div>
+    <div class="info-panel" id="infoText">निर्देश: स्लाइडर का उपयोग करें।</div>
+
+    <footer class="cc-footer">
+        <div>
+            <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="CC">
+            <img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="BY">
+            <span style="font-weight:bold; color:#fff; margin-left:5px;">CC BY Rohitash Bharia</span>
+        </div>
+        <div style="font-size:12px; color:#bdc3c7;">Developed for <strong>Smart Manch</strong></div>
+    </footer>
+
+    <script>
+        let mode = 1;
+        let slider;
+        let starOffset = 0;
+
+        function setup() {
+            let canvas = createCanvas(750, 450);
+            canvas.parent('canvas-container');
+            angleMode(DEGREES);
+            slider = select('#mainSlider');
+            setMode(1);
+        }
+
+        function draw() {
+            let val = parseFloat(slider.value());
+            if (mode === 1) drawCoinPhysics(val);
+            else if (mode === 2) drawPencilPhysics(val);
+            else if (mode === 3) drawStarPhysics(val);
+            else if (mode === 4) drawSunsetPhysics(val);
+        }
+
+        // --- MODE 1: COIN ---
+        function drawCoinPhysics(level) {
+            background(40);
+            let cx = width/2 - 50; let cy = height/2 + 80;
+            let gw = 200; let gh = 200; let topY = cy - gh;
+
+            noStroke(); fill(60); rect(cx - gw/2, topY, gw, gh);
+            fill(255, 215, 0); ellipse(cx, cy - 5, 50, 15);
+            fill(200); textSize(12); text("Real", cx - 15, cy + 20);
+
+            let waterH = (level/100) * (gh - 10);
+            let surfY = cy - waterH;
+            
+            if(level > 0) {
+                fill(52, 152, 219, 100); rect(cx - gw/2, surfY, gw, waterH);
+                stroke(135, 206, 250); strokeWeight(2); line(cx - gw/2, surfY, cx + gw/2, surfY);
+            }
+
+            stroke(150); strokeWeight(4); noFill();
+            line(cx - gw/2, topY, cx - gw/2, cy);
+            line(cx + gw/2, topY, cx + gw/2, cy);
+            line(cx - gw/2, cy, cx + gw/2, cy);
+
+            let eyeX = width - 80; let eyeY = topY - 20;
+            drawEye(eyeX, eyeY);
+
+            if(level > 30) {
+                let lift = waterH * 0.25;
+                let vY = (cy - 5) - lift;
+                
+                fill(255, 215, 0, 150); noStroke(); ellipse(cx, vY, 50, 15);
+                fill(255, 255, 0); text("Virtual", cx - 40, vY);
+
+                let t = (surfY - eyeY) / (vY - eyeY);
+                let hitX = lerp(eyeX, cx, t);
+
+                stroke(255, 255, 255, 150); strokeWeight(1); drawingContext.setLineDash([5, 3]);
+                line(hitX, surfY - 60, hitX, surfY + 60);
+                drawingContext.setLineDash([]);
+                noStroke(); fill(255); text("N", hitX - 10, surfY - 65);
+
+                strokeWeight(2);
+                stroke(255, 80, 80); line(cx, cy - 5, hitX, surfY);
+                drawArrow(cx, cy - 5, hitX, surfY, 0.6);
+                
+                stroke(80, 255, 80); line(hitX, surfY, eyeX, eyeY);
+                drawArrow(hitX, surfY, eyeX, eyeY, 0.5);
+
+                stroke(255, 255, 0); strokeWeight(1); drawingContext.setLineDash([3, 3]);
+                line(hitX, surfY, cx, vY);
+                drawingContext.setLineDash([]);
+
+                fill(255, 80, 80); noStroke(); text("आपतित", cx + 10, cy - 40);
+                fill(80, 255, 80); text("अपवर्तित", hitX + 20, surfY - 20);
+
+            } else {
+                stroke(100); strokeWeight(1); line(cx, cy-5, cx + gw/2, topY);
+                fill(200, 50, 50); noStroke(); text("Block by wall", cx, cy - 50);
+            }
+        }
+
+        // --- MODE 2: PENCIL ---
+        function drawPencilPhysics(level) {
+            background(40);
+            let cx = width/2; let cy = height/2 + 60;
+            let w = 200; let h = 240; let topY = cy - h;
+
+            stroke(255, 255, 255, 80); strokeWeight(3); noFill();
+            rect(cx - w/2, topY, w, h);
+
+            let waterH = (level/100) * (h - 10);
+            let surfY = cy - waterH;
+            
+            if(level > 0) {
+                noStroke(); fill(52, 152, 219, 100); rect(cx - w/2 + 2, surfY, w - 4, waterH);
+                stroke(135, 206, 250); strokeWeight(2); line(cx - w/2, surfY, cx + w/2, surfY);
+            }
+
+            let tipX = cx; let tipY = cy - 20;
+            let topPX = cx + 80; let topPY = topY - 50;
+            let midX = lerp(topPX, tipX, 0.65);
+            let midY = lerp(topPY, tipY, 0.65);
+
+            if(level > 40) {
+                let t = (surfY - topPY) / (tipY - topPY);
+                midX = lerp(topPX, tipX, t);
+                midY = surfY;
+
+                strokeWeight(10); strokeCap(ROUND);
+                stroke(230, 126, 34); line(topPX, topPY, midX, midY);
+                stroke(200, 100, 0); line(midX, midY, tipX, tipY);
+
+                let vX = tipX - 30; let vY = tipY - 50;
+                stroke(230, 126, 34, 100); line(midX, midY, vX, vY);
+                
+                let eyeX = width - 80; let eyeY = topY;
+                drawEye(eyeX, eyeY);
+
+                let tRef = (surfY - eyeY) / (vY - eyeY);
+                let hitX = lerp(eyeX, vX, tRef);
+
+                stroke(255, 255, 255, 150); strokeWeight(1); drawingContext.setLineDash([5, 3]);
+                line(hitX, surfY - 50, hitX, surfY + 50);
+                drawingContext.setLineDash([]);
+                noStroke(); fill(255); text("N", hitX + 5, surfY - 55);
+
+                strokeWeight(2);
+                stroke(255, 50, 50); line(tipX, tipY, hitX, surfY);
+                drawArrow(tipX, tipY, hitX, surfY, 0.5);
+
+                stroke(50, 255, 50); line(hitX, surfY, eyeX, eyeY);
+                drawArrow(hitX, surfY, eyeX, eyeY, 0.5);
+
+                stroke(255, 255, 0); strokeWeight(1); drawingContext.setLineDash([3, 3]);
+                line(hitX, surfY, vX, vY);
+                drawingContext.setLineDash([]);
+                
+                fill(255); noStroke(); text("Virtual", vX - 40, vY);
+
+            } else {
+                strokeWeight(10); stroke(230, 126, 34); line(topPX, topPY, tipX, tipY);
+            }
+        }
+
+        // --- MODE 3: STARS (Updated with Dotted Line) ---
+        function drawStarPhysics(turbulence) {
+            background(10, 10, 30);
+            
+            for(let i=0; i<5; i++) {
+                noStroke(); fill(100, 150, 255, 10 + i*5);
+                rect(0, height - 120 + i*25, width, 25);
+            }
+            fill(255); text("Atmosphere Layers", 20, height - 10);
+
+            let eyeX = 100; let eyeY = height - 40;
+            drawEye(eyeX, eyeY);
+
+            let realX = 500; let realY = 80;
+            fill(255, 255, 255, 80); noStroke(); ellipse(realX, realY, 8, 8);
+            text("Real Star", realX + 10, realY);
+
+            let jitter = (turbulence/100) * 15;
+            starOffset += 0.1;
+            let offX = map(noise(starOffset), 0, 1, -jitter, jitter);
+            let offY = map(noise(starOffset + 100), 0, 1, -jitter, jitter);
+            let appX = realX + offX - 40; 
+            let appY = realY + offY - 20;
+
+            // --- NEW: Virtual Path (Dotted Line) ---
+            stroke(255, 255, 0, 150); strokeWeight(1); drawingContext.setLineDash([5, 5]);
+            line(eyeX, eyeY, appX, appY);
+            drawingContext.setLineDash([]);
+
+            // Apparent Star
+            drawingContext.shadowBlur = 15; drawingContext.shadowColor = "white";
+            fill(255, 255, 200); noStroke();
+            ellipse(appX, appY, 12 + random(-2,2), 12 + random(-2,2));
+            drawingContext.shadowBlur = 0;
+            fill(255, 255, 0); text("Apparent (Twinkling)", appX + 15, appY);
+
+            // Real Path (Zig Zag)
+            stroke(255, 200, 200, 100); strokeWeight(2); noFill();
+            beginShape();
+            vertex(realX, realY);
+            vertex(lerp(realX, eyeX, 0.4) + random(-jitter, jitter), height/2);
+            vertex(eyeX, eyeY);
+            endShape();
+        }
+
+        // --- MODE 4: SUNSET (Updated with Dotted Line) ---
+        function drawSunsetPhysics(sunPos) {
+            background(20, 20, 50);
+            let cx = width/2; let cy = height + 300; let r = 450;
+            let eyeX = cx; let eyeY = height-150;
+
+            fill(34, 139, 34); noStroke(); ellipse(cx, cy, r*2, r*2);
+            fill(100, 200, 255, 30); ellipse(cx, cy, r*2 + 120, r*2 + 120);
+            
+            stroke(255); strokeWeight(1); drawingContext.setLineDash([5, 5]);
+            line(0, height-130, width, height-130);
+            drawingContext.setLineDash([]);
+            noStroke(); fill(200); text("Horizon", 10, height-135);
+
+            drawEye(eyeX, eyeY);
+
+            let sunY = map(sunPos, 0, 100, height-250, height+50);
+            let sunX = 150;
+            
+            fill(255, 140, 0); noStroke(); ellipse(sunX, sunY, 40, 40);
+            fill(255, 200, 200); text("Real Sun", sunX - 30, sunY + 35);
+
+            let horizonY = height - 130;
+            if(sunY > horizonY && sunY < horizonY + 80) {
+                let appY = sunY - 50;
+                if(appY > horizonY - 20) appY = horizonY - 20;
+
+                // --- NEW: Virtual Path (Dotted Line) ---
+                stroke(255, 255, 0, 150); strokeWeight(1); drawingContext.setLineDash([5, 5]);
+                line(eyeX, eyeY, sunX, appY);
+                drawingContext.setLineDash([]);
+
+                // Ghost Sun
+                fill(255, 100, 0, 100); noStroke(); ellipse(sunX, appY, 40, 40);
+                fill(255, 255, 0); text("Apparent Sun", sunX - 40, appY - 25);
+
+                // Real Path (Curved)
+                noFill(); stroke(255, 100, 100); strokeWeight(2);
+                beginShape();
+                vertex(sunX, sunY);
+                curveVertex(sunX + 20, sunY - 20);
+                curveVertex(width/2 - 50, horizonY - 20);
+                vertex(eyeX, eyeY);
+                endShape();
+            }
+        }
+
+        // Helpers
+        function drawEye(x, y) {
+            push(); translate(x, y);
+            fill(255); noStroke(); ellipse(0, 0, 30, 15);
+            fill(0); ellipse(-5, 0, 10, 10);
+            pop();
+        }
+        function drawArrow(x1, y1, x2, y2, pos) {
+            let mx = lerp(x1, x2, pos); let my = lerp(y1, y2, pos);
+            let ang = atan2(y2-y1, x2-x1);
+            push(); translate(mx, my); rotate(ang);
+            fill(255); noStroke(); triangle(-5, 5, 5, 0, -5, -5);
+            pop();
+        }
+        function setMode(m) {
+            mode = m;
+            for(let i=1; i<=4; i++) document.getElementById('btn'+i).className = (i===m)?'btn-active':'btn-inactive';
+            let info = document.getElementById('infoText'); let sl = document.getElementById('mainSlider');
+            if(m==1) { info.innerText = "सिक्का: पानी (सघन) से हवा (विरल) में किरण अभिलंब से दूर हटती है। आभासी छवि ऊपर दिखती है।"; sl.value = 0; }
+            if(m==2) { info.innerText = "पेंसिल: किरण आरेख दिखाता है कि कैसे अपवर्तन के कारण पेंसिल मुड़ी हुई दिखती है।"; sl.value = 0; }
+            if(m==3) { info.innerText = "तारे: अशांत वायुमंडल वास्तविक किरण को मोड़ता है। आँख सीधी पीली रेखा में आभासी तारा देखती है।"; sl.value = 50; }
+            if(m==4) { info.innerText = "सूर्यास्त: वास्तविक सूर्य क्षितिज के नीचे है, लेकिन मुड़ी हुई किरणों के कारण आभासी सूर्य ऊपर दिखता है।"; sl.value = 20; }
+        }
+    </script>
+</body>
+</html>

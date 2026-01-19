@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visible Torch & VIBGYOR - Smart Manch</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #1a1a1a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 10px;
+            user-select: none;
+        }
+        h2 { color: #f1c40f; margin: 10px 0; font-size: 24px; }
+        
+        .controls {
+            background: #34495e;
+            padding: 10px 25px;
+            border-radius: 50px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            border: 1px solid #555;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        canvas {
+            border: 2px solid #555;
+            border-radius: 8px;
+            background-color: #000;
+        }
+
+        .instructions {
+            margin-top: 10px;
+            font-size: 15px;
+            color: #bdc3c7;
+            background: #222;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        
+        input[type=range] { width: 180px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h2>प्रिज्म स्पेक्ट्रम (VIBGYOR)</h2>
+
+    <div class="controls">
+        <label>कोण बदलें: <span id="angleVal" style="color:#f1c40f">45°</span></label>
+        <input type="range" id="sliderAngle" min="30" max="80" value="45" step="1">
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div class="instructions">
+        💡 <strong>टॉर्च के बटन पर क्लिक करें</strong> और स्लाइडर हिलाकर जादू देखें!
+    </div>
+
+    <script>
+        let isLightOn = false;
+        let prismSize = 140; // प्रिज्म थोड़ा छोटा किया ताकि सब फिट हो
+        let slider;
+        
+        // टॉर्च क्लिक के लिए ग्लोबल वैरिएबल्स
+        let globalTorchX, globalTorchY;
+
+        // VIBGYOR Colors (Top to Bottom: Red bends least, Violet bends most)
+        const colors = [
+            { code: 'R', name: 'Red', hex: '#FF0000', n: 1.20 },
+            { code: 'O', name: 'Orange', hex: '#FF7F00', n: 1.24 },
+            { code: 'Y', name: 'Yellow', hex: '#FFFF00', n: 1.28 },
+            { code: 'G', name: 'Green', hex: '#00FF00', n: 1.32 },
+            { code: 'B', name: 'Blue', hex: '#0000FF', n: 1.36 },
+            { code: 'I', name: 'Indigo', hex: '#4B0082', n: 1.40 },
+            { code: 'V', name: 'Violet', hex: '#9400D3', n: 1.44 }
+        ];
+
+        function setup() {
+            // कैनवस का साइज बढ़ाया ताकि टॉर्च कटे नहीं
+            let canvas = createCanvas(800, 500);
+            canvas.parent('canvas-container');
+            angleMode(DEGREES);
+            slider = select('#sliderAngle');
+        }
+
+        function draw() {
+            background(25);
+            
+            // --- कैनवस सेटिंग ---
+            // सेंटर को थोड़ा ऊपर और दाएँ शिफ्ट किया ताकि नीचे टॉर्च के लिए जगह बचे
+            let transX = width / 2;
+            let transY = height / 2 - 20;
+            
+            let i_deg = parseFloat(slider.value());
+            document.getElementById('angleVal').innerText = i_deg + "°";
+
+            // --- 1. प्रिज्म ---
+            let x1 = 0, y1 = -prismSize * 1.5;
+            let x2 = -prismSize, y2 = 0;
+            let x3 = prismSize, y3 = 0;
+            
+            let entryX = (x1 + x2) / 2;
+            let entryY = (y1 + y2) / 2;
+
+            // --- 2. टॉर्च की पोजीशन (ताकि वह कैनवस से बाहर न जाए) ---
+            // टॉर्च की दूरी (Ray Length) को कंट्रोल में रखा
+            let rayLen = 220; 
+            
+            // कोण का लॉजिक (नीचे-बाएं से ऊपर-दाएं)
+            let posAngle = 180 - (i_deg - 15); 
+            
+            let srcX = entryX + rayLen * cos(posAngle);
+            let srcY = entryY + rayLen * sin(posAngle);
+
+            // टॉर्च किस तरफ देखेगी (Auto-Aim)
+            let pointingAngle = atan2(entryY - srcY, entryX - srcX);
+
+            // ग्लोबल क्लिक डिटेक्शन के लिए
+            globalTorchX = transX + srcX;
+            globalTorchY = transY + srcY;
+
+            // कर्सर हैंड
+            if (dist(mouseX, mouseY, globalTorchX, globalTorchY) < 60) {
+                cursor(HAND);
+            } else {
+                cursor(ARROW);
+            }
+
+            // --- ड्राइंग शुरू ---
+            push();
+            translate(transX, transY);
+
+            // प्रिज्म बॉडी
+            stroke(255, 255, 255, 60); strokeWeight(2);
+            fill(255, 255, 255, 10);
+            triangle(x1, y1, x2, y2, x3, y3);
+            noStroke(); fill(150); textSize(12);
+            text("Prism", -20, 20);
+
+            // --- 3. टॉर्च ---
+            push();
+            translate(srcX, srcY);
+            rotate(pointingAngle);
+
+            // टॉर्च बॉडी
+            fill(60); stroke(100); strokeWeight(1);
+            rect(-85, -18, 70, 36, 6); // Handle
+            fill(80);
+            quad(-15, -18, 0, -26, 0, 26, -15, 18); // Head
+
+            // बटन (Switch)
+            if(isLightOn) fill(46, 204, 113); // Green
+            else fill(231, 76, 60); // Red
+            stroke(255); strokeWeight(1);
+            ellipse(-50, 0, 16, 16);
+
+            // लेंस/बल्ब
+            if (isLightOn) {
+                fill(255, 255, 200);
+                drawingContext.shadowBlur = 25; drawingContext.shadowColor = "rgba(255, 255, 0, 0.8)";
+            } else {
+                fill(40);
+                drawingContext.shadowBlur = 0;
+            }
+            ellipse(0, 0, 10, 48);
+            drawingContext.shadowBlur = 0;
+
+            // "Click" टेक्स्ट
+            if(!isLightOn) {
+                rotate(-pointingAngle);
+                fill(255); noStroke(); textSize(14); textAlign(CENTER);
+                text("Click Switch!", -50, -40);
+            }
+            pop();
+
+            // --- 4. किरणें और VIBGYOR ---
+            if (isLightOn) {
+                // White Ray
+                stroke(255); strokeWeight(3);
+                line(srcX, srcY, entryX, entryY);
+
+                // स्पेक्ट्रम
+                colors.forEach(col => {
+                    stroke(col.hex); strokeWeight(2);
+
+                    // प्रिज्म के अंदर
+                    let spreadInside = (col.n - 1.0) * 90; 
+                    let exitX = x3 - 20; 
+                    let exitY = entryY + 40 + spreadInside;
+                    line(entryX, entryY, exitX, exitY);
+
+                    // प्रिज्म के बाहर (Screen ki taraf)
+                    let exitAngle = 15 + (col.n * 22);
+                    let finalX = exitX + 220; // स्क्रीन की दूरी
+                    let finalY = exitY + exitAngle;
+                    line(exitX, exitY, finalX, finalY);
+
+                    // --- VIBGYOR LABELS ---
+                    noStroke(); fill(col.hex);
+                    // Dot
+                    ellipse(finalX, finalY, 8, 8);
+                    
+                    // Text (R, O, Y...)
+                    textSize(16); textStyle(BOLD);
+                    text(col.code, finalX + 15, finalY + 5);
+                });
+                
+                // स्क्रीन लाइन
+                stroke(150); strokeWeight(4);
+                line(width/2 + 80, -200, width/2 + 80, 300);
+                
+                noStroke(); fill(200); textSize(14); 
+                text("Screen", width/2 + 60, -210);
+            }
+
+            pop(); // ट्रांसलेशन बंद
+        }
+
+        // क्लिक फंक्शन
+        function mousePressed() {
+            let d = dist(mouseX, mouseY, globalTorchX, globalTorchY);
+            if (d < 65) {
+                isLightOn = !isLightOn;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Potential Theory & Sim - Smart Manch</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #1e272e;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 10px;
+        }
+        h2 { color: #f1c40f; margin-bottom: 20px; text-shadow: 0 2px 5px black; }
+        
+        /* Main Layout */
+        .main-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        /* Left Side: Simulation */
+        .sim-section {
+            flex: 1;
+            min-width: 350px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Right Side: Theory */
+        .theory-section {
+            flex: 1;
+            min-width: 300px;
+            background: #2f3640;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid #f1c40f;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            height: fit-content;
+        }
+
+        /* Controls */
+        .controls {
+            background: #353b48;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            gap: 20px;
+            margin-bottom: 10px;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .tank-control { text-align: center; font-size: 14px; }
+        input[type=range] { width: 120px; cursor: pointer; accent-color: #3498db; }
+
+        canvas {
+            border: 3px solid #555;
+            border-radius: 10px;
+            background-color: #000;
+        }
+
+        /* Theory Text Styles */
+        h3 { color: #3498db; border-bottom: 1px solid #555; padding-bottom: 5px; margin-top: 0; }
+        p { font-size: 14px; line-height: 1.6; color: #dcdde1; }
+        
+        .formula-box {
+            background: #192a56;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #fbc531;
+            text-align: center;
+            border: 1px dashed #f1c40f;
+            font-size: 16px;
+        }
+        .unit { font-size: 13px; color: #bdc3c7; margin-top: 5px; display: block; font-family: sans-serif;}
+
+        .highlight { color: #e74c3c; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h2>विद्युत विभव और विभवांतर (Concept & Formula)</h2>
+
+    <div class="main-container">
+        
+        <div class="sim-section">
+            <div class="controls">
+                <div class="tank-control">
+                    <label style="color:#e74c3c;">बिंदु A (High)</label><br>
+                    <input type="range" id="sliderA" min="0" max="100" value="80">
+                </div>
+                <div class="tank-control">
+                    <label style="color:#3498db;">बिंदु B (Low)</label><br>
+                    <input type="range" id="sliderB" min="0" max="100" value="30">
+                </div>
+            </div>
+            
+            <div id="canvas-container"></div>
+            
+            <div style="margin-top:10px; color:#ccc; font-size:14px;">
+                जितना ज्यादा अंतर (Level Diff), उतनी तेज धारा बहेगी।
+            </div>
+        </div>
+
+        <div class="theory-section">
+            
+            <h3>1. विद्युत विभव (Electric Potential)</h3>
+            <p>
+                एकांक धन आवेश को अनंत से किसी बिंदु तक लाने में किया गया कार्य उस बिंदु का <strong>विद्युत विभव (V)</strong> कहलाता है।
+            </p>
+            <div class="formula-box">
+                V = W / Q
+                <span class="unit">मात्रक: वोल्ट (Volt) या जूल/कूलॉम</span>
+            </div>
+            <p><strong>सिमुलेशन में:</strong> यह पानी की टंकी की <span class="highlight">ऊंचाई (Level)</span> है।</p>
+
+            <br>
+
+            <h3>2. विभवांतर (Potential Difference)</h3>
+            <p>
+                एकांक धन आवेश को एक बिंदु से दूसरे बिंदु तक ले जाने में किए गए कार्य को उन दो बिंदुओं के बीच का <strong>विभवांतर (ΔV)</strong> कहते हैं।
+            </p>
+            <div class="formula-box">
+                ΔV = Va - Vb = W / Q
+                <span class="unit">मात्रक: वोल्ट (Volt)</span>
+            </div>
+            <p><strong>सिमुलेशन में:</strong> यह दोनों टंकियों के बीच <span class="highlight">लेवल का अंतर</span> है। धारा हमेशा उच्च विभव से निम्न विभव की ओर बहती है।</p>
+
+        </div>
+    </div>
+
+    <script>
+        let sliderA, sliderB;
+        let particles = [];
+
+        function setup() {
+            let canvas = createCanvas(400, 350); 
+            canvas.parent('canvas-container');
+            sliderA = select('#sliderA');
+            sliderB = select('#sliderB');
+            
+            // Create particles
+            for(let i=0; i<30; i++) {
+                particles.push({ x: random(120, 280), offset: random(0, 100) });
+            }
+        }
+
+        function draw() {
+            background(30);
+            
+            let valA = parseInt(sliderA.value());
+            let valB = parseInt(sliderB.value());
+            let pDiff = valA - valB;
+            
+            // Draw Tanks
+            drawCompactTanks(valA, valB);
+            
+            // Calculate Speed
+            let speed = 0;
+            if (pDiff > 0) speed = map(pDiff, 0, 100, 0, 10);
+            else if (pDiff < 0) speed = map(pDiff, -100, 0, -10, 0);
+
+            // Draw Electrons (Flow)
+            drawFlow(speed);
+            
+            // Display Values on Canvas
+            fill(255); noStroke(); textSize(14);
+            text(`Va = ${valA}V`, 50, 30);
+            text(`Vb = ${valB}V`, 300, 30);
+            
+            // Show Difference
+            if(Math.abs(pDiff) > 0) {
+                fill(255, 255, 0); textAlign(CENTER); textSize(16);
+                text(`विभवांतर (ΔV) = ${Math.abs(pDiff)} V`, width/2, 80);
+            } else {
+                fill(150); textAlign(CENTER); textSize(14);
+                text("कोई धारा नहीं (No Current)", width/2, 80);
+            }
+        }
+
+        function drawCompactTanks(hA, hB) {
+            let base = 300;
+            let w = 60;
+            
+            // Map height
+            let yA = map(hA, 0, 100, 0, 200);
+            let yB = map(hB, 0, 100, 0, 200);
+            
+            // Tank A
+            fill(231, 76, 60); noStroke();
+            rect(40, base - yA, w, yA);
+            stroke(255); strokeWeight(2); noFill();
+            rect(40, base - 200, w, 200); // Container
+            
+            // Tank B
+            fill(52, 152, 219); noStroke();
+            rect(300, base - yB, w, yB);
+            stroke(255); strokeWeight(2); noFill();
+            rect(300, base - 200, w, 200); // Container
+            
+            // Pipe
+            fill(80); noStroke(); rect(100, base - 20, 200, 15);
+        }
+
+        function drawFlow(speed) {
+            fill(255, 255, 0); noStroke();
+            for(let p of particles) {
+                p.x += speed;
+                if (p.x > 300) p.x = 100;
+                if (p.x < 100) p.x = 300;
+                
+                // Show particles only if speed is not 0
+                if(Math.abs(speed) > 0.1) {
+                    ellipse(p.x, 287, 6, 6);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

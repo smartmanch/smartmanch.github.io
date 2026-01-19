@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presbyopia Simulation - Smart Manch</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        h2 { color: #2c3e50; margin-bottom: 5px; }
+        
+        .controls {
+            margin-bottom: 15px;
+            background: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .radio-group { display: flex; gap: 15px; }
+        label {
+            cursor: pointer; font-size: 16px; font-weight: 500;
+            color: #555; padding: 5px 10px; border-radius: 5px; transition: 0.3s;
+        }
+        input[type="radio"] { margin-right: 5px; transform: scale(1.2); cursor: pointer; }
+        label:hover { background-color: #ecf0f1; }
+
+        canvas {
+            border: 2px solid #333;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            background-color: #fff;
+            margin-top: 10px;
+        }
+
+        .desc-box {
+            margin-top: 10px;
+            background-color: #e8f6f3;
+            padding: 10px 20px;
+            border-left: 5px solid #1abc9c;
+            border-radius: 4px;
+            width: 80%;
+            max-width: 700px;
+            text-align: center;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: auto;
+            padding-top: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+            text-align: center;
+            width: 100%;
+        }
+        .footer strong { color: #2c3e50; }
+    </style>
+</head>
+<body>
+
+    <h2>जरा दृष्टि दोष (Presbyopia)</h2>
+
+    <div class="controls">
+        <div class="radio-group">
+            <label>
+                <input type="radio" name="mode" value="1" onclick="setMode(1)" checked> 
+                1. युवा नेत्र (Young Eye)
+            </label>
+            <label>
+                <input type="radio" name="mode" value="2" onclick="setMode(2)"> 
+                2. वृद्ध नेत्र (Old Eye)
+            </label>
+            <label>
+                <input type="radio" name="mode" value="3" onclick="setMode(3)"> 
+                3. निवारण (द्विफोकसी/उत्तल)
+            </label>
+        </div>
+    </div>
+
+    <div id="descText" class="desc-box">
+        युवा अवस्था: आँख का लेंस लचीला है, पास की वस्तु साफ़ दिखती है।
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div class="footer">
+        <p>Developed for Smart Manch</p>
+        <p>&copy; 2026 <strong>Rohitash Bharia</strong>. All Rights Reserved.</p>
+    </div>
+
+    <script>
+        let mode = 1; 
+        let eyeWidth = 180;
+        let eyeHeight = 160;
+        
+        function setup() {
+            let canvas = createCanvas(800, 400);
+            canvas.parent('canvas-container');
+        }
+
+        function draw() {
+            background(255);
+            translate(width / 2, height / 2);
+
+            drawEye();
+
+            if (mode === 1) {
+                // सामान्य: लचीला लेंस, सही फोकस
+                drawLensLabel("लचीला लेंस (Flexible)");
+                drawRays(eyeWidth/2, false, false); 
+            } else if (mode === 2) {
+                // दोष: कठोर लेंस, फोकस पीछे
+                drawLensLabel("कठोर लेंस (Rigid)");
+                drawRays(eyeWidth/2 + 60, true, false); 
+            } else if (mode === 3) {
+                // निवारण
+                drawLensLabel("कठोर लेंस + चश्मा");
+                drawCorrectiveLens();
+                drawRays(eyeWidth/2, false, true); 
+            }
+        }
+
+        function drawEye() {
+            // आँख का गोला
+            stroke(50); strokeWeight(2); noFill();
+            
+            beginShape();
+            vertex(-eyeWidth/2 + 20, -eyeHeight/2 + 10);
+            bezierVertex(0, -eyeHeight/2 - 15, eyeWidth/2, -eyeHeight/2, eyeWidth/2, 0); 
+            bezierVertex(eyeWidth/2, eyeHeight/2, 0, eyeHeight/2 + 15, -eyeWidth/2 + 20, eyeHeight/2 - 10); 
+            endShape();
+
+            // कॉर्निया
+            arc(-eyeWidth/2 + 20, 0, 40, 90, -HALF_PI - 0.6, HALF_PI + 0.6);
+
+            // नेत्र लेंस (Convex)
+            fill(200, 230, 255); stroke(0, 100, 200);
+            ellipse(-eyeWidth/2 + 35, 0, 15, 80);
+            
+            // पक्ष्माभी पेशियाँ (Ciliary Muscles) - लेंस के ऊपर और नीचे
+            fill(200, 100, 100); noStroke();
+            if (mode === 1) {
+                // Young Muscles (Strong)
+                ellipse(-eyeWidth/2 + 35, -45, 10, 15);
+                ellipse(-eyeWidth/2 + 35, 45, 10, 15);
+            } else {
+                // Old Muscles (Weak/Small)
+                ellipse(-eyeWidth/2 + 35, -45, 6, 8);
+                ellipse(-eyeWidth/2 + 35, 45, 6, 8);
+            }
+
+            // रेटिना
+            stroke(200, 50, 50); strokeWeight(4);
+            line(eyeWidth/2, -50, eyeWidth/2, 50);
+            
+            noStroke(); fill(0); textSize(14);
+            text("रेटिना", eyeWidth/2 + 10, 0);
+        }
+        
+        function drawLensLabel(label) {
+            noStroke(); fill(0, 100, 200); textSize(12);
+            text(label, -eyeWidth/2 + 10, 100);
+            
+            if(mode !== 1) {
+                fill(150, 50, 50);
+                text("पेशियाँ कमजोर", -eyeWidth/2 + 10, -60);
+            }
+        }
+
+        function drawCorrectiveLens() {
+            // द्विफोकसी (Bifocal) का निचला हिस्सा उत्तल होता है
+            let lx = -eyeWidth/2 - 90;
+            fill(220, 255, 220, 150); stroke(0, 150, 0); strokeWeight(2);
+            ellipse(lx, 0, 15, 100);
+            
+            noStroke(); fill(0, 120, 0); textSize(12);
+            text("उत्तल लेंस", lx - 30, -65);
+            text("(पास देखने हेतु)", lx - 40, -50);
+        }
+
+        function drawRays(focusX, isDefected, hasLens) {
+            let startX = -width/2 + 20;
+            let lensX = -eyeWidth/2 + 35;
+            let glassX = -eyeWidth/2 - 90;
+            let retinaX = eyeWidth/2;
+
+            strokeWeight(2);
+            if (isDefected) stroke(255, 0, 0); 
+            else stroke(0, 150, 0); 
+
+            // 5 किरणें (पास की वस्तु से आती हुई - थोड़ी फैली हुई)
+            // नोट: सरलता के लिए हम समानांतर किरणें दिखा रहे हैं जो पास देखने की स्थिति दर्शाती हैं
+            for (let y = -40; y <= 40; y += 20) {
+                
+                if (hasLens) {
+                    line(startX, y, glassX, y);
+                    let converge = 0.8; 
+                    let y_eye = y * converge;
+                    line(glassX, y, lensX, y_eye);
+                    line(lensX, y_eye, focusX, 0);
+                } else {
+                    line(startX, y, lensX, y);
+                    
+                    if (isDefected) {
+                        let slope = (0 - y) / (focusX - lensX);
+                        let y_at_retina = y + slope * (retinaX - lensX);
+                        
+                        line(lensX, y, retinaX, y_at_retina);
+                        
+                        drawingContext.setLineDash([5, 5]);
+                        stroke(255, 0, 0, 150);
+                        line(retinaX, y_at_retina, focusX, 0);
+                        drawingContext.setLineDash([]); 
+                        stroke(255, 0, 0); 
+                    } else {
+                        line(lensX, y, focusX, 0);
+                    }
+                }
+            }
+
+            // फोकस बिंदु
+            noStroke(); 
+            fill(isDefected ? "red" : "green");
+            ellipse(focusX, 0, 10, 10);
+            
+            if(isDefected) {
+                fill(200, 0, 0);
+                text("F", focusX + 15, 5);
+                text("रेटिना के पीछे", focusX + 10, 25);
+            }
+        }
+
+        function setMode(m) {
+            mode = m;
+            let desc = document.getElementById('descText');
+            if(m == 1) {
+                desc.innerHTML = "1. युवा नेत्र: लेंस लचीला है और पक्ष्माभी पेशियाँ मजबूत हैं। नेत्र लेंस अपनी मोटाई बढ़ाकर पास की वस्तुओं को रेटिना पर फोकस कर लेता है।";
+                desc.style.borderLeftColor = "#1abc9c";
+                desc.style.backgroundColor = "#e8f6f3";
+            } else if (m == 2) {
+                desc.innerHTML = "2. जरा दृष्टि दोष: बुढ़ापे में पेशियाँ कमजोर और लेंस कठोर हो जाता है। वह मोटा नहीं हो पाता, इसलिए पास की वस्तु का फोकस रेटिना के <b>पीछे</b> बनता है।";
+                desc.style.borderLeftColor = "#e74c3c";
+                desc.style.backgroundColor = "#fdedec";
+            } else if (m == 3) {
+                desc.innerHTML = "3. निवारण: पास देखने के लिए <b>उत्तल लेंस (Reading Glass)</b> या द्विफोकसी लेंस का उपयोग किया जाता है।";
+                desc.style.borderLeftColor = "#3498db";
+                desc.style.backgroundColor = "#ebf5fb";
+            }
+        }
+    </script>
+</body>
+</html>

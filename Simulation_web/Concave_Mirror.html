@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concave Mirror Simulation - Smart Manch</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        h2 { color: #2c3e50; margin-bottom: 10px; }
+        .controls {
+            margin-bottom: 15px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+        }
+        canvas {
+            border: 2px solid #333;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            background-color: #fff;
+        }
+        .info-text { font-size: 14px; color: #555; margin-top: 5px; }
+        input[type=range] { width: 100%; cursor: pointer; }
+        
+        .footer {
+            margin-top: auto;
+            padding-top: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+            text-align: center;
+            width: 100%;
+        }
+        .footer strong { color: #2c3e50; }
+    </style>
+</head>
+<body>
+
+    <h2>अवतल दर्पण (Concave Mirror) सिमुलेशन</h2>
+
+    <div class="controls">
+        <label><strong>वस्तु की दूरी (u): </strong><span id="uVal"></span></label>
+        <br>
+        <input type="range" id="sliderU" min="-350" max="-30" value="-300" step="1">
+        <div class="info-text">स्लाइडर को हिलाकर विभिन्न स्थितियां देखें (F और P के बीच भी ले जाएं)।</div>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div class="footer">
+        <p>Developed for Smart Manch</p>
+        <p>&copy; 2026 <strong>Rohitash Bharia</strong>. All Rights Reserved.</p>
+    </div>
+
+    <script>
+        // अवतल दर्पण के लिए फोकस दूरी ऋणात्मक (Negative) होती है (दर्पण के सामने)
+        let f = -100; 
+        // वक्रता केंद्र (Center of Curvature)
+        let C_point = 2 * f; // -200
+        let u = -300; 
+        let h_o = 60; 
+        let slider;
+
+        function setup() {
+            let canvas = createCanvas(800, 400);
+            canvas.parent('canvas-container');
+            slider = select('#sliderU');
+        }
+
+        function draw() {
+            background(255);
+            
+            // 1. इनपुट
+            u = parseInt(slider.value());
+            document.getElementById('uVal').innerText = u + " px";
+
+            // 2. गणना (Mirror Formula: 1/v = 1/f - 1/u)
+            let v;
+            // फोकस पर होने पर अनंत की स्थिति संभालना
+            if (Math.abs(u - f) < 1) { v = Infinity; } 
+            else { v = (f * u) / (u - f); }
+
+            // आवर्धन (Mirror Magnification: m = -v/u)
+            let m = (v === Infinity) ? Infinity : -v / u;
+            let h_i = m * h_o;
+            let isVirtual = (v > 0); // अगर v पॉजिटिव है, तो इमेज दर्पण के पीछे (Virtual) है
+
+            translate(width / 2, height / 2);
+
+            // --- ड्राइंग ---
+
+            // मुख्य अक्ष
+            stroke(0); strokeWeight(1);
+            line(-width / 2, 0, width / 2, 0);
+
+            // --- अवतल दर्पण (Concave Mirror) ---
+            // यह अंदर की ओर धंसा होता है (Caving inwards towards left)
+            stroke(0); strokeWeight(3);
+            noFill();
+            // आर्क (Arc) बनाना '(' शेप
+            arc(15, 0, 40, 260, HALF_PI, -HALF_PI);
+            
+            // पॉलिश की हुई सतह (बाहर की तरफ/Right side) दिखाने के लिए हैश मार्क्स
+            strokeWeight(1);
+            for(let y = -120; y <= 120; y += 10) {
+                let x_curve = -5; // थोड़ा सा अंदाजा आर्क के पीछे
+                line(x_curve, y, x_curve + 10, y + 5); 
+            }
+
+            // पॉइंट्स (P, F, C) - दर्पण के सामने (Negative side)
+            fill(0); noStroke();
+            text("P", -5, 20); // पोल
+            ellipse(f, 0, 5, 5); text("F", f-10, 20);
+            ellipse(C_point, 0, 5, 5); text("C", C_point-15, 20);
+
+            // --- वस्तु (Object) - लाल तीर ---
+            stroke(255, 0, 0); strokeWeight(3);
+            line(u, 0, u, -h_o);
+            line(u, -h_o, u - 5, -h_o + 10);
+            line(u, -h_o, u + 5, -h_o + 10);
+            noStroke(); fill(255, 0, 0);
+            text("वस्तु", u - 15, -h_o - 10);
+
+            // --- किरण आरेख (Ray Diagram) ---
+            stroke(100, 100, 100, 100); strokeWeight(1);
+
+            if (v !== Infinity) {
+                // किरण 1: समानांतर -> फोकस (F) से गुजरेगी
+                line(u, -h_o, 0, -h_o); // आपतित किरण (Incidence)
+                
+                if (isVirtual) { // आभासी स्थिति के लिए
+                    drawingContext.setLineDash([]); 
+                    // वास्तविक परावर्तित किरण (फोकस से दूर जाती हुई)
+                    let slopeF = (-h_o - 0) / (0 - f);
+                    line(0, -h_o, -width/2, -h_o + slopeF*(-width/2));
+                    // पीछे की ओर डैश लाइन (v तक)
+                    drawingContext.setLineDash([5, 5]);
+                    line(0, -h_o, v, -h_i);
+                } else { // वास्तविक स्थिति के लिए
+                    drawingContext.setLineDash([]);
+                    // परावर्तित किरण F से होकर v तक
+                    line(0, -h_o, v, -h_i);
+                     // F से आगे तक लाइन बढ़ाना ताकि स्पष्ट दिखे
+                     let slopeF = (0 - (-h_o))/(f - 0);
+                     line(f, 0, f + (f-v)*2, 0 + (0 - (-h_i))*2);
+                }
+
+                // किरण 2: पोल (P) पर आपतित -> उतना ही कोण बनाकर परावर्तित (i=r)
+                drawingContext.setLineDash([]);
+                line(u, -h_o, 0, 0); // आपतित
+
+                if (isVirtual) {
+                    // वास्तविक परावर्तित किरण
+                    line(0, 0, -width/2, -(-h_o * (-width/2)/u));
+                     // पीछे की ओर डैश लाइन (v तक)
+                    drawingContext.setLineDash([5, 5]);
+                    line(0, 0, v, -h_i);
+                } else {
+                    // वास्तविक परावर्तित किरण v तक
+                    line(0, 0, v, -h_i);
+                }
+            }
+
+            // --- प्रतिबिम्ब (Image) - नीला तीर ---
+            if (Math.abs(v) < 3000 && v !== Infinity) {
+                stroke(0, 0, 255); strokeWeight(3);
+                if (isVirtual) { drawingContext.setLineDash([5, 5]); } 
+                else { drawingContext.setLineDash([]); }
+                
+                line(v, 0, v, -h_i);
+                
+                // तीर का निशान
+                if (h_i > 0) { // सीधा
+                    line(v, -h_i, v - 4, -h_i + 8); line(v, -h_i, v + 4, -h_i + 8);
+                } else { // उल्टा
+                    line(v, -h_i, v - 4, -h_i - 8); line(v, -h_i, v + 4, -h_i - 8);
+                }
+                drawingContext.setLineDash([]); // रीसेट
+
+                noStroke(); fill(0, 0, 255);
+                let typeStr = isVirtual ? "आभासी" : "वास्तविक";
+                text("प्रतिबिम्ब ("+typeStr+")", v - 30, -h_i + (h_i>0?-15:15));
+            }
+
+            // --- टेक्स्ट डिस्प्ले ---
+            resetMatrix();
+            fill(50); noStroke(); textSize(16);
+            
+            let nature = "";
+            if (v === Infinity) nature = "अनंत पर (At Infinity)";
+            else if (isVirtual) nature = "आभासी, सीधा और बड़ा (Virtual, Erect, Magnified)";
+            else if (Math.abs(m) > 1) nature = "वास्तविक, उल्टा और बड़ा (Real, Inverted, Magnified)";
+            else if (Math.abs(m) < 1) nature = "वास्तविक, उल्टा और छोटा (Real, Inverted, Diminished)";
+            else nature = "वास्तविक, उल्टा और समान आकार (Real, Inverted, Same Size)";
+
+            text("प्रकृति: " + nature, 20, 30);
+            text("v = " + (v===Infinity ? "Infinity" : v.toFixed(1) + " px"), 20, 55);
+            text("m = " + (m===Infinity ? "Infinity" : m.toFixed(2)), 20, 80);
+            text("दर्पण सूत्र: 1/v + 1/u = 1/f", width - 200, 30);
+        }
+    </script>
+</body>
+</html>

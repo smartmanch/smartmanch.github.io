@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rutherford Alpha Scattering Simulation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e272e;
+            color: #d2dae2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            user-select: none;
+        }
+
+        h2 {
+            color: #f9ca24;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .subtitle { color: #b2bec3; margin-bottom: 15px; font-size: 14px; }
+
+        .lab-container {
+            position: relative;
+            width: 850px;
+            background: #2c3e50;
+            border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            padding: 20px;
+            border: 3px solid #485460;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            background: radial-gradient(circle at center, #34495e 0%, #2c3e50 100%);
+            border-radius: 10px;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.6);
+            border: 1px solid #808e9b;
+            cursor: crosshair;
+        }
+
+        /* कंट्रोल पैनल */
+        .controls {
+            width: 100%;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        button#fireBtn {
+            padding: 12px 30px;
+            font-size: 18px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+            transition: all 0.2s;
+        }
+        button#fireBtn:hover { background-color: #c0392b; transform: scale(1.05);}
+        button#fireBtn:active { transform: scale(0.95); box-shadow: none; }
+        button#fireBtn.firing { background-color: #27ae60; }
+
+        /* स्टैट्स बॉक्स */
+        .stats-panel {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .stat-num {
+            display: block;
+            font-size: 24px;
+            font-weight: bold;
+            color: #f9ca24;
+        }
+        .stat-label { font-size: 12px; color: #bdc3c7; }
+
+        .legend {
+            margin-top: 10px;
+            font-size: 13px;
+            display: flex;
+            gap: 15px;
+        }
+        .legend-item { display: flex; align-items: center; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; margin-right: 5px; }
+
+        .footer-info {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #95a5a6;
+        }
+        .cc-badge { background: #e74c3c; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; margin-right: 5px;}
+    </style>
+</head>
+<body>
+
+    <h2>रदरफोर्ड का अल्फा प्रकीर्णन प्रयोग</h2>
+    <div class="subtitle">Class 9 - परमाणु की संरचना (Structure of Atom)</div>
+
+    <div class="lab-container">
+        <canvas id="simCanvas" width="800" height="450"></canvas>
+        
+        <div class="legend">
+            <div class="legend-item"><div class="dot" style="background:#f9ca24; box-shadow: 0 0 5px #f9ca24;"></div> अल्फा कण (α-particle, +ve)</div>
+            <div class="legend-item"><div class="dot" style="background:rgba(241, 196, 15, 0.2); border: 1px solid rgba(241, 196, 15, 0.5);"></div> सोने का परमाणु (खोखला भाग)</div>
+            <div class="legend-item"><div class="dot" style="background:#e74c3c; box-shadow: 0 0 10px #e74c3c;"></div> नाभिक (Nucleus, +ve)</div>
+        </div>
+
+        <div class="controls">
+            <button id="fireBtn">बौछार शुरू करें (Start Firing)</button>
+
+            <div class="stats-panel">
+                <div class="stat-box">
+                    <span id="countStraight" class="stat-num">0</span>
+                    <span class="stat-label">सीधे निकले (Passed Straight)</span>
+                </div>
+                <div class="stat-box">
+                    <span id="countDeflected" class="stat-num" style="color:#e74c3c;">0</span>
+                    <span class="stat-label">विक्षेपित/मुड़े (Deflected)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-info">
+        <span class="cc-badge">CC</span> <span style="color:#0be881; font-weight:bold;">@Rohitash Bharia</span>
+        <p>निष्कर्ष: परमाणु का अधिकांश भाग खाली है; सारा धनात्मक आवेश केंद्र (नाभिक) में है।</p>
+    </div>
+
+<script>
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    const fireBtn = document.getElementById('fireBtn');
+    const countStraightEl = document.getElementById('countStraight');
+    const countDeflectedEl = document.getElementById('countDeflected');
+
+    let isFiring = false;
+    const particles = [];
+    let straightCount = 0;
+    let deflectedCount = 0;
+
+    // नाभिक सेटिंग्स (Nucleus Settings)
+    const nucleus = {
+        x: canvas.width / 2 + 100, // थोड़ा दाईं ओर
+        y: canvas.height / 2,
+        radius: 8,
+        chargeStrength: 5000 // प्रतिकर्षण बल की ताकत
+    };
+
+    // परमाणु का बाहरी घेरा (Visual only)
+    const atomRadius = 180;
+
+    // --- अल्फा कण क्लास (Particle Class) ---
+    class Particle {
+        constructor() {
+            this.x = 0; // बाईं ओर से शुरू
+            // Y पोजीशन रैंडम, ताकि वे परमाणु के अलग-अलग हिस्सों पर गिरें
+            // हम उन्हें परमाणु की ऊंचाई के आसपास केंद्रित करते हैं
+            const spread = atomRadius * 1.2; 
+            this.y = nucleus.y + (Math.random() - 0.5) * 2 * spread;
+            
+            this.vx = 8 + Math.random(); // शुरुआती गति (X दिशा में)
+            this.vy = 0;
+            this.radius = 3;
+            this.history = []; // पूंछ (trail) के लिए
+        }
+
+        update() {
+            // पूंछ के लिए इतिहास सहेजें
+            this.history.push({x: this.x, y: this.y});
+            if(this.history.length > 20) this.history.shift();
+
+            // --- भौतिकी (Physics): कूलम्ब प्रतिकर्षण (Coulomb Repulsion) ---
+            
+            // नाभिक से दूरी और कोण निकालें
+            const dx = this.x - nucleus.x;
+            const dy = this.y - nucleus.y;
+            const distSq = dx*dx + dy*dy;
+            const dist = Math.sqrt(distSq);
+
+            // बल दूरी के वर्ग के व्युत्क्रमानुपाती होता है (F ∝ 1/r²)
+            // स्थिरता के लिए न्यूनतम दूरी (clamping)
+            const minDistSq = 100; 
+            const effectiveDistSq = Math.max(distSq, minDistSq);
+            
+            // बल की गणना (सरलीकृत)
+            const force = nucleus.chargeStrength / effectiveDistSq;
+
+            // बल की दिशा (नाभिक से दूर)
+            const fx = (dx / dist) * force;
+            const fy = (dy / dist) * force;
+
+            // वेग अपडेट करें (F = ma, मान लें mass=1)
+            this.vx += fx;
+            this.vy += fy;
+
+            // स्थिति अपडेट करें
+            this.x += this.vx;
+            this.y += this.vy;
+        }
+
+        draw() {
+            // पूंछ (Trail) बनाएं
+            ctx.beginPath();
+            ctx.moveTo(this.history[0].x, this.history[0].y);
+            for(let point of this.history) {
+                ctx.lineTo(point.x, point.y);
+            }
+            ctx.strokeStyle = 'rgba(249, 202, 36, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // कण (Particle) बनाएं
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#f9ca24';
+            ctx.fill();
+            // चमक
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#f9ca24';
+        }
+    }
+
+    // --- मुख्य एनिमेशन लूप ---
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 1. स्थिर तत्व बनाएं (नाभिक और परमाणु)
+        drawStaticElements();
+
+        // 2. नए कण पैदा करें (अगर फायरिंग चालू है)
+        if (isFiring) {
+            // हर फ्रेम में 1-2 कण
+            if(Math.random() > 0.3) particles.push(new Particle());
+            if(Math.random() > 0.8) particles.push(new Particle());
+        }
+
+        // 3. कणों को अपडेट और ड्रा करें
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i];
+            p.update();
+            p.draw();
+            ctx.shadowBlur = 0; // चमक रीसेट
+
+            // 4. स्क्रीन से बाहर जाने पर चेक करें (Counting Logic)
+            checkBoundsAndCount(p, i);
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    function drawStaticElements() {
+        // सोने का परमाणु (खोखला हिस्सा)
+        ctx.beginPath();
+        ctx.arc(nucleus.x, nucleus.y, atomRadius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(241, 196, 15, 0.05)'; // बहुत हल्का पीला
+        ctx.strokeStyle = 'rgba(241, 196, 15, 0.2)';
+        ctx.lineWidth = 2;
+        ctx.fill();
+        ctx.stroke();
+        
+        // नाभिक (Nucleus) - ठोस और चमकदार
+        ctx.beginPath();
+        ctx.arc(nucleus.x, nucleus.y, nucleus.radius, 0, Math.PI * 2);
+        ctx.fillStyle = '#e74c3c';
+        ctx.fill();
+        // नाभिक की चमक
+        ctx.shadowBlur = 25;
+        ctx.shadowColor = '#e74c3c';
+        ctx.beginPath();
+        ctx.arc(nucleus.x, nucleus.y, nucleus.radius + 2, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(231, 76, 60, 0.5)';
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // अल्फा गन (बाएं तरफ)
+        ctx.fillStyle = '#576574';
+        ctx.fillRect(0, nucleus.y - 30, 40, 60);
+        ctx.fillStyle = '#2f3640';
+        ctx.fillRect(35, nucleus.y - 10, 15, 20); // नोजल
+    }
+
+    function checkBoundsAndCount(p, index) {
+        let removed = false;
+        
+        // स्क्रीन से काफी बाहर जाने पर हटा दें
+        const margin = 100;
+        
+        // दाईं ओर बाहर निकलना
+        if (p.x > canvas.width + margin) {
+            // अगर Y वेग बहुत कम है, तो मतलब सीधा गया
+            if (Math.abs(p.vy) < 1.5) {
+                straightCount++;
+            } else {
+                deflectedCount++;
+            }
+            removed = true;
+        } 
+        // ऊपर, नीचे या बाईं ओर (वापस मुड़ना) निकलना
+        else if (p.x < -margin || p.y < -margin || p.y > canvas.height + margin) {
+            deflectedCount++;
+            removed = true;
+        }
+
+        if (removed) {
+            particles.splice(index, 1);
+            updateStats();
+        }
+    }
+
+    function updateStats() {
+        countStraightEl.innerText = straightCount;
+        countDeflectedEl.innerText = deflectedCount;
+    }
+
+    // --- इवेंट लिसनर्स ---
+    fireBtn.addEventListener('click', () => {
+        isFiring = !isFiring;
+        if (isFiring) {
+            fireBtn.innerText = "बौछार रोकें (Stop Firing)";
+            fireBtn.classList.add('firing');
+        } else {
+            fireBtn.innerText = "बौछार शुरू करें (Start Firing)";
+            fireBtn.classList.remove('firing');
+        }
+    });
+
+    // शुरू करें
+    animate();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snell's Law: Compact View - Smart Manch</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f6f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 10px;
+        }
+        h2 { color: #2c3e50; margin-bottom: 10px; }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 950px;
+        }
+
+        .canvas-box {
+            border: 3px solid #7f8c8d;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .stats-panel {
+            flex: 1;
+            min-width: 280px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .constant-box {
+            background: #d4efdf;
+            border: 2px solid #27ae60;
+            color: #1e8449;
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .val { font-family: monospace; font-size: 16px; }
+
+        input[type=range] { width: 100%; cursor: pointer; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+    <h2>Refraction: Sin i / Sin r = Stirank</h2>
+
+    <div class="container">
+        
+        <div id="canvas-container" class="canvas-box"></div>
+
+        <div class="stats-panel">
+            <div style="text-align:center; padding-bottom:10px; border-bottom:1px solid #ddd;">
+                <label style="color:#e74c3c;">Angle i: <span id="angleDisp">45°</span></label>
+                <input type="range" id="sliderI" min="0" max="80" value="45" step="1">
+            </div>
+
+            <div class="row" style="color:#e74c3c;">
+                <span>sin i (Air)</span>
+                <span id="valSinI" class="val">0.707</span>
+            </div>
+
+            <div class="row" style="color:#3498db;">
+                <span>sin r (Glass)</span>
+                <span id="valSinR" class="val">0.471</span>
+            </div>
+
+            <div class="constant-box">
+                <div style="font-size: 14px;">Snell's Law (Ratio)</div>
+                <div style="font-size: 28px; font-weight:bold;">1.50</div>
+                <div style="font-size: 12px;">(Hamesha Constant)</div>
+            </div>
+            
+            <p style="font-size:13px; color:#555; text-align:center;">
+                *Note: Diagram mein choti <b style="color:#e74c3c">Laal</b> aur <b style="color:#3498db">Neeli</b> lines sin ki value hain.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let angleI = 45;
+        let n1 = 1.0;
+        let n2 = 1.5;
+        // Yeh wo radius hai jahan hum sin i/r ki line banayenge (paas me)
+        let vizRadius = 70; 
+        let slider;
+
+        function setup() {
+            let canvas = createCanvas(600, 350);
+            canvas.parent('canvas-container');
+            angleMode(DEGREES);
+            slider = select('#sliderI');
+        }
+
+        function draw() {
+            background(255);
+            translate(width / 2, height / 2 - 20); // Thoda upar shift kiya
+
+            // 1. Input & Calc
+            angleI = parseFloat(slider.value());
+            document.getElementById('angleDisp').innerText = angleI + "°";
+
+            let sinI = sin(angleI);
+            let angleR = asin((n1 / n2) * sinI);
+            let sinR = sin(angleR);
+
+            // Update Panel
+            document.getElementById('valSinI').innerText = sinI.toFixed(3);
+            document.getElementById('valSinR').innerText = sinR.toFixed(3);
+
+            // --- DRAWING ---
+
+            // Slab (Glass)
+            rectMode(CORNER);
+            noStroke();
+            // Air
+            fill(252, 252, 252); rect(-300, -160, 600, 160);
+            // Glass
+            fill(225, 240, 250); stroke(50, 100, 180); strokeWeight(2);
+            rect(-300, 0, 600, 200);
+            
+            noStroke(); fill(120); textSize(12);
+            text("AIR (Hawa)", -280, -20);
+            text("GLASS (Kaanch)", -280, 160);
+
+            // Normal Line
+            stroke(100); strokeWeight(1); drawingContext.setLineDash([4, 4]);
+            line(0, -140, 0, 140);
+            drawingContext.setLineDash([]);
+
+            // Helper Circle (Dotted) - Paas wala circle
+            noFill(); stroke(180); strokeWeight(1); drawingContext.setLineDash([2, 2]);
+            ellipse(0, 0, vizRadius * 2, vizRadius * 2);
+            drawingContext.setLineDash([]);
+
+
+            // --- INCIDENT RAY (Angle i) ---
+            let rayLen = 180; // Ray lambi hogi
+            let srcX = -rayLen * sin(angleI);
+            let srcY = -rayLen * cos(angleI);
+
+            // 1. Lambi Ray draw karein
+            stroke(231, 76, 60, 100); strokeWeight(2); // Thoda transparent
+            line(srcX, srcY, 0, 0);
+
+            // 2. Sin i Line (Paas me, vizRadius par)
+            // Point on the small circle
+            let p1x = -vizRadius * sin(angleI);
+            let p1y = -vizRadius * cos(angleI);
+
+            // Ray segment till circle (Dark Red)
+            stroke(231, 76, 60); strokeWeight(2);
+            line(p1x, p1y, 0, 0);
+
+            // The "Aadi Line" (Horizontal Sin component)
+            // Yeh line point se seedha Normal (Y-axis) par girti hai
+            stroke(231, 76, 60); strokeWeight(4);
+            line(p1x, p1y, 0, p1y);
+
+            // Label
+            noStroke(); fill(231, 76, 60); textStyle(BOLD);
+            if (angleI > 10) text("sin i", p1x/2 - 15, p1y - 5);
+
+
+            // --- REFRACTED RAY (Angle r) ---
+            let refX = rayLen * sin(angleR);
+            let refY = rayLen * cos(angleR);
+
+            // 1. Lambi Ray
+            stroke(52, 152, 219, 100); strokeWeight(2);
+            line(0, 0, refX, refY);
+
+            // 2. Sin r Line (Paas me)
+            let p2x = vizRadius * sin(angleR);
+            let p2y = vizRadius * cos(angleR);
+
+            // Ray segment till circle (Dark Blue)
+            stroke(52, 152, 219); strokeWeight(2);
+            line(0, 0, p2x, p2y);
+
+            // The "Aadi Line" (Horizontal Sin component)
+            stroke(52, 152, 219); strokeWeight(4);
+            line(p2x, p2y, 0, p2y);
+
+            // Label
+            noStroke(); fill(52, 152, 219);
+            if (angleR > 5) text("sin r", p2x/2 + 5, p2y + 15);
+
+            // Center Point
+            fill(0); noStroke(); ellipse(0,0,5,5);
+        }
+    </script>
+</body>
+</html>

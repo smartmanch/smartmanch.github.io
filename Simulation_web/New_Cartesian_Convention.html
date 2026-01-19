@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compact Sign Convention - Smart Manch</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 10px; /* पैडिंग कम की */
+            min-height: 100vh;
+        }
+        h2 { color: #2c3e50; margin: 5px 0 10px 0; font-size: 22px; }
+        
+        .controls {
+            margin-bottom: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 95%;
+            max-width: 750px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+        
+        button {
+            padding: 5px 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover { background-color: #2980b9; }
+        button.active { background-color: #2c3e50; border: 2px solid #3498db; }
+
+        canvas {
+            border: 2px solid #333;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            background-color: #fff;
+            display: block; /* एक्स्ट्रा स्पेस हटाने के लिए */
+        }
+
+        /* कॉम्पैक्ट डेटा टेबल */
+        .data-table {
+            margin-top: 10px;
+            border-collapse: collapse;
+            width: 95%;
+            max-width: 700px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 14px; /* फॉण्ट छोटा किया */
+        }
+        .data-table th, .data-table td {
+            border: 1px solid #ddd;
+            padding: 5px; /* पैडिंग कम की */
+            text-align: center;
+        }
+        .data-table th { background-color: #2c3e50; color: white; }
+        .positive { color: green; font-weight: bold; }
+        .negative { color: red; font-weight: bold; }
+
+        .footer {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #7f8c8d;
+            text-align: center;
+            width: 100%;
+        }
+        .footer strong { color: #2c3e50; }
+        
+        /* रेंज स्लाइडर को थोड़ा छोटा किया */
+        input[type=range] { width: 100px; vertical-align: middle; }
+    </style>
+</head>
+<body>
+
+    <h2>नयी कार्तीय चिह्न परिपाटी (Sign Convention)</h2>
+
+    <div class="controls">
+        <div>
+            <label>दर्पण: </label>
+            <button id="btnConcave" class="active" onclick="setMirror('concave')">अवतल</button>
+            <button id="btnConvex" onclick="setMirror('convex')">उत्तल</button>
+        </div>
+        <div>
+            <label>u:</label>
+            <input type="range" id="sliderU" min="-300" max="-50" value="-150" step="1">
+        </div>
+        <div>
+            <label>h:</label>
+            <input type="range" id="sliderH" min="30" max="90" value="60" step="1">
+        </div>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>राशि (Quantity)</th>
+                <th>चिह्न (Sign)</th>
+                <th>मान (Value)</th>
+                <th>नियम (Rule)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>वस्तु दूरी (u)</td>
+                <td id="signU"></td>
+                <td id="valU"></td>
+                <td>हमेशा ऋणात्मक (-ve)</td>
+            </tr>
+            <tr>
+                <td>फोकस दूरी (f)</td>
+                <td id="signF"></td>
+                <td id="valF"></td>
+                <td id="ruleF"></td>
+            </tr>
+            <tr>
+                <td>प्रतिबिम्ब दूरी (v)</td>
+                <td id="signV"></td>
+                <td id="valV"></td>
+                <td>पीछे (+ve), सामने (-ve)</td>
+            </tr>
+            <tr>
+                <td>वस्तु ऊँचाई (h)</td>
+                <td id="signH" class="positive">+</td>
+                <td id="valH"></td>
+                <td>ऊपर की ओर (+ve)</td>
+            </tr>
+            <tr>
+                <td>प्रतिबिम्ब ऊँचाई (h')</td>
+                <td id="signHi"></td>
+                <td id="valHi"></td>
+                <td>सीधा (+ve), उल्टा (-ve)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <p>Developed for Smart Manch</p>
+        <p>&copy; 2026 <strong>Rohitash Bharia</strong>. All Rights Reserved.</p>
+    </div>
+
+    <script>
+        let mirrorType = 'concave';
+        let f = -80; // फोकस दूरी थोड़ी कम की ताकि छोटे कैनवस में फिट हो
+        let u = -150;
+        let h_o = 60;
+        let sliderU, sliderH;
+
+        function setup() {
+            // कैनवस की ऊँचाई 450 से घटाकर 320 कर दी
+            let canvas = createCanvas(750, 320);
+            canvas.parent('canvas-container');
+            sliderU = select('#sliderU');
+            sliderH = select('#sliderH');
+        }
+
+        function draw() {
+            background(255);
+            
+            // इनपुट अपडेट
+            u = parseInt(sliderU.value());
+            h_o = parseInt(sliderH.value());
+            
+            // दर्पण के अनुसार फोकस दूरी
+            if (mirrorType === 'concave') f = -80;
+            else f = 80;
+
+            // गणना
+            let v = (f * u) / (u - f);
+            let m = -v / u;
+            let h_i = m * h_o;
+
+            updateTable(u, v, f, h_o, h_i);
+
+            translate(width / 2, height / 2); 
+
+            // --- 1. ग्राफ ग्रिड ---
+            drawGrid();
+
+            // --- 2. दर्पण ---
+            drawMirror();
+
+            // --- 3. वस्तु ---
+            drawObject(u, h_o);
+
+            // --- 4. प्रतिबिम्ब ---
+            if(v !== Infinity && Math.abs(v) < 2000) {
+                drawImage(v, h_i);
+            }
+
+            // --- 5. फोकस बिंदु ---
+            fill(0); noStroke();
+            ellipse(f, 0, 6, 6);
+            textSize(12);
+            text("F", f, 15);
+            // f की आयाम रेखा को पास लाया गया (y=30 से y=25)
+            drawDimension(0, 25, f, 25, "f="+f, f > 0 ? "green" : "red");
+        }
+
+        function drawGrid() {
+            stroke(230); strokeWeight(1);
+            for(let i = -width/2; i < width/2; i+=40) line(i, -height/2, i, height/2);
+            for(let j = -height/2; j < height/2; j+=40) line(-width/2, j, width/2, j);
+
+            // Axes
+            stroke(0); strokeWeight(1.5);
+            line(-width/2, 0, width/2, 0); // X Axis
+            line(0, -height/2, 0, height/2); // Y Axis
+
+            // Signs
+            textSize(18); textStyle(BOLD);
+            fill(200, 0, 0, 80); text("(-)", -width/2 + 20, -10);
+            fill(0, 150, 0, 80); text("(+)", width/2 - 40, -10);
+            
+            fill(0, 150, 0, 80); text("(+)", 10, -height/2 + 25);
+            fill(200, 0, 0, 80); text("(-)", 10, height/2 - 15);
+
+            textStyle(NORMAL); textSize(12); fill(100);
+            text("P (0,0)", 5, 12);
+        }
+
+        function drawMirror() {
+            stroke(0, 100, 200); strokeWeight(3); noFill();
+            if(mirrorType === 'concave') {
+                arc(10, 0, 25, 180, HALF_PI, -HALF_PI); 
+                stroke(100); strokeWeight(1);
+                for(let y=-80; y<80; y+=10) line(22, y, 30, y+5);
+            } else {
+                arc(-10, 0, 25, 180, -HALF_PI, HALF_PI); 
+                stroke(100); strokeWeight(1);
+                for(let y=-80; y<80; y+=10) line(-22, y, -14, y+5);
+            }
+        }
+
+        function drawObject(u_pos, h_val) {
+            stroke(255, 0, 0); strokeWeight(2.5);
+            line(u_pos, 0, u_pos, -h_val);
+            line(u_pos, -h_val, u_pos-4, -h_val+8);
+            line(u_pos, -h_val, u_pos+4, -h_val+8);
+
+            // आयाम रेखाओं को ऊपर खिसकाया (y=100 से y=85)
+            drawDimension(0, 85, u_pos, 85, "u="+u_pos, "red");
+            drawDimension(u_pos, 0, u_pos, -h_val, "h="+h_val, "green");
+        }
+
+        function drawImage(v_pos, h_val) {
+            stroke(0, 0, 255); strokeWeight(2.5);
+            if (v_pos > 0) drawingContext.setLineDash([4, 4]);
+            
+            line(v_pos, 0, v_pos, -h_val);
+            
+            if(h_val > 0) { 
+                line(v_pos, -h_val, v_pos-4, -h_val+8);
+                line(v_pos, -h_val, v_pos+4, -h_val+8);
+            } else { 
+                line(v_pos, -h_val, v_pos-4, -h_val-8);
+                line(v_pos, -h_val, v_pos+4, -h_val-8);
+            }
+            drawingContext.setLineDash([]);
+
+            // आयाम रेखाओं को ऊपर खिसकाया (y=130 से y=110)
+            let colorV = v_pos > 0 ? "green" : "red";
+            drawDimension(0, 110, v_pos, 110, "v="+v_pos.toFixed(0), colorV);
+            
+            let colorHi = h_val > 0 ? "green" : "red";
+            let xOffset = (v_pos > u) ? 15 : -15;
+            // h' लेबल थोड़ा साफ़ किया
+            drawDimension(v_pos + xOffset, 0, v_pos + xOffset, -h_val, "", colorHi);
+            noStroke(); fill(colorHi); textSize(11);
+            text("h'="+Math.abs(h_val).toFixed(0), v_pos + xOffset + (xOffset>0?5:-30), -h_val/2);
+        }
+
+        function drawDimension(x1, y1, x2, y2, txt, col) {
+            stroke(col); fill(col); strokeWeight(1); textSize(11);
+            line(x1, y1, x2, y2);
+            ellipse(x1, y1, 2, 2); ellipse(x2, y2, 2, 2);
+            
+            if(txt !== "") {
+                noStroke();
+                let midX = (x1 + x2) / 2;
+                let midY = (y1 + y2) / 2;
+                // टेक्स्ट को लाइन के ऊपर रखने के लिए थोड़ा ऑफसेट
+                text(txt, midX - 10, midY - 3);
+            }
+        }
+
+        function setMirror(type) {
+            mirrorType = type;
+            document.getElementById('btnConcave').className = type === 'concave' ? 'active' : '';
+            document.getElementById('btnConvex').className = type === 'convex' ? 'active' : '';
+        }
+
+        function updateTable(u, v, f, h, hi) {
+            const setClass = (id, val) => {
+                let el = document.getElementById(id);
+                el.innerText = val > 0 ? "+" : "-";
+                el.className = val > 0 ? "positive" : "negative";
+            };
+
+            setClass('signU', u);
+            document.getElementById('valU').innerText = Math.abs(u);
+
+            setClass('signF', f);
+            document.getElementById('valF').innerText = Math.abs(f);
+            document.getElementById('ruleF').innerText = mirrorType === 'concave' ? "अवतल (-ve)" : "उत्तल (+ve)";
+
+            if(v === Infinity) {
+                document.getElementById('signV').innerText = "Inf";
+                document.getElementById('valV').innerText = "∞";
+            } else {
+                setClass('signV', v);
+                document.getElementById('valV').innerText = Math.abs(v).toFixed(1);
+            }
+
+            document.getElementById('valH').innerText = Math.abs(h);
+
+            setClass('signHi', hi);
+            document.getElementById('valHi').innerText = Math.abs(hi).toFixed(1);
+        }
+    </script>
+</body>
+</html>

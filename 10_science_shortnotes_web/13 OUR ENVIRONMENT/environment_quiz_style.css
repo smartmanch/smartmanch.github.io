@@ -1,0 +1,174 @@
+/* environment_quiz_style.css */
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #e8f5e9; /* हल्का हरा */
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    margin: 0;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+    background-color: #1b5e20; /* गहरा हरा */
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#quiz-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 800px;
+}
+
+h2, h3 {
+    color: #1b5e20; /* गहरा हरा */
+    border-bottom: 2px solid #1b5e20;
+    padding-bottom: 5px;
+}
+
+/* विद्यार्थी विवरण */
+#student-info-form label {
+    display: inline-block;
+    width: 120px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+#student-info-form input {
+    width: calc(100% - 130px);
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    /* सामान्य बॉर्डर */
+    transition: border 0.3s, box-shadow 0.3s;
+}
+
+/* ❌ त्रुटि हाइलाइट (नया कोड) ❌ */
+#student-info-form input.error-highlight {
+    border: 2px solid #dc3545 !important; /* लाल बॉर्डर */
+    box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+}
+
+
+/* पुनरीक्षण सामग्री के लिए स्टाइल */
+#review-content {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 15px;
+    margin-bottom: 20px;
+}
+.qa-item {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-left: 5px solid #388e3c;
+    background-color: #f1f8e9;
+    border-radius: 4px;
+}
+.qa-item p {
+    margin: 5px 0;
+    line-height: 1.5;
+}
+.qa-item strong {
+    color: #1b5e20;
+    font-size: 1.1em;
+}
+
+/* क्विज क्षेत्र की स्टाइल */
+#header-info {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    display: flow-root;
+}
+
+#quiz-area {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.option {
+    display: block;
+    padding: 12px;
+    margin: 8px 0;
+    background-color: #e8f5e9;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    user-select: none;
+    line-height: 1.4;
+    text-align: left;
+}
+
+.option:hover {
+    background-color: #dcedc8;
+}
+
+/* क्लिक स्टेट्स */
+.correct {
+    background-color: #28a745 !important; /* हरा */
+    color: white;
+    box-shadow: 0 0 5px #28a745;
+}
+.incorrect {
+    background-color: #dc3545 !important; /* लाल */
+    color: white;
+    box-shadow: 0 0 5px #dc3545;
+}
+
+/* फीडबैक संदेश */
+#feedback-message {
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 15px;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+button {
+    background-color: #1b5e20; /* गहरा हरा */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+    width: 100%;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #00332d;
+}
+
+/* मार्कशीट स्टाइलिंग */
+#mark-sheet {
+    border: 2px solid #1b5e20;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    background-color: #f9ffff;
+}
+#mark-sheet p {
+    font-size: 1.1em;
+    padding: 5px 0;
+    border-bottom: 1px dashed #ccc;
+}
+#mark-sheet p:last-child {
+    border-bottom: none;
+}

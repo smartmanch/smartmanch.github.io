@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>हमारा पर्यावरण - क्विज</title>
+    <link rel="stylesheet" href="environment_quiz_style.css"> 
+</head>
+<body>
+
+    <header>
+        <h1>🌱 हमारा पर्यावरण - क्विज 🌍</h1>
+    </header>
+
+    <div id="quiz-container">
+        
+        <div id="start-screen">
+            <h3>📝 विद्यार्थी विवरण और क्विज निर्देश</h3>
+            <div id="student-info-form">
+                <label for="student-name">विद्यार्थी का नाम:</label>
+                <input type="text" id="student-name" required placeholder="अपना नाम भरें"><br><br>
+                
+                <label for="student-class">कक्षा:</label>
+                <input type="text" id="student-class" required placeholder="कक्षा भरें"><br><br>
+
+                <label for="student-roll">रोल नंबर:</label>
+                <input type="text" id="student-roll" required placeholder="रोल नंबर भरें"><br><br>
+            </div>
+            
+            <hr>
+            
+            <div id="quiz-instructions">
+                <p>क्विज शुरू करने से पहले, आपको **30 महत्वपूर्ण प्रश्नोत्तरों** का पुनरीक्षण करना होगा।</p>
+                <p>👉 **अंकन नियम:** प्रत्येक सही उत्तर के लिए **2 अंक**। गलत उत्तर पर कोई अंक नहीं।</p>
+            </div>
+
+            <button onclick="showReviewScreen()">पुनरीक्षण सामग्री देखें और क्विज शुरू करें</button>
+        </div>
+        
+        <div id="review-screen" style="display:none;">
+            <h2>📖 पुनरीक्षण: 30 लघु-उत्तरीय प्रश्नोत्तर</h2>
+            <div id="review-content">
+                </div>
+            <button onclick="startMCQQuiz()" style="margin-top: 20px;">✅ 25 प्रश्नों वाली क्विज शुरू करें</button>
+        </div>
+
+        <div id="quiz-screen" style="display:none;">
+            <div id="header-info">
+                <span>**प्रश्न:** <span id="current-question-number">1</span> / <span id="total-questions">25</span></span>
+                <span style="float: right;">💰 **कुल अंक:** <span id="current-score">0</span></span>
+            </div>
+            
+            <hr>
+
+            <div id="quiz-area">
+                <h3 id="question-text">प्रश्न यहाँ लोड होगा...</h3>
+                <div id="options-container">
+                    </div>
+                <div id="feedback-message"></div>
+            </div>
+            
+            <button id="next-button" onclick="loadNextQuestion()" style="display:none;">अगला प्रश्न</button>
+        </div>
+
+        <div id="result-screen" style="display:none;">
+            <h2>🌟 आपका परिणाम (Result Card) 🌟</h2>
+            <div id="mark-sheet">
+                </div>
+            <button onclick="window.location.reload()">क्विज फिर से शुरू करें</button>
+        </div>
+
+    </div>
+
+    <script src="environment_quiz_script.js"></script>
+</body>
+</html>

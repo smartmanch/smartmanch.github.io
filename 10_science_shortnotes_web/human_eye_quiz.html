@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>मानव नेत्र तथा रंगबिरंगा संसार - क्विज (30 प्रश्न)</title>
+    <link rel="stylesheet" href="human_eye_quiz_style.css"> 
+</head>
+<body>
+
+    <header>
+        <h2 style="color: white; margin-bottom: 5px;">राजकीय उच्च माध्यमिक विद्यालय, सैनीपुरा, झुंझुनू</h2>
+        <h1>👁️ मानव नेत्र तथा रंगबिरंगा संसार - क्विज 🌈</h1>
+    </header>
+
+    <div id="quiz-container">
+        
+        <div id="start-screen">
+            <h3>📝 विद्यार्थी विवरण और क्विज निर्देश</h3>
+            <div id="student-info-form">
+                <label for="student-name">विद्यार्थी का नाम:</label>
+                <input type="text" id="student-name" required><br><br>
+                
+                <label for="student-class">कक्षा:</label>
+                <input type="text" id="student-class" required><br><br>
+
+                <label for="student-roll">रोल नंबर:</label>
+                <input type="text" id="student-roll" required><br><br>
+            </div>
+            
+            <hr>
+            
+            <div id="quiz-instructions">
+                <p>यह क्विज **30 प्रश्नों** पर आधारित है।</p>
+                <p>👉 **अंकन नियम:** यदि आपका **पहला क्लिक सही** होता है, तो आपको **2 अंक** मिलेंगे। गलत उत्तर देने पर कोई अंक नहीं मिलेगा।</p>
+            </div>
+
+            <button onclick="startQuiz()">क्विज शुरू करें</button>
+        </div>
+        <div id="quiz-screen" style="display:none;">
+            <div id="header-info">
+                <span>**प्रश्न:** <span id="current-question-number">1</span> / <span id="total-questions">30</span></span>
+                <span style="float: right;">💰 **कुल अंक:** <span id="current-score">0</span></span>
+            </div>
+            
+            <hr>
+
+            <div id="quiz-area">
+                <h3 id="question-text">प्रश्न यहाँ लोड होगा...</h3>
+                <div id="options-container">
+                    </div>
+                <div id="feedback-message"></div>
+            </div>
+            
+            <button id="next-button" onclick="loadNextQuestion()" style="display:none;">अगला प्रश्न</button>
+        </div>
+
+        <div id="result-screen" style="display:none;">
+            <h2>🌟 आपका परिणाम (Result Card) 🌟</h2>
+            <div id="mark-sheet">
+                </div>
+            <p id="creator-message" style="margin-top: 20px; font-style: italic; color: #333;"></p>
+            <button onclick="window.location.reload()">क्विज फिर से शुरू करें</button>
+        </div>
+
+    </div>
+
+    <script src="human_eye_quiz_script.js"></script>
+</body>
+</html>

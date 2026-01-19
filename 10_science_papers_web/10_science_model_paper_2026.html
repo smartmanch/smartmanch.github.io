@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RBSE 10th Science Model Paper 2026</title>
+    <style>
+        :root {
+            --primary: #283593; /* Indigo */
+            --secondary: #d32f2f; /* Red */
+            --accent: #00897b; /* Teal */
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #37474f;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-radius: 16px;
+            border-top: 6px solid var(--primary);
+        }
+
+        /* Headers */
+        h1 { color: var(--primary); text-align: center; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .exam-tag { 
+            text-align: center; 
+            background: var(--accent); 
+            color: white; 
+            display: table; 
+            margin: 10px auto 25px auto; 
+            padding: 6px 20px; 
+            border-radius: 20px; 
+            font-size: 0.9em; 
+            font-weight: bold;
+        }
+        h2 { color: var(--secondary); margin-top: 40px; border-bottom: 2px solid #ffcdd2; padding-bottom: 8px; display: inline-block; }
+
+        /* Login */
+        .login-box {
+            max-width: 450px;
+            margin: 50px auto;
+            text-align: center;
+            padding: 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        input {
+            width: 90%;
+            padding: 14px;
+            margin: 12px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        input:focus { border-color: var(--primary); outline: none; }
+        
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.3s;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .btn:hover { background: #1a237e; transform: translateY(-2px); }
+        .btn-quiz { background: var(--secondary); margin-top: 30px; width: auto; padding: 15px 50px; display: inline-block; }
+
+        /* Questions */
+        .section-header {
+            background: linear-gradient(to right, var(--primary), #5c6bc0);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            margin-top: 45px;
+            font-weight: 600;
+            font-size: 1.15em;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        
+        .question-card {
+            border-bottom: 1px dashed #cfd8dc;
+            padding: 25px 0;
+        }
+        
+        .q-text { font-weight: 600; font-size: 1.1em; margin-bottom: 12px; color: #263238; }
+        .marks { float: right; font-size: 0.85em; background: #e8eaf6; padding: 4px 12px; border-radius: 15px; color: var(--primary); font-weight:bold; }
+
+        /* Answers */
+        .ans-toggle {
+            background: white;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            padding: 8px 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .ans-toggle:hover { background: var(--accent); color: white; }
+        
+        .answer-content {
+            display: none;
+            margin-top: 20px;
+            background: #e0f2f1;
+            padding: 20px;
+            border-left: 5px solid var(--accent);
+            border-radius: 0 8px 8px 8px;
+        }
+
+        /* Topper Style Answer Formatting */
+        .topper-ans h3 { color: #004d40; border-bottom: 2px solid #80cbc4; padding-bottom: 5px; margin-top: 20px; }
+        .topper-ans h4 { color: #00695c; margin: 15px 0 8px 0; font-weight: bold; text-decoration: underline; text-decoration-color: #b2dfdb; }
+        .topper-ans ul { padding-left: 20px; margin-top: 5px; }
+        .topper-ans li { margin-bottom: 8px; }
+        .topper-ans p { margin-bottom: 10px; text-align: justify; }
+        .chem-eq { font-family: 'Courier New', monospace; background: #eceff1; padding: 3px 6px; border-radius: 4px; color: #d84315; font-weight: bold; }
+        .highlight { background-color: #fff9c4; padding: 0 4px; }
+
+        /* Quiz - Radio Button at End */
+        .quiz-option {
+            display: flex; /* Flexbox to align items */
+            justify-content: space-between; /* Space between text and radio */
+            align-items: center; /* Vertical center */
+            padding: 15px 20px;
+            background: #fafafa;
+            margin: 12px 0;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .quiz-option:hover { background: #fff; border-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .opt-text { flex: 1; text-align: left; padding-right: 15px; } /* Text takes available space */
+        .quiz-option input[type="radio"] { 
+            width: 20px; 
+            height: 20px; 
+            margin: 0; 
+            cursor: pointer; 
+            accent-color: var(--primary); /* Custom radio color */
+        }
+        
+        .correct-ans { background: #c8e6c9; color: #1b5e20; border: 1px solid #81c784; padding: 15px; border-radius: 8px; margin-top: 10px;}
+        .wrong-ans { background: #ffcdd2; color: #b71c1c; border: 1px solid #e57373; padding: 15px; border-radius: 8px; margin-top: 10px;}
+
+        /* Footer */
+        .footer-credit {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px;
+            background: #eceff1;
+            color: #455a64;
+            border-radius: 0 0 16px 16px;
+            margin-bottom: -40px;
+            margin-left: -40px;
+            margin-right: -40px;
+            border-top: 1px solid #cfd8dc;
+        }
+        .cc-text { font-weight: bold; font-size: 1.1em; color: #37474f; }
+        .wishes {
+            color: var(--secondary);
+            font-size: 1.3em;
+            margin-top: 10px;
+            font-weight: bold;
+            font-family: 'Brush Script MT', cursive; /* Stylish font for wishes */
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div id="page-login">
+        <h1>RBSE Class 10 Science</h1>
+        <div class="exam-tag">Model Paper 2026</div>
+        <p style="text-align:center; color:#555;">(Based on New Blueprint)</p>
+        
+        <div class="login-box">
+            <h3 style="color:var(--primary); margin-top:0;">Login Details</h3>
+            <input type="text" id="stuName" placeholder="विद्यार्थी का नाम (Name)">
+            <input type="text" id="stuClass" value="10th Science" readonly style="background:#f9f9f9; color:#777;">
+            <input type="number" id="stuRoll" placeholder="रोल नंबर (Roll No)">
+            <button class="btn" onclick="startPaper()">पेपर पढ़ना शुरू करें (Start)</button>
+        </div>
+    </div>
+
+    <div id="page-study" class="hidden">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; border-bottom:2px solid #eee; padding-bottom:15px;">
+            <div id="greet-msg" style="font-weight:bold; color:var(--primary); font-size:1.1em;"></div>
+            <button class="btn" style="width:auto; margin:0; padding:10px 25px; font-size:0.9em; background:#455a64;" onclick="scrollToQuiz()">Quiz पर जाएं</button>
+        </div>
+        
+        <div id="paper-content"></div>
+
+        <div style="text-align:center; margin-top:60px; background:#e0f2f1; padding:40px; border-radius:12px; border:2px dashed var(--accent);">
+            <h3 style="color:var(--primary);">क्या आपने पूरा पेपर पढ़ लिया?</h3>
+            <p>अब 80 महत्वपूर्ण प्रश्नों की क्विज़ देकर अपनी तैयारी को परखें।</p>
+            <button class="btn btn-quiz" onclick="startQuiz()">80 MCQ क्विज़ शुरू करें (Start Quiz)</button>
+        </div>
+    </div>
+
+    <div id="page-quiz" class="hidden">
+        <h1>अभ्यास क्विज़ (Practice Quiz)</h1>
+        <p style="text-align:center; color:#666;">(इसमें मॉडल पेपर और सिलेबस के 80 महत्वपूर्ण प्रश्न शामिल हैं)</p>
+        <div id="quiz-container"></div>
+        <button class="btn btn-quiz" style="display:block; margin:40px auto;" onclick="submitQuiz()">क्विज़ जमा करें (Submit)</button>
+    </div>
+
+    <div id="page-result" class="hidden">
+        <h1>परिणाम (Result)</h1>
+        <div class="login-box" style="width:100%; max-width:100%; border:3px solid var(--primary); background:#e8eaf6;">
+            <h2 id="final-score" style="margin:0; color:var(--primary); font-size:2.5em;"></h2>
+            <p id="result-name" style="font-size:1.3em; margin:15px 0; color:#333;"></p>
+            <div id="feedback-msg" style="font-weight:bold; color:var(--secondary); font-size:1.2em;"></div>
+        </div>
+        
+        <h3>विस्तृत रिपोर्ट (Detailed Report):</h3>
+        <div id="result-details"></div>
+        
+        <button class="btn" onclick="location.reload()" style="margin-top:40px; background:#37474f;">पुनः प्रयास करें (Restart)</button>
+
+        <div class="footer-credit">
+            <div class="cc-text">cc @Rohitash Bharia</div>
+            <div class="wishes">सभी विद्यार्थियों को बोर्ड परीक्षा की हार्दिक शुभकामनाएं! (Best of Luck!)</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- PAPER DATA (2026 Model Paper) ---
+    const paperData = {
+        secA: {
+            title: "खण्ड-अ (Section A) - बहुविकल्पीय, रिक्त स्थान एवं अतिलघुत्तरात्मक",
+            questions: [
+                // MCQs
+                { no: "1(i)", q: "संगमरमर का रासायनिक सूत्र है?", m: "1", a: "<span class='chem-eq'>CaCO3</span> (कैल्शियम कार्बोनेट)" },
+                { no: "1(ii)", q: "लौह चूर्ण पर तनु हाइड्रोक्लोरिक अम्ल डालने से क्या होता है?", m: "1", a: "हाइड्रोजन गैस एवं आयरन क्लोराइड बनता है।" },
+                { no: "1(iii)", q: "कोई धातु ऑक्सीजन के साथ अभिक्रिया कर उच्च गलनांक वाला यौगिक निर्मित करती है। यह यौगिक जल में विलेय है। यह तत्व क्या है?", m: "1", a: "कैल्शियम (Ca)" },
+                { no: "1(iv)", q: "धातुओं की अभिक्रियाशीलता के आधार पर सबसे अधिक क्रियाशील धातु है?", m: "1", a: "पौटेशियम (K)" },
+                { no: "1(v)", q: "एथेन का आण्विक सूत्र <span class='chem-eq'>C2H6</span> है। इसमें कितने सहसंयोजक आबंध हैं?", m: "1", a: "7 सहसंयोजक आबंध" },
+                { no: "1(vi)", q: "बेन्जीन की संरचना कैसी होती है?", m: "1", a: "वलय संरचना (Ring structure), सूत्र <span class='chem-eq'>C6H6</span>।" },
+                { no: "1(vii)", q: "पराग कोष में होते हैं?", m: "1", a: "परागकण (Pollen grains)" },
+                { no: "1(viii)", q: "अलैंगिक जनन मुकुलन (Budding) द्वारा होता है?", m: "1", a: "यीस्ट (Yeast) में" },
+                { no: "1(ix)", q: "मस्तिष्क उत्तरदायी होता है?", m: "1", a: "सोचने, हृदय स्पंदन और शरीर का संतुलन बनाने के लिए (उपरोक्त सभी)।" },
+                { no: "1(x)", q: "रासायनिक समन्वय देखा जाता है?", m: "1", a: "पादप व जंतु दोनों में" },
+                { no: "1(xi)", q: "सामान्य दृष्टि के वयस्क के लिए सुस्पष्ट दर्शन की अल्पतम दूरी होती है?", m: "1", a: "25 cm" },
+                { no: "1(xii)", q: "श्वेत प्रकाश में कितने रंग होते हैं?", m: "1", a: "7 (सात)" },
+                { no: "1(xiii)", q: "निम्न में से कौन पद विद्युत परिपथ में विद्युत शक्ति को निरूपित नहीं करता?", m: "1", a: "<span class='chem-eq'>IR^2</span> (सही सूत्र: VI, I^2R, V^2/R)" },
+                { no: "1(xiv)", q: "प्रतिरोध का मात्रक है?", m: "1", a: "ओम (Ohm)" },
+                { no: "1(xv)", q: "किसी विद्युत धारावाही सीधी लम्बी परिनालिका के भीतर चुम्बकीय क्षेत्र कैसा होता है?", m: "1", a: "सभी बिन्दुओं पर समान (एकसमान) होता है।" },
+                { no: "1(xvi)", q: "चुम्बकीय क्षेत्र की दिशा किस नियम से ज्ञात की जाती है (फ्लेमिंग)?", m: "1", a: "कागज में भीतर की ओर (प्रश्न चित्र पर निर्भर)।" },
+                { no: "1(xvii)", q: "निम्नलिखित में से कौन आहार श्रृंखला का निर्माण करते हैं?", m: "1", a: "घास, बकरी तथा मानव" },
+                { no: "1(xviii)", q: "जैव निम्नीकरणीय पदार्थ कौन से हैं?", m: "1", a: "फलों के छिलके, केक, नींबू रस आदि।" },
+                
+                // Fill in Blanks
+                { no: "2(i)", q: "शुद्ध जल के pH का मान _____ होता है।", m: "1", a: "7" },
+                { no: "2(ii)", q: "अम्ल एवं धातु अभिक्रिया करके लवण व _____ बनाते हैं।", m: "1", a: "हाइड्रोजन गैस (H2)" },
+                { no: "2(iii)", q: "A.T.P. का पूरा नाम _____ है।", m: "1", a: "एडेनोसीन ट्राइफॉस्फेट" },
+                { no: "2(iv)", q: "प्रकाश संश्लेषण में जल के अणु (<span class='chem-eq'>H2O</span>) का _____ होता है।", m: "1", a: "अपघटन (या ऑक्सीकरण)" },
+                { no: "2(v)", q: "_____ जैसे जीव अपना लिंग बदल सकते हैं।", m: "1", a: "घोंघा (Snail)" },
+                
+                // Very Short
+                { no: "3(i)", q: "संयोजन अभिक्रिया किसे कहते हैं?", m: "1", a: "दो या अधिक अभिकारक मिलकर एकल उत्पाद बनाते हैं।" },
+                { no: "3(ii)", q: "H+ आयन की सान्द्रता का विलयन की प्रकृति पर क्या प्रभाव पड़ता है?", m: "1", a: "H+ बढ़ने पर अम्लीयता बढ़ती है, pH घटता है।" },
+                { no: "3(iii)", q: "उभयधर्मी ऑक्साइड के उदाहरण दें।", m: "1", a: "एल्युमीनियम ऑक्साइड (<span class='chem-eq'>Al2O3</span>), जिंक ऑक्साइड (<span class='chem-eq'>ZnO</span>)।" },
+                { no: "3(iv)", q: "मानव में लैंगिक हार्मोन कौन से हैं?", m: "1", a: "नर: टेस्टोस्टेरोन; मादा: एस्ट्रोजन, प्रोजेस्टेरोन।" },
+                { no: "3(v)", q: "आयोडीन की कमी से कौन सा रोग होता है?", m: "1", a: "घेंघा (Goitre)।" },
+                { no: "3(vi)", q: "लिंग निर्धारण किस गुणसूत्र से होता है?", m: "1", a: "Y गुणसूत्र (नर में) की उपस्थिति या अनुपस्थिति से।" },
+                { no: "3(vii)", q: "आनुवंशिकता की परिभाषा दें।", m: "1", a: "लक्षणों का एक पीढ़ी से दूसरी पीढ़ी में संचरण।" },
+                { no: "3(viii)", q: "लेंस सूत्र लिखिए।", m: "1", a: "<span class='chem-eq'>1/f = 1/v - 1/u</span>" },
+                { no: "3(ix)", q: "लेंस की क्षमता का मात्रक?", m: "1", a: "डायोप्टर (D)।" },
+                { no: "3(x)", q: "विद्युत फ्यूज का क्या कार्य है?", m: "1", a: "अतिभारण या लघुपथन से परिपथ की सुरक्षा करना।" },
+                { no: "3(xi)", q: "MRI का पूरा नाम?", m: "1", a: "मैग्नेटिक रेसोनेंस इमेजिंग (Magnetic Resonance Imaging)।" },
+                { no: "3(xii)", q: "पोषी स्तर क्या है?", m: "1", a: "खाद्य श्रृंखला का प्रत्येक चरण जहाँ ऊर्जा का स्थानांतरण होता है।" }
+            ]
+        },
+        secB: {
+            title: "खण्ड-ब (Section B) - लघुत्तरात्मक प्रश्न",
+            questions: [
+                { no: "4", q: "लोहे को जंग से बचाने के दो उपाय लिखिए।", m: "2", a: "1. पेंट या ग्रीस लगाकर। 2. यशदलेपन (Galvanization) करके।" },
+                { no: "5", q: "साइक्लोपेन्टेन का सूत्र व संरचना बताइए।", m: "2", a: "सूत्र: <span class='chem-eq'>C5H10</span>। यह 5 कार्बन की एक बंद वलय संरचना है।" },
+                { no: "6", q: "प्रकाश संश्लेषण के लिए आवश्यक कच्ची सामग्री क्या है?", m: "2", a: "कार्बन डाइऑक्साइड (CO2), जल (H2O), सूर्य का प्रकाश और क्लोरोफिल।" },
+                { no: "7", q: "प्रकाशानुवर्तन (Phototropism) क्या है?", m: "2", a: "पौधे के प्ररोह भाग का प्रकाश की ओर मुड़ना। यह ऑक्सिन हार्मोन के कारण होता है।" },
+                { no: "8", q: "DNA प्रतिकृति का क्या महत्व है?", m: "2", a: "यह जनन के लिए आवश्यक है ताकि नई संतति में पैतृक गुण जा सकें और प्रजाति का अस्तित्व बना रहे।" },
+                { no: "9", q: "उत्तल दर्पण के उपयोग लिखिए।", m: "2", a: "1. वाहनों के साइड मिरर (पश्च-दृश्य दर्पण) में। 2. एटीएम मशीनों या दुकानों में सुरक्षा दर्पण के रूप में।" },
+                { no: "10", q: "नेत्र की समंजन क्षमता किसे कहते हैं?", m: "2", a: "नेत्र लेंस की वह क्षमता जिससे वह अपनी फोकस दूरी को बदलकर दूर और पास की वस्तुओं को स्पष्ट देख सकता है।" },
+                { no: "11", q: "1 कूलॉम आवेश को 6V बैटरी से गुजारने पर ऊर्जा?", m: "2", a: "ऊर्जा (W) = V × Q = 6 × 1 = 6 जूल।" },
+                { no: "12", q: "चुम्बकीय क्षेत्र रेखाएँ एक-दूसरे को क्यों नहीं काटतीं?", m: "2", a: "यदि वे काटेंगी तो कटान बिंदु पर दिशा की दो मान होंगे जो असंभव है। कंपास की सुई एक साथ दो दिशाएं नहीं दिखा सकती।" },
+                { no: "13", q: "पारितंत्र में ऊर्जा प्रवाह को समझाइये।", m: "2", a: "ऊर्जा प्रवाह एकदिशिक होता है: सूर्य -> उत्पादक -> प्राथमिक उपभोक्ता -> द्वितीयक उपभोक्ता। प्रत्येक स्तर पर 90% ऊर्जा क्षय होती है (10% नियम)।" }
+            ]
+        },
+        secC: {
+            title: "खण्ड-स (Section C) - दीर्घ उत्तरीय प्रश्न (विस्तृत)",
+            questions: [
+                { 
+                    no: "14", 
+                    q: "रासायनिक समीकरण संतुलित कीजिए: (a) HNO3 + Ca(OH)2 (b) NaOH + H2SO4", 
+                    m: "3", 
+                    type: "topper",
+                    a: `
+                        <div class="topper-ans">
+                            <h4>संतुलित रासायनिक समीकरण:</h4>
+                            <ul>
+                                <li>(a) <span class="chem-eq">2HNO3 + Ca(OH)2 &rarr; Ca(NO3)2 + 2H2O</span></li>
+                                <li>(b) <span class="chem-eq">2NaOH + H2SO4 &rarr; Na2SO4 + 2H2O</span></li>
+                            </ul>
+                            <h4>अभिक्रिया के प्रकार (अथवा प्रश्न के लिए):</h4>
+                            <ul>
+                                <li><strong>ऊष्माक्षेपी (Exothermic):</strong> वह अभिक्रिया जिसमें उत्पाद निर्माण के साथ-साथ ऊष्मा भी उत्पन्न होती है। (उदा. श्वसन, CH4 का दहन)।</li>
+                                <li><strong>ऊष्माशोषी (Endothermic):</strong> वह अभिक्रिया जिसमें ऊर्जा (ऊष्मा/प्रकाश) अवशोषित होती है। (उदा. CaCO3 का वियोजन)।</li>
+                            </ul>
+                        </div>
+                    `
+                },
+                { 
+                    no: "15", 
+                    q: "मिसेल (Micelle) निर्माण की क्रियाविधि समझाइए।", 
+                    m: "3", 
+                    type: "topper",
+                    a: `
+                        <div class="topper-ans">
+                            
+
+[Image of soap micelle formation]
+
+                            <h4>मिसेल निर्माण की क्रियाविधि:</h4>
+                            <p>साबुन के अणु (<span class="chem-eq">R-COONa</span>) के दो मुख्य भाग होते हैं:</p>
+                            <ul>
+                                <li><strong>जलरागी सिरा (Ionic Head):</strong> यह पानी में घुलनशील होता है।</li>
+                                <li><strong>जलविरागी सिरा (Hydrocarbon Tail):</strong> यह पानी में अघुलनशील लेकिन तेल/मैल में घुलनशील होता है।</li>
+                            </ul>
+                            <h4>सफाई प्रक्रिया:</h4>
+                            <p>जब साबुन को पानी में घोला जाता है, तो अणु स्वयं को एक गोलाकार रूप में व्यवस्थित कर लेते हैं। तेल (मैल) को हाइड्रोकार्बन पूंछ घेर लेती है और आयनिक सिरा बाहर पानी की तरफ रहता है। इस संरचना को 'मिसेल' कहते हैं। पानी हिलाने पर मैल पानी में खिंच आता है और कपड़ा साफ हो जाता है।</p>
+                        </div>
+                    `
+                },
+                { 
+                    no: "16", 
+                    q: "मानव नर जनन तंत्र का वर्णन कीजिए।", 
+                    m: "3", 
+                    type: "topper",
+                    a: `
+                        <div class="topper-ans">
+                            
+
+[Image of male reproductive system]
+
+                            <h4>नर जनन तंत्र के प्रमुख अंग:</h4>
+                            <ul>
+                                <li><strong>वृषण (Testis):</strong> यह उदर गुहा के बाहर वृषण कोष में स्थित होते हैं। यहाँ शुक्राणुओं का निर्माण होता है और 'टेस्टोस्टेरोन' हार्मोन स्रावित होता है।</li>
+                                <li><strong>शुक्रवाहिनी (Vas Deferens):</strong> यह शुक्राणुओं को वृषण से मूत्रमार्ग तक ले जाती है।</li>
+                                <li><strong>सहायक ग्रंथियाँ:</strong> प्रोस्टेट और शुक्राशय अपने स्राव वीर्य में मिलाते हैं जो शुक्राणुओं को पोषण और गति प्रदान करते हैं।</li>
+                                <li><strong>शिश्न (Penis):</strong> यह मैथुन अंग है जो शुक्राणुओं को मादा जनन पथ में पहुँचाता है।</li>
+                            </ul>
+                        </div>
+                    `
+                },
+                { 
+                    no: "17", 
+                    q: "विद्युत परिपथ में व्यय शक्ति की गणना कीजिए (आंकिक प्रश्न)।", 
+                    m: "3", 
+                    type: "topper",
+                    a: `
+                        <div class="topper-ans">
+                            <h4>दिया गया है:</h4>
+                            <ul>
+                                <li>विभव (V) = 220 V</li>
+                                <li>बल्ब का प्रतिरोध (R1) = 1200 ओम</li>
+                                <li>हीटर का प्रतिरोध (R2) = 100 ओम</li>
+                            </ul>
+                            <h4>गणना (धारा I = V/R):</h4>
+                            <ul>
+                                <li><strong>बल्ब के लिए:</strong> I1 = 220 / 1200 = 0.18 A</li>
+                                <li><strong>हीटर के लिए:</strong> I2 = 220 / 100 = 2.2 A</li>
+                            </ul>
+                            <p><strong>निष्कर्ष:</strong> हीटर का प्रतिरोध कम होने के कारण वह अधिक विद्युत धारा लेगा।</p>
+                        </div>
+                    `
+                }
+            ]
+        },
+        secD: {
+            title: "खण्ड-द (Section D) - निबन्धात्मक प्रश्न (अति विस्तृत)",
+            questions: [
+                { 
+                    no: "18", 
+                    q: "ग्वाला ताजे दूध में थोड़ा बेकिंग सोडा क्यों मिलाता है? समझाइए। (अथवा: अम्ल व लवण)", 
+                    m: "4", 
+                    type: "topper",
+                    a: `
+                        <div class="topper-ans">
+                            <h4>ग्वाला और बेकिंग सोडा:</h4>
+                            <ul>
+                                <li><strong>कारण:</strong> ताजा दूध का pH मान 6 होता है। समय के साथ यह खट्टा (लैक्टिक अम्ल बनने से) हो सकता है। ग्वाला इसमें थोड़ा बेकिंग सोडा (<span class="chem-eq">NaHCO3</span>, क्षारीय) मिला देता है ताकि दूध का pH 6 से थोड़ा बढ़ जाए (क्षारीय हो जाए)।</li>
+                                <li><strong>फायदा:</strong> क्षारीय दूध जल्दी खराब नहीं होता और लंबे समय तक सुरक्षित रहता है।</li>
+                                <li><strong>दही जमने में देरी:</strong> इस दूध को दही बनने में अधिक समय लगता है क्योंकि लैक्टिक अम्ल को पहले क्षार को उदासीन करना पड़ता है, उसके बाद ही दूध खट्टा होकर दही बनता है।</li>
+                            </ul>
+                            <h4>महत्वपूर्ण लवण:</h4>
+                            <ul>
+                                <li><strong>धोने का सोडा:</strong> <span class="chem-eq">Na2CO3.10H2O</span> (उपयोग: कांच, साबुन, कागज उद्योग)।</li>
+                                <li><strong>प्लास्टर ऑफ पेरिस:</strong> <span class="chem-eq">CaSO4.1/2H2O</span> (उपयोग: टूटी हड्डियों को जोड़ने में)।</li>
+                            </ul>
+                        </div>
+                    `
+                },
+                { 
+                    no: "19", 
+                    q: "मानव श्वसन तंत्र का सचित्र वर्णन कीजिए। (अथवा: मानव हृदय)", 
+                    m: "4", 
+                    type: "topper",
+                    a: `
+                        <div class="topper-ans">
+                            
+
+[Image of human respiratory system]
+
+                            <h4>मानव श्वसन तंत्र:</h4>
+                            <ul>
+                                <li><strong>नासाद्वार:</strong> वायु शरीर में प्रवेश करती है, यहाँ महीन बाल धूल कणों को रोकते हैं।</li>
+                                <li><strong>श्वासनली (Trachea):</strong> इसमें उपास्थि के वलय होते हैं जो इसे पिचकने से रोकते हैं।</li>
+                                <li><strong>फुफ्फुस (Lungs):</strong> वक्ष गुहा में स्थित होते हैं। इसके अंदर श्वासनली छोटी नलिकाओं (श्वसनिकाओं) में विभाजित होकर अंत में 'कुपिकाओं' (Alveoli) में खुलती है।</li>
+                                <li><strong>कुपिकाएँ:</strong> ये गुब्बारे जैसी संरचनाएँ हैं जो गैसीय विनिमय (O2 और CO2 का आदान-प्रदान) के लिए विशाल सतह उपलब्ध कराती हैं। यहाँ रक्त केशिकाओं का जाल होता है।</li>
+                            </ul>
+                            <h4>गैसीय परिवहन:</h4>
+                            <ul>
+                                <li><strong>ऑक्सीजन:</strong> रक्त में मौजूद हीमोग्लोबिन (RBC) ऑक्सीजन को फेफड़ों से शरीर की कोशिकाओं तक ले जाता है।</li>
+                                <li><strong>CO2:</strong> यह जल में अधिक विलेय है, इसलिए इसका परिवहन रक्त प्लाज्मा में घुलकर होता है।</li>
+                            </ul>
+                        </div>
+                    `
+                },
+                { 
+                    no: "20", 
+                    q: "कांच की आयताकार स्लैब से प्रकाश के अपवर्तन को चित्र सहित समझाइए। (अथवा: दर्पण/लेंस)", 
+                    m: "4", 
+                    type: "topper",
+                    a: `
+                        <div class="topper-ans">
+                            
+                            <h4>कांच की स्लैब से अपवर्तन:</h4>
+                            <ul>
+                                <li><strong>प्रथम अपवर्तन:</strong> जब प्रकाश किरण वायु (विरल) से कांच (सघन) में प्रवेश करती है, तो वह अभिलंब की ओर मुड़ जाती है।</li>
+                                <li><strong>द्वितीय अपवर्तन:</strong> जब किरण कांच से वापस वायु में निकलती है, तो वह अभिलंब से दूर हट जाती है।</li>
+                                <li><strong>पार्श्विक विस्थापन:</strong> आपतित किरण और निर्गत किरण एक-दूसरे के समांतर होती हैं, लेकिन उनके बीच थोड़ी दूरी हो जाती है। इसे पार्श्विक विस्थापन कहते हैं। ऐसा इसलिए होता है क्योंकि स्लैब के दोनों फलकों पर मुड़ने का परिमाण समान और विपरीत होता है।</li>
+                            </ul>
+                            <h4>अपवर्तन के नियम:</h4>
+                            <ol>
+                                <li>आपतित किरण, अपवर्तित किरण और अभिलंब तीनों एक ही तल में होते हैं।</li>
+                                <li><strong>स्नेल का नियम:</strong> आपतन कोण की ज्या (sin i) और अपवर्तन कोण की ज्या (sin r) का अनुपात एक स्थिरांक होता है। (<span class="chem-eq">n = sin i / sin r</span>)</li>
+                            </ol>
+                        </div>
+                    `
+                }
+            ]
+        }
+    };
+
+    // --- 80 MCQ QUIZ GENERATOR (Based on Syllabus) ---
+    const quizQuestions = [
+        // Chemistry
+        { q: "संगमरमर का सूत्र?", opts: ["CaO", "Ca(OH)2", "CaCO3", "CaSO4"], ans: 2 },
+        { q: "सबसे अधिक अभिक्रियाशील धातु?", opts: ["सोडियम (Na)", "पोटैशियम (K)", "आयरन (Fe)", "सिल्वर (Ag)"], ans: 1 },
+        { q: "शुद्ध जल का pH मान?", opts: ["0", "7", "14", "1"], ans: 1 },
+        { q: "विरंजक चूर्ण का सूत्र?", opts: ["CaCl2", "CaOCl2", "CaCO3", "Ca(OH)2"], ans: 1 },
+        { q: "जिप्सम को गर्म करने पर क्या बनता है?", opts: ["प्लास्टर ऑफ पेरिस", "सीमेंट", "चूना", "अमोनिया"], ans: 0 },
+        { q: "कमरे के ताप पर द्रव धातु?", opts: ["पारा (Mercury)", "ब्रोमीन", "सोडियम", "एल्युमीनियम"], ans: 0 },
+        { q: "कमरे के ताप पर द्रव अधातु?", opts: ["आयोडीन", "ब्रोमीन", "क्लोरीन", "कार्बन"], ans: 1 },
+        { q: "एल्केन का सामान्य सूत्र?", opts: ["CnH2n+2", "CnH2n", "CnH2n-2", "CnHn"], ans: 0 },
+        { q: "बेन्जीन का सूत्र?", opts: ["C6H12", "C6H6", "C2H2", "C2H4"], ans: 1 },
+        { q: "सिरके में कौन सा अम्ल होता है?", opts: ["लैक्टिक", "साइट्रिक", "एसीटिक", "मेथेनोइक"], ans: 2 },
+        { q: "चींटी के डंक में अम्ल?", opts: ["मेथेनोइक (फार्मिक)", "एसीटिक", "टार्टरिक", "ऑक्सालिक"], ans: 0 },
+        { q: "पीतल (Brass) मिश्रधातु है?", opts: ["Cu + Zn", "Cu + Sn", "Pb + Sn", "Fe + C"], ans: 0 },
+        { q: "आधुनिक आवर्त सारणी किसने दी?", opts: ["मेंडलीव", "मोजले", "न्यूलैंड्स", "डोबेराइनर"], ans: 1 },
+        { q: "कार्बन की संयोजकता है?", opts: ["2", "4", "6", "8"], ans: 1 },
+        { q: "धातु ऑक्साइड की प्रकृति?", opts: ["अम्लीय", "क्षारीय", "उदासीन", "उभयधर्मी"], ans: 1 },
+        { q: "अधातु ऑक्साइड की प्रकृति?", opts: ["अम्लीय", "क्षारीय", "लवणीय", "उदासीन"], ans: 0 },
+        { q: "विद्युत की सबसे अच्छी सुचालक धातु?", opts: ["तांबा", "चांदी (Ag)", "सोना", "लोहा"], ans: 1 },
+        { q: "भर्जन (Roasting) किस अयस्क का होता है?", opts: ["सल्फाइड", "कार्बोनेट", "ऑक्साइड", "क्लोराइड"], ans: 0 },
+        { q: "निस्तापन (Calcination) किस अयस्क का होता है?", opts: ["सल्फाइड", "कार्बोनेट", "सिलिकेट", "नाइट्रेट"], ans: 1 },
+        { q: "खाना बनाते समय बर्तन की तली काली होने का अर्थ?", opts: ["भोजन पक गया", "ईंधन पूरी तरह नहीं जल रहा", "बर्तन खराब है", "ईंधन गीला है"], ans: 1 },
+
+        // Biology
+        { q: "पराग कोष में होते हैं?", opts: ["बाह्यदल", "अंडाशय", "परागकण", "अंडप"], ans: 2 },
+        { q: "यीस्ट में जनन की विधि?", opts: ["विखंडन", "मुकुलन", "बीजाणु", "कायिक"], ans: 1 },
+        { q: "मानव में वृक्क (Kidney) का कार्य?", opts: ["पोषण", "श्वसन", "उत्सर्जन", "परिवहन"], ans: 2 },
+        { q: "पादप में जाइलम का कार्य?", opts: ["जल का वहन", "भोजन का वहन", "गैस का वहन", "अम्ल का वहन"], ans: 0 },
+        { q: "फ्लोएम का कार्य?", opts: ["जल वहन", "भोजन वहन", "सहारा देना", "श्वसन"], ans: 1 },
+        { q: "स्वपोषी पोषण के लिए आवश्यक है?", opts: ["CO2", "क्लोरोफिल", "सूर्य प्रकाश", "सभी"], ans: 3 },
+        { q: "मस्तिष्क का सोचने वाला भाग?", opts: ["अग्र मस्तिष्क", "मध्य मस्तिष्क", "पश्च मस्तिष्क", "मेरुरज्जु"], ans: 0 },
+        { q: "शरीर का संतुलन कौन बनाता है?", opts: ["प्रमस्तिष्क", "अनुमस्तिष्क (Cerebellum)", "मज्जा", "हाइपोथैलेमस"], ans: 1 },
+        { q: "दो तंत्रिकाओं के बीच खाली स्थान?", opts: ["द्रुमिका", "सिनेप्स", "एक्सॉन", "आवेग"], ans: 1 },
+        { q: "मास्टर ग्रंथि किसे कहते हैं?", opts: ["थायराइड", "पीयूष (Pituitary)", "अधिवृक्क", "अग्न्याशय"], ans: 1 },
+        { q: "इंसुलिन की कमी से रोग?", opts: ["घेंघा", "मधुमेह", "बौनापन", "रतौंधी"], ans: 1 },
+        { q: "नर हार्मोन कौन सा है?", opts: ["एस्ट्रोजन", "टेस्टोस्टेरोन", "इंसुलिन", "थायरोक्सिन"], ans: 1 },
+        { q: "मादा हार्मोन?", opts: ["टेस्टोस्टेरोन", "एस्ट्रोजन", "एड्रीनलीन", "वृद्धि हार्मोन"], ans: 1 },
+        { q: "मेंडल ने किस पौधे पर प्रयोग किए?", opts: ["गुलाब", "मटर", "गेहूं", "चना"], ans: 1 },
+        { q: "मानव में गुणसूत्रों की संख्या?", opts: ["23", "46", "44", "22"], ans: 1 },
+        { q: "लिंग निर्धारण कौन करता है?", opts: ["X गुणसूत्र", "Y गुणसूत्र", "माइटोकॉन्ड्रिया", "राइबोसोम"], ans: 1 },
+        { q: "प्राकृतिक चयन का सिद्धांत?", opts: ["डार्विन", "लमार्क", "मेंडल", "हल्डैन"], ans: 0 },
+        { q: "DNA का पूरा नाम?", opts: ["डीऑक्सी राइबो न्यूक्लिक अम्ल", "डी राइबो न्यूक्लिक अम्ल", "डुअल नाइट्रोजन एसिड", "कोई नहीं"], ans: 0 },
+        { q: "अमीबा में जनन?", opts: ["द्विखंडन", "मुकुलन", "खंडन", "बीजाणु"], ans: 0 },
+        { q: "प्लेसेंटा किससे जुड़ा होता है?", opts: ["भ्रूण और माँ", "किडनी", "फेफड़े", "हृदय"], ans: 0 },
+
+        // Physics
+        { q: "लेंस सूत्र?", opts: ["1/v - 1/u = 1/f", "1/v + 1/u = 1/f", "v = u", "f = R/2"], ans: 0 },
+        { q: "दर्पण सूत्र?", opts: ["1/v - 1/u = 1/f", "1/v + 1/u = 1/f", "v/u = m", "P = 1/f"], ans: 1 },
+        { q: "लेंस क्षमता का मात्रक?", opts: ["मीटर", "डायोप्टर (D)", "सेमी", "वाट"], ans: 1 },
+        { q: "स्पष्ट दृष्टि की न्यूनतम दूरी?", opts: ["25 m", "25 cm", "2.5 cm", "अनंत"], ans: 1 },
+        { q: "निकट दृष्टि दोष में कौन सा लेंस?", opts: ["उत्तल", "अवतल", "बेलनाकार", "समतल"], ans: 1 },
+        { q: "दूर दृष्टि दोष में कौन सा लेंस?", opts: ["उत्तल", "अवतल", "उभयोत्तल", "कोई नहीं"], ans: 0 },
+        { q: "वाहनों के साइड मिरर?", opts: ["अवतल दर्पण", "उत्तल दर्पण", "समतल दर्पण", "लेंस"], ans: 1 },
+        { q: "दाढ़ी बनाने वाला दर्पण?", opts: ["अवतल", "उत्तल", "समतल", "परवलयिक"], ans: 0 },
+        { q: "प्रकाश का वेग सर्वाधिक होता है?", opts: ["कांच में", "जल में", "निर्वात में", "हीरे में"], ans: 2 },
+        { q: "आकाश का नीला रंग?", opts: ["परावर्तन", "अपवर्तन", "प्रकीर्णन", "विक्षेपण"], ans: 2 },
+        { q: "तारों का टिमटिमाना?", opts: ["वायुमंडलीय अपवर्तन", "परावर्तन", "प्रकीर्णन", "ध्रुवण"], ans: 0 },
+        { q: "विद्युत धारा का मात्रक?", opts: ["वोल्ट", "एम्पीयर", "ओम", "जूल"], ans: 1 },
+        { q: "प्रतिरोध का मात्रक?", opts: ["ओम", "महो", "सीमेंस", "वाट"], ans: 0 },
+        { q: "विभवांतर मापने वाला यंत्र?", opts: ["अमीटर", "वोल्टमीटर", "गैल्वेनोमीटर", "टेस्टर"], ans: 1 },
+        { q: "ओम का नियम?", opts: ["V = IR", "I = VR", "R = VI", "V = I/R"], ans: 0 },
+        { q: "विद्युत फ्यूज आधारित है?", opts: ["चुम्बकीय प्रभाव", "उष्मीय प्रभाव", "रासायनिक प्रभाव", "प्रकाशीय प्रभाव"], ans: 1 },
+        { q: "1 यूनिट (kWh) में जूल?", opts: ["3.6 x 10^5", "3.6 x 10^6", "3600", "1000"], ans: 1 },
+        { q: "लघुपथन के समय धारा?", opts: ["शून्य", "बहुत कम", "बहुत अधिक", "समान"], ans: 2 },
+        { q: "भारत में AC की आवृत्ति?", opts: ["50 Hz", "60 Hz", "100 Hz", "220 Hz"], ans: 0 },
+        { q: "विद्युत मोटर बदलती है?", opts: ["यांत्रिक को विद्युत में", "विद्युत को यांत्रिक में", "रासायनिक को विद्युत में", "उष्मा को विद्युत में"], ans: 1 },
+
+        // Environment
+        { q: "ओजोन परत बचाती है?", opts: ["अवरक्त किरणों से", "पराबैंगनी (UV) किरणों से", "गामा किरणों से", "रेडियो तरंगों से"], ans: 1 },
+        { q: "CFC का पूरा नाम?", opts: ["क्लोरो फ्लोरो कार्बन", "कार्बन फ्लोरो क्लोराइड", "क्लोरो फॉर्म", "कोई नहीं"], ans: 0 },
+        { q: "आहार श्रृंखला का सही क्रम?", opts: ["घास-बकरी-शेर", "घास-शेर-बकरी", "बकरी-घास-मानव", "शेर-घास-हिरण"], ans: 0 },
+        { q: "ऊर्जा का प्रवाह होता है?", opts: ["एकदिशिक", "द्विदिशिक", "चक्रीय", "अनियमित"], ans: 0 },
+        { q: "पोषी स्तर में ऊर्जा ह्रास?", opts: ["10% नियम", "50% नियम", "90% नियम", "100% नियम"], ans: 0 }, // 10% transfers, 90% lost
+        { q: "गंगा सफाई योजना?", opts: ["1980", "1985", "1990", "1995"], ans: 1 },
+        { q: "चिपको आंदोलन?", opts: ["राजस्थान", "गढ़वाल (हिमालय)", "केरल", "बिहार"], ans: 1 },
+        { q: "अमृता देवी बिश्नोई पुरस्कार?", opts: ["खेल", "वन्यजीव संरक्षण", "साहित्य", "संगीत"], ans: 1 },
+        { q: "कोलिफॉर्म जीवाणु कहाँ मिलता है?", opts: ["मानव आंत", "यकृत", "फेफड़े", "हृदय"], ans: 0 },
+        { q: "खादिन/बंधिस क्या है?", opts: ["फसल", "जल संग्रहण विधि", "त्योहार", "वस्त्र"], ans: 1 },
+        { q: "3R का अर्थ?", opts: ["Reduce, Recycle, Reuse", "Read, Write, Remember", "Run, Race, Rest", "None"], ans: 0 },
+        { q: "ग्रीन हाउस गैस?", opts: ["O2", "N2", "CO2", "H2"], ans: 2 },
+        { q: "कृत्रिम पारितंत्र का उदाहरण?", opts: ["वन", "तालाब", "खेत (फसल)", "सागर"], ans: 2 },
+        { q: "जैव निम्नीकरणीय अपशिष्ट?", opts: ["प्लास्टिक", "कांच", "कागज", "धातु"], ans: 2 },
+        { q: "सबसे बड़ा पारितंत्र?", opts: ["महासागर", "वन", "मरुस्थल", "पर्वत"], ans: 0 },
+        { q: "टिहरी बांध किस नदी पर है?", opts: ["गंगा", "यमुना", "भागीरथी", "नर्मदा"], ans: 2 },
+        { q: "सरदार सरोवर बांध?", opts: ["नर्मदा", "ताप्ती", "गोदावरी", "कृष्णा"], ans: 0 },
+        { q: "बिश्नोई समुदाय किस वृक्ष की रक्षा के लिए प्रसिद्ध है?", opts: ["खेजड़ी", "पीपल", "बरगद", "नीम"], ans: 0 },
+        { q: "सौर ऊर्जा को विद्युत में बदलता है?", opts: ["सौर सेल", "सौर कुकर", "हीटर", "गीजर"], ans: 0 },
+        { q: "जीवाश्म ईंधन?", opts: ["कोयला", "लकड़ी", "गोबर", "सूर्य"], ans: 0 }
+    ];
+
+    // --- APP LOGIC ---
+    let userResponses = new Array(quizQuestions.length).fill(null);
+
+    function startPaper() {
+        const name = document.getElementById("stuName").value;
+        const roll = document.getElementById("stuRoll").value;
+        
+        if(!name || !roll) {
+            alert("कृपया नाम और रोल नंबर भरें (Please fill details).");
+            return;
+        }
+
+        document.getElementById("greet-msg").innerText = `स्वागत है, ${name} (Roll: ${roll})`;
+        document.getElementById("page-login").classList.add("hidden");
+        document.getElementById("page-study").classList.remove("hidden");
+        renderPaper();
+    }
+
+    function renderPaper() {
+        const container = document.getElementById("paper-content");
+        let html = "";
+        
+        const sections = [paperData.secA, paperData.secB, paperData.secC, paperData.secD];
+        
+        sections.forEach(sec => {
+            html += `<div class="section-header">${sec.title}</div>`;
+            sec.questions.forEach(q => {
+                let ansBlock = "";
+                if(q.type === 'topper') {
+                    ansBlock = `
+                        <button class="ans-toggle" onclick="toggleAns(this)">आदर्श उत्तर देखें (Model Answer) ▼</button>
+                        <div class="answer-content">${q.a}</div>
+                    `;
+                } else {
+                    ansBlock = `
+                        <button class="ans-toggle" onclick="toggleAns(this)">उत्तर देखें ▼</button>
+                        <div class="answer-content"><strong>उत्तर:</strong> ${q.a}</div>
+                    `;
+                }
+
+                html += `
+                    <div class="question-card">
+                        <div class="q-text">Q${q.no}. ${q.q}</div>
+                        <span class="marks">${q.m} अंक</span>
+                        ${ansBlock}
+                    </div>
+                `;
+            });
+        });
+        
+        container.innerHTML = html;
+    }
+
+    function toggleAns(btn) {
+        const content = btn.nextElementSibling;
+        if(content.style.display === "block") {
+            content.style.display = "none";
+            btn.innerText = btn.innerText.replace("▲", "▼");
+        } else {
+            content.style.display = "block";
+            btn.innerText = btn.innerText.replace("▼", "▲");
+        }
+    }
+
+    function scrollToQuiz() {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function startQuiz() {
+        if(!confirm("क्विज़ शुरू करें?")) return;
+        
+        document.getElementById("page-study").classList.add("hidden");
+        document.getElementById("page-quiz").classList.remove("hidden");
+        window.scrollTo(0,0);
+
+        const container = document.getElementById("quiz-container");
+        let html = "";
+
+        // Use first 80 questions (or as many as available)
+        const finalQuizList = quizQuestions.slice(0, 80);
+
+        finalQuizList.forEach((item, idx) => {
+            let optionsHtml = "";
+            item.opts.forEach((opt, oIdx) => {
+                optionsHtml += `
+                    <label class="quiz-option">
+                        <span class="opt-text">${opt}</span>
+                        <input type="radio" name="q${idx}" value="${oIdx}" onclick="recordResponse(${idx}, ${oIdx})">
+                    </label>
+                `;
+            });
+
+            html += `
+                <div class="question-card">
+                    <div class="q-text">Q${idx+1}. ${item.q}</div>
+                    ${optionsHtml}
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
+
+    function recordResponse(qIdx, oIdx) {
+        userResponses[qIdx] = oIdx;
+    }
+
+    function submitQuiz() {
+        if(!confirm("क्विज़ जमा करें?")) return;
+
+        let score = 0;
+        let detailsHtml = "";
+        const finalQuizList = quizQuestions.slice(0, 80);
+
+        finalQuizList.forEach((item, idx) => {
+            const userAns = userResponses[idx];
+            const isCorrect = userAns === item.ans;
+            
+            if(isCorrect) score++;
+
+            const userText = userAns !== null ? item.opts[userAns] : "उत्तर नहीं दिया";
+            const correctText = item.opts[item.ans];
+            const statusClass = isCorrect ? "correct-ans" : "wrong-ans";
+            const icon = isCorrect ? "✅" : "❌";
+
+            detailsHtml += `
+                <div class="${statusClass}">
+                    <div><strong>Q${idx+1}:</strong> ${item.q}</div>
+                    <div>आपका उत्तर: ${userText} ${icon}</div>
+                    ${!isCorrect ? `<div>सही उत्तर: <strong>${correctText}</strong></div>` : ""}
+                </div>
+            `;
+        });
+
+        const percentage = (score / finalQuizList.length) * 100;
+        let msg = "";
+        if(percentage >= 90) msg = "उत्कृष्ट! (Outstanding)";
+        else if(percentage >= 75) msg = "बहुत अच्छा! (Very Good)";
+        else if(percentage >= 60) msg = "अच्छा प्रयास! (Good)";
+        else msg = "सुधार की आवश्यकता है (Needs Improvement)";
+
+        document.getElementById("page-quiz").classList.add("hidden");
+        document.getElementById("page-result").classList.remove("hidden");
+        
+        document.getElementById("final-score").innerText = `स्कोर: ${score} / ${finalQuizList.length}`;
+        document.getElementById("result-name").innerText = document.getElementById("stuName").value;
+        document.getElementById("feedback-msg").innerText = msg;
+        document.getElementById("result-details").innerHTML = detailsHtml;
+        
+        window.scrollTo(0,0);
+    }
+
+</script>
+
+</body>
+</html>

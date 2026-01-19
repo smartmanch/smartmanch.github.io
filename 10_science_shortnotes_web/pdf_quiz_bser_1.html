@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>रासायनिक अभिक्रियाएँ एवं समीकरण क्विज और अध्ययन सामग्री</title> <link rel="stylesheet" href="pdf_quiz_bser_style.css"> 
+</head>
+<body>
+
+    <header>
+        <h1>🏫 राजकीय उच्च माध्यमिक विद्यालय सैनीपुरा, झुंझुनू 🏆</h1>
+    </header>
+
+    <div id="game-container">
+        
+        <div id="info-screen">
+            <h2>👋 विद्यार्थी सूचना</h2>
+            <label for="student-name">नाम (Name):</label>
+            <input type="text" id="student-name" required><br><br>
+            <label for="student-roll">रोल नंबर (Roll No.):</label>
+            <input type="text" id="student-roll" required><br><br>
+            <label for="student-class">कक्षा (Class):</label>
+            <input type="text" id="student-class" required><br><br>
+            <button onclick="showStudyMaterial()">अध्ययन सामग्री देखें</button>
+        </div>
+
+        <div id="study-screen" style="display:none;">
+            <h2>📚 कक्षा 10 विज्ञान (अध्याय 1) महत्वपूर्ण प्रश्नोत्तर (Reading Material)</h2> <p><strong>निर्देश:</strong> क्विज शुरू करने से पहले इन **10 विस्तृत और 20 वस्तुनिष्ठ** प्रश्नों और उनके उत्तरों को ध्यान से पढ़ें।</p>
+            <div id="study-material-list">
+                </div>
+            <button onclick="startQuiz()">✅ मैंने पढ़ लिया, अब क्विज शुरू करें</button>
+        </div>
+
+        <div id="quiz-screen" style="display:none;">
+            <div id="current-score" style="text-align: right; font-size: 1.2em; margin-bottom: 10px;">
+                💰 **कुल अंक:** <span>0</span>
+            </div>
+            <h2>📝 रासायनिक अभिक्रियाएँ एवं समीकरण पर आधारित 20 वस्तुनिष्ठ प्रश्न</h2> <p><strong>निर्देश:</strong> दिए गए प्रश्न का सही उत्तर चुनें। (पहले सही क्लिक पर 2 अंक मिलेंगे)</p>
+            <div id="quiz-area">
+                </div>
+            <button id="next-button" onclick="handleNextQuestion()" style="display:none;">अगला प्रश्न</button>
+        </div>
+
+        <div id="result-screen" style="display:none;">
+            <h2>🌟 विद्यार्थी परिणाम पत्र (Result Card) 🌟</h2>
+            <div id="mark-sheet">
+                </div>
+            <p style="margin-top: 20px;">
+                शुभकामनाएं!
+                <br>
+                <strong>विज्ञान शिक्षक (Science Educator)</strong>
+            </p>
+        </div>
+    </div>
+
+    <script src="pdf_quiz_bser_script.js"></script> 
+</body>
+</html>

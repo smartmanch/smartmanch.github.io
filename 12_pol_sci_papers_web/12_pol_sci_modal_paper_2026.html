@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RBSE 12th Pol Science Model Paper 2026</title>
+    <style>
+        :root {
+            --primary: #1a237e; /* Deep Blue */
+            --secondary: #c62828; /* Deep Red */
+            --accent: #00695c; /* Teal */
+            --bg: #f5f5f5;
+            --card-bg: #ffffff;
+            --text: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+
+        /* Headers */
+        h1 { color: var(--primary); text-align: center; border-bottom: 3px solid var(--secondary); padding-bottom: 10px; }
+        h2 { color: var(--secondary); margin-top: 30px; border-left: 5px solid var(--primary); padding-left: 10px; }
+        h3 { color: var(--accent); margin-top: 20px; }
+        .sub-text { text-align: center; color: #666; font-style: italic; }
+
+        /* Login Form */
+        .login-box {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: #fff;
+        }
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .btn:hover { background: #303f9f; }
+        .btn-quiz { background: var(--secondary); margin-top: 30px; }
+
+        /* Question Styles */
+        .section-header {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            margin: 30px -40px 20px -40px;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .question-card {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+        
+        .q-text { font-weight: 600; font-size: 1.05em; margin-bottom: 8px; }
+        .marks { float: right; font-size: 0.8em; color: #777; background: #eee; padding: 2px 6px; border-radius: 4px; }
+
+        /* Answer Styles */
+        .ans-toggle {
+            background: none;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.9em;
+            border-radius: 4px;
+        }
+        .ans-toggle:hover { background: var(--accent); color: white; }
+        
+        .answer-content {
+            display: none;
+            margin-top: 10px;
+            background: #e8f5e9;
+            padding: 15px;
+            border-left: 4px solid var(--accent);
+            border-radius: 0 5px 5px 0;
+        }
+        
+        /* Topper Style Formatting */
+        .topper-ans h4 { margin: 10px 0 5px 0; color: #2e7d32; text-decoration: underline; }
+        .topper-ans ul { padding-left: 20px; margin: 5px 0; }
+        .topper-ans li { margin-bottom: 5px; }
+        .intro, .conc { font-style: italic; color: #555; margin: 5px 0; display: block;}
+
+        /* Quiz Styles */
+        .quiz-option {
+            display: block;
+            padding: 10px;
+            background: #f9f9f9;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+        .quiz-option:hover { background: #e0e0e0; }
+        .quiz-option input { width: auto; margin-right: 10px; }
+        .correct-ans { background-color: #d4edda; border-color: #c3e6cb; color: #155724; padding: 10px; margin-top: 5px; }
+        .wrong-ans { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; padding: 10px; margin-top: 5px; }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div id="page-login">
+        <h1>RBSE Class 12th Political Science</h1>
+        <p class="sub-text">Model Paper 2026 (Based on Blueprint)</p>
+        <div class="login-box">
+            <h3>विद्यार्थी विवरण (Student Details)</h3>
+            <input type="text" id="stuName" placeholder="आपका नाम (Name)">
+            <input type="text" id="stuClass" value="12th Arts" readonly>
+            <input type="number" id="stuRoll" placeholder="रोल नंबर (Roll No)">
+            <button class="btn" onclick="startPaper()">पेपर शुरू करें (Start Paper)</button>
+        </div>
+    </div>
+
+    <div id="page-study" class="hidden">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 id="greet-msg"></h2>
+            <button class="btn" style="width:auto; padding:5px 15px;" onclick="scrollToQuiz()">सीधे क्विज़ पर जाएं</button>
+        </div>
+        <p style="text-align:center; color:red; font-size:0.9em;">निर्देश: बड़े प्रश्नों के 'आदर्श उत्तर' देखने के लिए बटन पर क्लिक करें।</p>
+        
+        <div id="paper-content"></div>
+
+        <div style="text-align:center; margin-top:40px;">
+            <h3>क्या आपने पूरा पेपर पढ़ लिया?</h3>
+            <p>अब अपनी तैयारी परखने के लिए 80 प्रश्नों की क्विज़ दें।</p>
+            <button class="btn btn-quiz" onclick="startQuiz()">80 MCQ क्विज़ शुरू करें (Start Quiz)</button>
+        </div>
+    </div>
+
+    <div id="page-quiz" class="hidden">
+        <h1>अभ्यास क्विज़ (Practice Quiz)</h1>
+        <div id="quiz-container"></div>
+        <button class="btn btn-quiz" onclick="submitQuiz()">क्विज़ जमा करें (Submit)</button>
+    </div>
+
+    <div id="page-result" class="hidden">
+        <h1>परिणाम (Result)</h1>
+        <div class="login-box" style="width:100%; max-width:100%;">
+            <h2 id="final-score"></h2>
+            <p id="result-name"></p>
+        </div>
+        <h3>विस्तृत विश्लेषण (Detailed Analysis):</h3>
+        <div id="result-details"></div>
+        <button class="btn" onclick="location.reload()" style="margin-top:20px;">पुनः प्रयास करें (Restart)</button>
+    </div>
+
+</div>
+
+<script>
+    // --- PAPER DATA ---
+    const paperData = {
+        secA: {
+            title: "खण्ड-अ (Section A) - बहुविकल्पीय एवं अतिलघुत्तरात्मक",
+            questions: [
+                { no: "1", q: "शीतयुद्ध की सबसे बड़ी प्रतीक बर्लिन की दीवार कब गिराई गई?", m: "1", a: "1989 (9 नवंबर)" },
+                { no: "2", q: "यूरोपीय संघ को नोबेल शांति पुरस्कार किस वर्ष दिया गया?", m: "1", a: "2012" },
+                { no: "3", q: "खुफिया एजेंसी इंटर सर्विसेज इंटेलिजेंस (ISI) का संबंध किस देश से है?", m: "1", a: "पाकिस्तान" },
+                { no: "4", q: "11 सितंबर 2001 को अमेरिका में हुए आतंकी हमले किस संगठन द्वारा किये गये?", m: "1", a: "अल-कायदा" },
+                { no: "5", q: "बर्गर अथवा नीली जीन्स की लोकप्रियता किस देश की जीवन शैली से जुड़ी है?", m: "1", a: "अमेरिका" },
+                { no: "6", q: "भारत में वैश्वीकरण के प्रतिरोध में किसकी भूमिका रही है?", m: "1", a: "इंडियन सोशल फोरम" },
+                { no: "7", q: "1948 में सार्वभौम वयस्क मताधिकार के आधार पर भारत में पहला चुनाव कहाँ हुआ?", m: "1", a: "मणिपुर" },
+                { no: "8", q: "द्वितीय पंचवर्षीय योजना में किस क्षेत्र को प्रमुखता दी गई?", m: "1", a: "उद्योग (पीसी महालनोबिस मॉडल)" },
+                { no: "9", q: "प्रथम पंचवर्षीय योजना में प्राथमिकता किसे दी गई?", m: "1", a: "कृषि" },
+                { no: "10", q: "दूसरे विश्वयुद्ध के दौरान 'इंडियन नेशनल आर्मी' (INA) का गठन किसने किया?", m: "1", a: "सुभाष चंद्र बोस" },
+                { no: "11", q: "1956 में स्वेज नहर मामले पर मिस्र पर किसने आक्रमण किया?", m: "1", a: "ब्रिटेन (फ्रांस और इजराइल के साथ)" },
+                { no: "12", q: "25 जून 1975 को आपातकाल की घोषणा किस राष्ट्रपति ने की?", m: "1", a: "फखरुद्दीन अली अहमद" },
+                { no: "13", q: "1975 में जनता के 'संसद मार्च' का नेतृत्व किसने किया?", m: "1", a: "जयप्रकाश नारायण" },
+                { no: "14", q: "दिसंबर 1961 से पूर्व गोवा पर किसका शासन था?", m: "1", a: "पुर्तगाल" },
+                { no: "15", q: "'आया राम गया राम' जुमले का संबंध किस राज्य के विधायक से था?", m: "1", a: "हरियाणा (विधायक गया लाल)" },
+                { no: "16", q: "असम समझौता (केंद्र सरकार और AASU के बीच) कब हुआ?", m: "1", a: "1985" },
+                { no: "17", q: "मार्च 1998 में भाजपा-नीत राजग (NDA) सरकार का नेतृत्व किसने किया?", m: "1", a: "अटल बिहारी वाजपेयी" },
+                { no: "18", q: "मंडल कमीशन ने OBC के लिए कितने प्रतिशत आरक्षण की सिफारिश की?", m: "1", a: "27%" },
+                { no: "ii", q: "(रिक्त स्थान) 1991 में _____ के नेतृत्व में सोवियत संघ का विघटन हुआ।", m: "1", a: "बोरिस येल्तसिन" },
+                { no: "iii", q: "(रिक्त स्थान) 1998 में पाकिस्तान ने _____ पहाड़ी पर परमाणु परीक्षण किए।", m: "1", a: "चगाई (Chagai)" },
+                { no: "iv", q: "(अतिलघु) 1967 में 'आसियान' स्थापना का मुख्य उद्देश्य क्या था?", m: "1", a: "क्षेत्रीय आर्थिक विकास को तेज करना।" },
+                { no: "v", q: "(अतिलघु) योजना आयोग के स्थान पर बनी नई संस्था का नाम क्या है?", m: "1", a: "नीति आयोग (1 जनवरी 2015)" }
+            ]
+        },
+        secB: {
+            title: "खण्ड-ब (Section B) - लघुत्तरात्मक प्रश्न (शब्द सीमा 50)",
+            questions: [
+                { no: "4", q: "'इतिहास की सबसे बड़ी गराज-सेल' किसे और क्यों कहा गया?", m: "2", a: "सोवियत संघ के विघटन के बाद उद्योगों को निजी हाथों में औने-पौने दामों पर बेचा गया, जिसे 'शॉक थेरेपी' के तहत 'इतिहास की सबसे बड़ी गराज सेल' कहा गया।" },
+                { no: "5", q: "ग्लोबल वार्मिंग के दो प्रभाव बताइए।", m: "2", a: "1. समुद्र जल स्तर में वृद्धि। 2. जलवायु चक्र में परिवर्तन और कृषि पर बुरा असर।" },
+                { no: "6", q: "भारत-भूटान संबंधों पर टिप्पणी लिखिए।", m: "2", a: "भारत और भूटान के संबंध मैत्रीपूर्ण हैं। भारत भूटान की सुरक्षा और पनबिजली परियोजनाओं में मदद करता है। भूटानी सरकार ने पूर्वोत्तर के उग्रवादियों को खदेड़ने में भारत की मदद की है।" },
+                { no: "7", q: "'साझी संपदा' (Global Commons) क्या है?", m: "2", a: "वह संसाधन जिस पर किसी एक देश का नहीं बल्कि पूरे समुदाय का अधिकार हो। जैसे- अंटार्कटिका, समुद्री सतह और बाहरी अंतरिक्ष।" },
+                { no: "10", q: "'जय जवान जय किसान' का नारा कब और क्यों दिया गया?", m: "2", a: "1965 में लाल बहादुर शास्त्री ने दिया। कारण: पाकिस्तान के साथ युद्ध और देश में खाद्यान्न संकट (अकाल)।" }
+            ]
+        },
+        secC: {
+            title: "खण्ड-स (Section C) - दीर्घ उत्तरीय प्रश्न (विस्तृत)",
+            questions: [
+                { 
+                    no: "14", 
+                    q: "सोवियत संघ के विघटन के प्रमुख कारण बताइये। (अथवा) भारत-रूस संबंधों की विवेचना करें।", 
+                    m: "3", 
+                    type: "topper",
+                    a: `
+                        <div class="topper-ans">
+                            <span class="intro"><strong>उत्तर (सोवियत संघ के विघटन के कारण):</strong> सोवियत संघ (USSR) का विघटन 1991 में हुआ, जो शीतयुद्ध की समाप्ति का प्रतीक था। इसके प्रमुख कारण निम्नलिखित हैं:</span>
+                            <h4>1. राजनीतिक और आर्थिक संस्थाओं की कमजोरी</h4>
+                            <ul>
+                                <li>सोवियत प्रणाली नौकरशाही के शिकंजे में कस चुकी थी।</li>
+                                <li>उपभोक्ता वस्तुओं की भारी कमी थी और अर्थव्यवस्था गतिरुद्ध हो गई थी।</li>
+                            </ul>
+                            <h4>2. मिखाइल गोर्बाचेव के सुधार</h4>
+                            <ul>
+                                <li>गोर्बाचेव ने 'पेरेस्त्रोइका' (पुनर्रचना) और 'ग्लासनोस्त' (खुलेपन) की नीतियां अपनाईं।</li>
+                                <li>इन सुधारों ने लोगों की दबी हुई आकांक्षाओं को हवा दे दी जिसे नियंत्रित करना मुश्किल हो गया।</li>
+                            </ul>
+                            <h4>3. राष्ट्रवाद का उदय</h4>
+                            <ul>
+                                <li>बाल्टिक गणराज्य (एस्टोनिया, लातविया, लिथुआनिया) और यूक्रेन में राष्ट्रवाद और संप्रभुता की मांग सबसे तात्कालिक कारण बनी।</li>
+                            </ul>
+                            <span class="conc"><strong>निष्कर्ष:</strong> इस प्रकार, आंतरिक कमजोरियों और सुधारों के विरोधाभासी परिणामों ने एक महाशक्ति का अंत कर दिया।</span>
+                        </div>
+                    `
+                },
+                { 
+                    no: "15", 
+                    q: "अंतर्राष्ट्रीय स्तर पर पर्यावरण संरक्षण में भारत के प्रयासों पर प्रकाश डालिए।", 
+                    m: "3", 
+                    type: "topper",
+                    a: `
+                        <div class="topper-ans">
+                            <span class="intro"><strong>उत्तर:</strong> भारत पर्यावरण सुरक्षा के प्रति सदैव सचेत रहा है। भारत के प्रमुख प्रयास इस प्रकार हैं:</span>
+                            <h4>1. अंतर्राष्ट्रीय संधियों का पालन</h4>
+                            <ul>
+                                <li>भारत ने 2002 में 'क्योटो प्रोटोकॉल' पर हस्ताक्षर किए।</li>
+                                <li>पेरिस समझौते (2015) के तहत कार्बन उत्सर्जन कम करने का लक्ष्य रखा।</li>
+                            </ul>
+                            <h4>2. राष्ट्रीय नीतियां</h4>
+                            <ul>
+                                <li><strong>ऊर्जा संरक्षण अधिनियम (2001):</strong> ऊर्जा दक्षता को बढ़ावा देने के लिए।</li>
+                                <li><strong>राष्ट्रीय ऑटो-फ्यूल नीति:</strong> स्वच्छ ईंधन (जैसे CNG) का अनिवार्य उपयोग।</li>
+                            </ul>
+                            <h4>3. अंतर्राष्ट्रीय सौर गठबंधन (ISA)</h4>
+                            <ul>
+                                <li>भारत ने फ्रांस के साथ मिलकर इस संगठन की स्थापना की ताकि सौर ऊर्जा का वैश्विक उपयोग बढ़े।</li>
+                            </ul>
+                            <span class="conc"><strong>निष्कर्ष:</strong> भारत 'साझी परंतु अलग-अलग जिम्मेदारियों' के सिद्धांत का समर्थन करते हुए अपनी भूमिका निभा रहा है।</span>
+                        </div>
+                    `
+                },
+                { 
+                    no: "17", 
+                    q: "गुटनिरपेक्षता की प्रासंगिकता बताइये।", 
+                    m: "3", 
+                    type: "topper",
+                    a: `
+                        <div class="topper-ans">
+                            <span class="intro"><strong>उत्तर:</strong> शीतयुद्ध की समाप्ति के बाद भी गुटनिरपेक्ष आंदोलन (NAM) की प्रासंगिकता बनी हुई है:</span>
+                            <h4>1. नई अंतर्राष्ट्रीय आर्थिक व्यवस्था</h4>
+                            <ul>
+                                <li>यह विकासशील देशों के आर्थिक विकास और व्यापार अधिकारों के लिए एक मंच प्रदान करता है।</li>
+                            </ul>
+                            <h4>2. विश्व शांति और निशस्त्रीकरण</h4>
+                            <ul>
+                                <li>यह अभी भी युद्धों को रोकने और परमाणु हथियारों को खत्म करने की वकालत करता है।</li>
+                            </ul>
+                            <h4>3. दक्षिण-दक्षिण सहयोग</h4>
+                            <ul>
+                                <li>यह गरीब और विकासशील देशों के बीच सहयोग बढ़ाने का माध्यम है।</li>
+                            </ul>
+                        </div>
+                    `
+                }
+            ]
+        },
+        secD: {
+            title: "खण्ड-द (Section D) - निबन्धात्मक प्रश्न (विस्तृत)",
+            questions: [
+                { 
+                    no: "18", 
+                    q: "भारत की सुरक्षा रणनीतियों का विस्तार से वर्णन कीजिये।", 
+                    m: "4", 
+                    type: "topper",
+                    a: `
+                        <div class="topper-ans">
+                            <span class="intro"><strong>उत्तर:</strong> भारत को पारंपरिक और अपारंपरिक दोनों तरह के खतरों का सामना करना पड़ता है। भारत की सुरक्षा रणनीति के चार प्रमुख घटक हैं:</span>
+                            <h4>1. सैन्य क्षमता को मजबूत करना</h4>
+                            <ul>
+                                <li>चूंकि भारत पर पाकिस्तान (1947, 65, 71, 99) और चीन (1962) द्वारा आक्रमण किए गए हैं, इसलिए सैन्य शक्ति अनिवार्य है।</li>
+                                <li>1998 में परमाणु परीक्षण इसी रणनीति का हिस्सा था।</li>
+                            </ul>
+                            <h4>2. अंतर्राष्ट्रीय नियमों और संस्थाओं को मजबूत करना</h4>
+                            <ul>
+                                <li>भारत संयुक्त राष्ट्र (UN) का समर्थन करता है।</li>
+                                <li>भारत ने गुटनिरपेक्षता के माध्यम से एशियाई एकता और विऔपनिवेशीकरण का समर्थन किया।</li>
+                            </ul>
+                            <h4>3. आंतरिक सुरक्षा चुनौतियों का सामना</h4>
+                            <ul>
+                                <li>नागालैंड, मिजोरम और पंजाब में उग्रवाद तथा कश्मीर में आतंकवाद का सामना करने के लिए लोकतांत्रिक तरीके अपनाए गए।</li>
+                            </ul>
+                            <h4>4. आर्थिक विकास</h4>
+                            <ul>
+                                <li>गरीबी से मुक्ति को सुरक्षा का हिस्सा माना गया ताकि समाज में असमानता कम हो और शांति बनी रहे।</li>
+                            </ul>
+                            <span class="conc"><strong>निष्कर्ष:</strong> भारत की सुरक्षा नीति व्यापक है जो सीमाओं की रक्षा के साथ-साथ मानव सुरक्षा पर भी जोर देती है।</span>
+                        </div>
+                    `
+                },
+                { 
+                    no: "19", 
+                    q: "स्वतंत्रता पश्चात भारत में राज्यों का पुनर्गठन किस आधार पर हुआ? (अथवा) रजवाड़ों का विलय।", 
+                    m: "4", 
+                    type: "topper",
+                    a: `
+                        <div class="topper-ans">
+                            <span class="intro"><strong>उत्तर (राज्यों का पुनर्गठन):</strong> स्वतंत्रता के बाद भारत के सामने सबसे बड़ी चुनौती राज्यों के सीमांकन की थी।</span>
+                            <h4>1. भाषाई आधार की मांग</h4>
+                            <ul>
+                                <li>तेलुगु भाषी लोगों के लिए अलग राज्य की मांग को लेकर 'पोटी श्रीरामुलु' की भूख हड़ताल और मृत्यु के बाद आंदोलन तेज हुआ।</li>
+                                <li>परिणामस्वरूप 1952 में 'आंध्र प्रदेश' का गठन हुआ।</li>
+                            </ul>
+                            <h4>2. राज्य पुनर्गठन आयोग (1953)</h4>
+                            <ul>
+                                <li>केंद्र सरकार ने 1953 में आयोग बनाया। इसने स्वीकार किया कि राज्यों की सीमाओं का निर्धारण वहां बोली जाने वाली भाषा के आधार पर होना चाहिए।</li>
+                            </ul>
+                            <h4>3. राज्य पुनर्गठन अधिनियम (1956)</h4>
+                            <ul>
+                                <li>इस अधिनियम के तहत 14 राज्य और 6 केंद्र शासित प्रदेश बनाए गए।</li>
+                                <li>बाद में गुजरात-महाराष्ट्र (1960) और पंजाब-हरियाणा (1966) भी भाषा के आधार पर बने।</li>
+                            </ul>
+                            <span class="conc"><strong>निष्कर्ष:</strong> भाषाई राज्यों ने भारत की एकता को कमजोर नहीं किया, बल्कि इसे और मजबूत और लोकतांत्रिक बनाया।</span>
+                        </div>
+                    `
+                }
+            ]
+        }
+    };
+
+    // --- 80 MCQ GENERATION LOGIC ---
+    // Creating a comprehensive question bank based on the Syllabus & Paper
+    const allQuestions = [
+        // From Paper (Original MCQs)
+        { q: "बर्लिन की दीवार कब गिराई गई?", opts: ["1961", "1979", "1989", "1991"], ans: 2 },
+        { q: "यूरोपीय संघ को नोबेल शांति पुरस्कार कब मिला?", opts: ["2010", "2012", "2015", "2018"], ans: 1 },
+        { q: "ISI किस देश की खुफिया एजेंसी है?", opts: ["भारत", "पाकिस्तान", "अमेरिका", "रूस"], ans: 1 },
+        { q: "9/11 हमला किस देश पर हुआ?", opts: ["जापान", "फ्रांस", "अमेरिका", "ब्रिटेन"], ans: 2 },
+        { q: "अल-कायदा क्या है?", opts: ["राजनैतिक दल", "आतंकवादी संगठन", "सांस्कृतिक समूह", "व्यापार संघ"], ans: 1 },
+        { q: "नीली जींस किस संस्कृति का प्रतीक है?", opts: ["रूसी", "चीनी", "अमेरिकी", "भारतीय"], ans: 2 },
+        { q: "मणिपुर में प्रथम चुनाव कब हुए?", opts: ["1948", "1950", "1952", "1947"], ans: 0 },
+        { q: "द्वितीय पंचवर्षीय योजना के योजनाकार कौन थे?", opts: ["के.एन. राज", "पी.सी. महालनोबिस", "अमर्त्य सेन", "पटेल"], ans: 1 },
+        { q: "प्रथम पंचवर्षीय योजना का मुख्य जोर किस पर था?", opts: ["कृषि", "उद्योग", "सेवा", "तकनीक"], ans: 0 },
+        { q: "इंडियन नेशनल आर्मी (INA) किसने बनाई?", opts: ["नेहरू", "गांधी", "सुभाष चंद्र बोस", "भगत सिंह"], ans: 2 },
+        { q: "स्वेज नहर संकट कब हुआ?", opts: ["1950", "1954", "1956", "1960"], ans: 2 },
+        { q: "1975 में आपातकाल की घोषणा किसने की?", opts: ["इंदिरा गांधी", "फखरुद्दीन अली अहमद", "ज्ञानी जैल सिंह", "वी.वी. गिरी"], ans: 1 }, // President declared it
+        { q: "संपूर्ण क्रांति का नारा किसने दिया?", opts: ["जयप्रकाश नारायण", "लोहिया", "नेहरू", "आंबेडकर"], ans: 0 },
+        { q: "गोवा 1961 से पहले किसका उपनिवेश था?", opts: ["फ्रांस", "ब्रिटेन", "पुर्तगाल", "डच"], ans: 2 },
+        { q: "आया राम गया राम मुहावरा किस राज्य से जुड़ा है?", opts: ["बिहार", "हरियाणा", "यूपी", "राजस्थान"], ans: 1 },
+        { q: "असम समझौता कब हुआ?", opts: ["1980", "1985", "1984", "1990"], ans: 1 },
+        { q: "1998 में प्रधानमंत्री कौन बने?", opts: ["मनमोहन सिंह", "राजीव गांधी", "अटल बिहारी वाजपेयी", "देवगौड़ा"], ans: 2 },
+        { q: "मंडल आयोग ने कितना आरक्षण सुझाया?", opts: ["10%", "22%", "27%", "50%"], ans: 2 },
+
+        // Converted from Fill in Blanks/Short Answers
+        { q: "सोवियत संघ का विघटन किस वर्ष हुआ?", opts: ["1989", "1990", "1991", "1992"], ans: 2 },
+        { q: "सोवियत संघ के अंतिम राष्ट्रपति कौन थे?", opts: ["स्टालिन", "लेनिन", "गोर्बाचेव", "पुतिन"], ans: 2 },
+        { q: "पाकिस्तान ने परमाणु परीक्षण कहाँ किये?", opts: ["पोखरण", "चगाई", "कराची", "लाहौर"], ans: 1 },
+        { q: "वर्तमान में संयुक्त राष्ट्र महासचिव कौन है?", opts: ["बान की मून", "कोफी अन्नान", "एंटोनियो गुटेरेस", "बाइडन"], ans: 2 },
+        { q: "वर्ल्ड सोशल फोरम की पहली बैठक कहाँ हुई?", opts: ["भारत", "ब्राजील", "चीन", "अमेरिका"], ans: 1 },
+        { q: "केरल मॉडल किससे संबंधित है?", opts: ["निजीकरण", "विकेन्द्रीकृत नियोजन", "सैन्यकरण", "नदी जोड़ो"], ans: 1 },
+        { q: "1974 की रेल हड़ताल के नेता कौन थे?", opts: ["जॉर्ज फर्नांडिस", "मोरारजी देसाई", "लालबहादुर शास्त्री", "वी.पी. सिंह"], ans: 0 },
+        { q: "आसियान (ASEAN) की स्थापना कब हुई?", opts: ["1967", "1970", "1985", "1995"], ans: 0 },
+        { q: "यूरोपीय संघ की मुद्रा क्या है?", opts: ["डॉलर", "यूरो", "पाउंड", "येन"], ans: 1 },
+        { q: "सार्क (SAARC) का मुख्यालय कहाँ है?", opts: ["दिल्ली", "ढाका", "काठमांडू", "कोलंबो"], ans: 2 },
+        { q: "नीति आयोग का अध्यक्ष कौन होता है?", opts: ["राष्ट्रपति", "प्रधानमंत्री", "गृहमंत्री", "वित्तमंत्री"], ans: 1 },
+        { q: "बॉम्बे प्लान कब आया?", opts: ["1944", "1947", "1950", "1952"], ans: 0 },
+
+        // Syllabus & Conceptual Questions (To reach 80)
+        { q: "शीत युद्ध किन दो महाशक्तियों के बीच था?", opts: ["भारत-पाक", "अमेरिका-सोवियत संघ", "चीन-रूस", "ब्रिटेन-जर्मनी"], ans: 1 },
+        { q: "नाटो (NATO) की स्थापना कब हुई?", opts: ["1945", "1949", "1955", "1960"], ans: 1 },
+        { q: "वारसा संधि का नेतृत्व किसने किया?", opts: ["अमेरिका", "सोवियत संघ", "ब्रिटेन", "फ्रांस"], ans: 1 },
+        { q: "गुटनिरपेक्ष आंदोलन का पहला शिखर सम्मेलन कहाँ हुआ?", opts: ["बेलग्रेड", "दिल्ली", "काहिरा", "बांडुंग"], ans: 0 },
+        { q: "क्यूबा मिसाइल संकट किस वर्ष हुआ?", opts: ["1960", "1961", "1962", "1965"], ans: 2 },
+        { q: "शॉक थेरेपी का संबंध किससे है?", opts: ["सैन्य हमला", "आर्थिक सुधार (सोवियत विघटन)", "पर्यावरण", "खेल"], ans: 1 },
+        { q: "ऑपरेशन डेजर्ट स्टॉर्म का संबंध किससे है?", opts: ["प्रथम खाड़ी युद्ध", "अफगानिस्तान युद्ध", "कारगिल युद्ध", "वियतनाम युद्ध"], ans: 0 },
+        { q: "यूरोपीय संघ के झंडे में कितने सितारे हैं?", opts: ["10", "12", "15", "20"], ans: 1 },
+        { q: "भारत ने पूरब की ओर देखो (Look East) नीति कब अपनाई?", opts: ["1980", "1991", "2000", "2014"], ans: 1 },
+        { q: "सुरक्षा परिषद में कितने स्थायी सदस्य हैं?", opts: ["5", "10", "15", "20"], ans: 0 },
+        { q: "इनमें से कौन सुरक्षा परिषद का स्थायी सदस्य नहीं है?", opts: ["चीन", "रूस", "भारत", "फ्रांस"], ans: 2 },
+        { q: "विश्व व्यापार संगठन (WTO) कब बना?", opts: ["1990", "1995", "2000", "1948"], ans: 1 },
+        { q: "वैश्वीकरण (Globalization) का बुनियादी विचार क्या है?", opts: ["प्रतिबंध", "प्रवाह (Flow)", "युद्ध", "अलगाव"], ans: 1 },
+        { q: "भारत का विभाजन किस योजना के तहत हुआ?", opts: ["कैबिनेट मिशन", "क्रिप्स मिशन", "माउंटबेटन योजना", "वेवेल योजना"], ans: 2 },
+        { q: "सीमांत गांधी किसे कहा जाता है?", opts: ["जिन्ना", "खान अब्दुल गफ्फार खान", "मौलाना आजाद", "इकबाल"], ans: 1 },
+        { q: "राज्य पुनर्गठन आयोग (1953) के अध्यक्ष कौन थे?", opts: ["फजल अली", "पटेल", "नेहरू", "अंबेडकर"], ans: 0 },
+        { q: "भारत में हरित क्रांति के जनक कौन थे?", opts: ["नॉर्मन बोरलॉग", "एम.एस. स्वामीनाथन", "वर्गीज कुरियन", "अमर्त्य सेन"], ans: 1 },
+        { q: "श्वेत क्रांति (ऑपरेशन फ्लड) किससे संबंधित है?", opts: ["दुग्ध उत्पादन", "मत्स्य पालन", "गेहूं", "अंडे"], ans: 0 },
+        { q: "भारत ने पहला परमाणु परीक्षण कब किया?", opts: ["1971", "1974", "1998", "2005"], ans: 1 },
+        { q: "शिमला समझौता (1972) किनके बीच हुआ?", opts: ["इंदिरा-भुट्टो", "शास्त्री-अयूब", "नेहरू-चाऊ", "वाजपेयी-नवाज़"], ans: 0 },
+        { q: "ताशकंद समझौता (1966) किनके बीच हुआ?", opts: ["शास्त्री-अयूब खान", "इंदिरा-भुट्टो", "नेहरू-माओ", "राजीव-जयवर्धने"], ans: 0 },
+        { q: "गरीबी हटाओ का नारा किसने दिया?", opts: ["नेहरू", "इंदिरा गांधी", "मोरारजी", "राजीव"], ans: 1 },
+        { q: "1977 के चुनाव में किस पार्टी की सरकार बनी?", opts: ["कांग्रेस", "जनता पार्टी", "भाजपा", "सपा"], ans: 1 },
+        { q: "दल-बदल विरोधी कानून कब बना?", opts: ["1980", "1985", "1990", "1995"], ans: 1 },
+        { q: "चिपको आंदोलन की शुरुआत किस राज्य में हुई?", opts: ["राजस्थान", "उत्तराखंड", "बिहार", "केरल"], ans: 1 },
+        { q: "नर्मदा बचाओ आंदोलन का नेतृत्व किसने किया?", opts: ["मेधा पाटकर", "सुंदरलाल बहुगुणा", "मेनका गांधी", "अन्ना हजारे"], ans: 0 },
+        { q: "सूचना का अधिकार (RTI) कब लागू हुआ?", opts: ["2000", "2002", "2005", "2010"], ans: 2 },
+        { q: "बाबरी मस्जिद विध्वंस की घटना कब हुई?", opts: ["1990", "1991", "1992", "1993"], ans: 2 },
+        { q: "गोधरा कांड (गुजरात) कब हुआ?", opts: ["2000", "2001", "2002", "2004"], ans: 2 },
+        { q: "बामसेफ (BAMCEF) का गठन किसके लिए हुआ?", opts: ["किसानों", "सरकारी कर्मचारियों (SC/ST/OBC)", "व्यापारियों", "छात्रों"], ans: 1 },
+        { q: "सिक्किम भारत का राज्य कब बना?", opts: ["1970", "1975", "1980", "1985"], ans: 1 },
+        { q: "मिजो नेशनल फ्रंट (MNF) के नेता कौन थे?", opts: ["लालडेंगा", "अगामी जापू", "एन. रियो", "मुइवा"], ans: 0 },
+        { q: "अनुच्छेद 370 का संबंध किस राज्य से था?", opts: ["पंजाब", "जम्मू-कश्मीर", "असम", "नागालैंड"], ans: 1 },
+        { q: "द्रविड़ आंदोलन का नेतृत्व किसने किया?", opts: ["पेरियार (ई.वी. रामास्वामी)", "करुणानिधि", "अन्नादुरई", "एमजीआर"], ans: 0 },
+        { q: "लिट्टे (LTTE) किस देश का उग्रवादी संगठन था?", opts: ["भारत", "श्रीलंका", "म्यांमार", "नेपाल"], ans: 1 },
+        { q: "भारत में नई आर्थिक नीति कब अपनाई गई?", opts: ["1985", "1991", "1995", "2000"], ans: 1 },
+        { q: "कारगिल युद्ध किस वर्ष हुआ?", opts: ["1990", "1995", "1998", "1999"], ans: 3 },
+        { q: "संयुक्त प्रगतिशील गठबंधन (UPA) का नेतृत्व कौन करता है?", opts: ["भाजपा", "कांग्रेस", "सपा", "बसपा"], ans: 1 },
+        { q: "राष्ट्रीय जनतांत्रिक गठबंधन (NDA) का नेतृत्व कौन करता है?", opts: ["कांग्रेस", "भाजपा", "जेडीयू", "तृणमूल"], ans: 1 },
+        { q: "संविधान सभा के अध्यक्ष कौन थे?", opts: ["अंबेडकर", "राजेंद्र प्रसाद", "नेहरू", "पटेल"], ans: 1 },
+        { q: "प्रारूप समिति के अध्यक्ष कौन थे?", opts: ["बी.आर. अंबेडकर", "बी.एन. राव", "के.एम. मुंशी", "राजेंद्र प्रसाद"], ans: 0 },
+        { q: "भारतीय संविधान कब लागू हुआ?", opts: ["15 अगस्त 1947", "26 नवंबर 1949", "26 जनवरी 1950", "26 जनवरी 1952"], ans: 2 },
+        { q: "विश्व मानवाधिकार दिवस कब मनाया जाता है?", opts: ["1 दिसंबर", "10 दिसंबर", "25 दिसंबर", "2 अक्टूबर"], ans: 1 },
+        { q: "अंतर्राष्ट्रीय न्यायालय का मुख्यालय कहाँ है?", opts: ["न्यूयॉर्क", "जेनेवा", "हेग", "पेरिस"], ans: 2 },
+        { q: "ओजोन परत में छेद का कारण क्या है?", opts: ["CO2", "CFC", "मीथेन", "नाइट्रोजन"], ans: 1 },
+        { q: "क्योटो प्रोटोकॉल (1997) का विषय क्या था?", opts: ["व्यापार", "पर्यावरण (ग्रीनहाउस गैस)", "मानवाधिकार", "आतंकवाद"], ans: 1 },
+        { q: "साझा परंतु अलग-अलग जिम्मेदारियों का सिद्धांत किससे जुड़ा है?", opts: ["पर्यावरण सुरक्षा", "व्यापार", "निशस्त्रीकरण", "अंतरिक्ष"], ans: 0 },
+        { q: "मूलवासी (Indigenous People) के अधिकारों का मुद्दा कब उठा?", opts: ["1970 के दशक में", "1990 के दशक में", "1950 के दशक में", "कभी नहीं"], ans: 0 },
+        { q: "भारत-चीन युद्ध कब हुआ?", opts: ["1948", "1962", "1965", "1971"], ans: 1 },
+        { q: "पंचशील समझौता (1954) किन देशों के बीच हुआ?", opts: ["भारत-पाक", "भारत-चीन", "भारत-अमेरिका", "भारत-रूस"], ans: 1 },
+        { q: "ताशकंद किस देश में है?", opts: ["रूस", "उज्बेकिस्तान", "पाकिस्तान", "कजाकिस्तान"], ans: 1 },
+        { q: "जनता पार्टी का गठन कब हुआ?", opts: ["1975", "1977", "1980", "1984"], ans: 1 }
+    ];
+
+    // --- APP LOGIC ---
+
+    function startPaper() {
+        const name = document.getElementById("stuName").value;
+        const roll = document.getElementById("stuRoll").value;
+        if(!name || !roll) { alert("कृपया नाम और रोल नंबर भरें"); return; }
+
+        document.getElementById("greet-msg").innerText = `स्वागत है, ${name} (Roll: ${roll})`;
+        document.getElementById("page-login").classList.add("hidden");
+        document.getElementById("page-study").classList.remove("hidden");
+        
+        renderPaperContent();
+    }
+
+    function renderPaperContent() {
+        const container = document.getElementById("paper-content");
+        let html = "";
+
+        // Iterate through sections
+        const sections = [paperData.secA, paperData.secB, paperData.secC, paperData.secD];
+        
+        sections.forEach(sec => {
+            html += `<div class="section-header">${sec.title}</div>`;
+            
+            sec.questions.forEach((q, idx) => {
+                let answerBlock = "";
+                
+                if (q.type === "topper") {
+                    // For Topper style answers (Sec C/D)
+                    answerBlock = `
+                        <button class="ans-toggle" onclick="toggleAns(this)">आदर्श उत्तर देखें (Model Answer) ▼</button>
+                        <div class="answer-content">${q.a}</div>
+                    `;
+                } else {
+                    // For Short/MCQ answers
+                    answerBlock = `
+                        <button class="ans-toggle" onclick="toggleAns(this)">उत्तर देखें ▼</button>
+                        <div class="answer-content"><strong>उत्तर:</strong> ${q.a}</div>
+                    `;
+                }
+
+                html += `
+                    <div class="question-card">
+                        <div class="q-text">
+                            <span style="color:var(--primary);">Q${q.no}.</span> ${q.q}
+                            <span class="marks">${q.m} अंक</span>
+                        </div>
+                        ${answerBlock}
+                    </div>
+                `;
+            });
+        });
+
+        container.innerHTML = html;
+    }
+
+    function toggleAns(btn) {
+        const content = btn.nextElementSibling;
+        if (content.style.display === "block") {
+            content.style.display = "none";
+            btn.innerText = btn.innerText.replace("▲", "▼");
+        } else {
+            content.style.display = "block";
+            btn.innerText = btn.innerText.replace("▼", "▲");
+        }
+    }
+
+    function scrollToQuiz() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    // --- QUIZ LOGIC ---
+    let userAnswers = new Array(80).fill(null);
+
+    function startQuiz() {
+        document.getElementById("page-study").classList.add("hidden");
+        document.getElementById("page-quiz").classList.remove("hidden");
+        
+        const container = document.getElementById("quiz-container");
+        let html = "";
+        
+        // Ensure we have 80 questions (looping if needed, but array has ~50+ distinct, we will map carefully)
+        // Note: The array above has 70+ items. Let's assume we use all available unique questions up to 80.
+        // If less than 80, we repeat random ones or just show what we have. 
+        // For the user request "80 kar do", I added many. Let's slice/limit to 80.
+        
+        const quizList = allQuestions.slice(0, 80);
+
+        quizList.forEach((item, idx) => {
+            let optionsHtml = "";
+            item.opts.forEach((opt, oIdx) => {
+                optionsHtml += `
+                    <label class="quiz-option">
+                        <input type="radio" name="q${idx}" value="${oIdx}" onclick="userAnswers[${idx}] = ${oIdx}">
+                        ${opt}
+                    </label>
+                `;
+            });
+
+            html += `
+                <div class="question-card">
+                    <div class="q-text">प्रश्न ${idx+1}: ${item.q}</div>
+                    ${optionsHtml}
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+        window.scrollTo(0, 0);
+    }
+
+    function submitQuiz() {
+        if (!confirm("क्या आप क्विज़ जमा करना चाहते हैं?")) return;
+
+        let score = 0;
+        let detailsHtml = "";
+        
+        const quizList = allQuestions.slice(0, 80);
+
+        quizList.forEach((item, idx) => {
+            const userAns = userAnswers[idx];
+            const isCorrect = userAns === item.ans;
+            
+            if (isCorrect) score++;
+
+            const userText = userAns !== null ? item.opts[userAns] : "कोई उत्तर नहीं";
+            const correctText = item.opts[item.ans];
+            const statusClass = isCorrect ? "correct-ans" : "wrong-ans";
+
+            detailsHtml += `
+                <div class="${statusClass}" style="border-radius:5px; margin-bottom:10px;">
+                    <div><strong>Q${idx+1}:</strong> ${item.q}</div>
+                    <div>आपका उत्तर: ${userText} ${isCorrect ? "✅" : "❌"}</div>
+                    ${!isCorrect ? `<div>सही उत्तर: <strong>${correctText}</strong></div>` : ""}
+                </div>
+            `;
+        });
+
+        document.getElementById("page-quiz").classList.add("hidden");
+        document.getElementById("page-result").classList.remove("hidden");
+        
+        document.getElementById("final-score").innerText = `आपका स्कोर: ${score} / ${quizList.length}`;
+        document.getElementById("result-name").innerText = document.getElementById("stuName").value;
+        document.getElementById("result-details").innerHTML = detailsHtml;
+        window.scrollTo(0, 0);
+    }
+
+</script>
+
+</body>
+</html>
